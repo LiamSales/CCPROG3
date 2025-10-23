@@ -1,4 +1,4 @@
 class VendingMachine (){
-    val slots: Array<Int>(8) = emptyArray()
-    
+    val slots: Array<Item>(8) = emptyArray()
+
 }
