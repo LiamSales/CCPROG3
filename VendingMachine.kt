@@ -5,22 +5,47 @@ class VendingMachine (var slotLimit: Int, var itemLimit: Int){
         require(itemLimit >= 8, "It must have at least 8 items per slot.")        
     }
 
-    var pesos: Array<Int>(9) = emptyArray()
-    var centavos: Array<Int>(3) = emptyArray()
+    val cash: Array<Int>(12) = emptyArray()
     val slots: Array<Item>(slotLimit) = emptyArray()
 
+    var cashAccepted: Array<Int>(12) = emptyArray()
+
+//accept cash first, then have user select item
 
     fun collectChange(){
-        pesos = emptyArray()
-        centavos = emptyArray()
     }
 
-    fun payMachine(){
+    fun payMachine(// for each denom){
     }
 
-    fun displayBalance(){
+    fun displayBalance(// for each denom){
     }
 
+    fun addItem(name: String, stock: Int, price: Float, calories: Int){
+        //find the first empty slot
+        //make sure no duplicates in the name
+        //input validation for the rest
+    }
+
+    fun replenish(newStock: Int){
+        //ez add more
+    }
+
+    fun removeItem(){
+        //different from item being 0
+    }
+
+    fun removeStock(){
+
+    }
+
+    fun changePrice(){
+
+    }
+
+    fun displaySummary(){
+
+    }
 
 
 
