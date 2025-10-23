@@ -5,23 +5,25 @@ class VendingMachine (var slotLimit: Int, var itemLimit: Int){
         require(itemLimit >= 8, "It must have at least 8 items per slot.")        
     }
 
-    var change: Float = 0.0f
+    var pesos: Array<Int>(9) = emptyArray()
+    var centavos: Array<Int>(3) = emptyArray()
     val slots: Array<Item>(slotLimit) = emptyArray()
 
 
     fun collectChange(){
-        this.change = 0.0f
+        pesos = emptyArray()
+        centavos = emptyArray()
     }
 
-    fun payMachine(cash: Float){
-        change+=cash
+    fun payMachine(){
     }
 
     fun displayBalance(){
-        println("change")
     }
 
-    
+
+
+
 
 
 }
