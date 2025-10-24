@@ -1,24 +1,24 @@
 class VendingMachine (var slotLimit: Int, var itemLimit: Int){
 
     init{
-        require(slotLimit >= 10, "It must have at least 10 slots.")
-        require(itemLimit >= 8, "It must have at least 8 items per slot.")        
+        require(slotLimit >= 10) { "It must have at least 10 slots." }
+        require(itemLimit >= 8) {"It must have at least 8 items per slot."}      
     }
+    
+    val cash = Array(12) { 0 }
+    val slots = arrayOfNulls<Item>(slotLimit)
+    var cashAccepted = Array(12) { 0 }
 
-    val cash: Array<Int>(12) = emptyArray()
-    val slots: Array<Item>(slotLimit) = emptyArray()
-
-    var cashAccepted: Array<Int>(12) = emptyArray()
-
+    
 //accept cash first, then have user select item
 
     fun collectChange(){
     }
 
-    fun payMachine(// for each denom){
+    fun payMachine(){
     }
 
-    fun displayBalance(// for each denom){
+    fun displayBalance(){
     }
 
     fun addItem(name: String, stock: Int, price: Float, calories: Int){
@@ -46,9 +46,5 @@ class VendingMachine (var slotLimit: Int, var itemLimit: Int){
     fun displaySummary(){
 
     }
-
-
-
-
 
 }
