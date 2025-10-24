@@ -5,13 +5,9 @@ class VendingMachine (var slotLimit: Int, var itemLimit: Int){
         require(itemLimit >= 8) {"It must have at least 8 items per slot."}      
     }
     
-    val cash = Array(12) { 0 }
+    val bank: cash = Array(12) { 0 }
     val slots = arrayOfNulls<Item>(slotLimit)
-    var cashAccepted = Array(12) { 0 }
-
     
-//accept cash first, then have user select item
-
     fun collectChange(){
     }
 
@@ -32,14 +28,36 @@ class VendingMachine (var slotLimit: Int, var itemLimit: Int){
     }
 
     fun removeItem(){
-        //different from item being 0
+        //deletes item
     }
 
     fun removeStock(){
-
     }
 
     fun changePrice(){
+
+    }
+
+    fun transaction(payment: cash){
+
+        //save state of the cash on hand local var
+        //compute total
+
+        //add to bank
+
+        //ask what they want, use slot IDs
+        //cancelling just gets the equivalent from the local var out from bank subract balance
+
+        //check if difference is positive
+        //check if there can be change generated properly
+        //cancel if not
+
+        //if yes
+        //subtract 1 quantity
+        
+        //give change
+
+        // save summary of the transaction
 
     }
 

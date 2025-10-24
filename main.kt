@@ -1,3 +1,6 @@
+typealias cash = Array<Int>
+typealias inventory 
+
 fun createRegular(){
 
 }
