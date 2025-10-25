@@ -62,6 +62,7 @@ class VendingMachine (var slotLimit: Int, var itemLimit: Int){
         //if yes
         //subtract 1 quantity
         
+        //display details, emphasis on calories
         //give change
 
         // save summary of the transaction

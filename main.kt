@@ -37,6 +37,15 @@ fun testMachine(){
 
 }
 
+fun testFeatures(){
+    //automatic check
+}
+
+fun testMaintenance(){
+    // no distinction
+}
+
+
 fun main() {
 
     while (true) {
