@@ -1,7 +1,7 @@
 # CCPROG3
 Object-Oriented Programming
 
-# [View UML Diagram on Lucidchart]([https://lucid.app/lucidchart/your-diagram-link](https://lucid.app/lucidchart/fbc7cfde-8654-4c36-98f2-d7ff61862d01/edit?viewport_loc=-451%2C-181%2C3119%2C1494%2CHWEp-vi-RSFO&invitationId=inv_f2a9a539-0733-4d69-9f91-b3cb97769b0d)
+# [View UML Diagram on Lucidchart](https://lucid.app/lucidchart/fbc7cfde-8654-4c36-98f2-d7ff61862d01/edit?viewport_loc=-451%2C-181%2C3119%2C1494%2CHWEp-vi-RSFO&invitationId=inv_f2a9a539-0733-4d69-9f91-b3cb97769b0d)
 
 Program Overview – Vending Machine Factory Simulator
 Vending or “automatic retailing” has its roots traced back as far as 215BC. However, it was only in the
