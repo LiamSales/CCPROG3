@@ -4,9 +4,14 @@ class VendingMachine (var slotLimit: Int, var itemLimit: Int){
         require(slotLimit >= 10) { "It must have at least 10 slots." }
         require(itemLimit >= 8) {"It must have at least 8 items per slot."}      
     }
+
+    //have it loop, compare with check
     
+
+
     val bank: cash = Array(12) { 0 }
-    val slots = arrayOfNulls<Item>(slotLimit)
+    val slots = arrayOfNulls<Item>(slotLimit)// change to array of pair(items, quantity)
+    //var summary: empty at init should have a local copy of restock
     
     fun collectChange(){
     }
@@ -23,8 +28,10 @@ class VendingMachine (var slotLimit: Int, var itemLimit: Int){
         //input validation for the rest
     }
 
-    fun replenish(newStock: Int){
+    fun restockMachine(){
         //ez add more
+        val restockSlots = Array<Int>(slotLimit)
+        //rewrite the summary, set this as restock
     }
 
     fun removeItem(){
