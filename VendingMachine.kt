@@ -7,7 +7,11 @@ class VendingMachine (var slotLimit: Int, var itemLimit: Int){
 
     //have it loop, compare with check
     
+// add getters and setters, adjust visibility
+// learn about packages
 
+// privatize attributes, publicize the methods
+// composition or aggregation for item??
 
     val bank: cash = Array(12) { 0 }
     val slots = arrayOfNulls<Item>(slotLimit)// change to array of pair(items, quantity)
