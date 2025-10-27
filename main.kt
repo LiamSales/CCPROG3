@@ -1,5 +1,9 @@
-typealias cash = Array<Int>
-typealias inventory 
+typealias cash = MutableMap<Int,Int>
+
+data class Item(
+    val name: String,
+    var calories: Int
+)
 
 fun createRegular(){
 

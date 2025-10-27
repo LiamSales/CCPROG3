@@ -1,8 +1,23 @@
+data class Slot(
+    var item: Item?,
+    var quantity: Int,
+    var price: Float
+    )
+
+data class Transaction(
+    val name: String,
+    val price: Float,
+    val calories: Int,
+    val payment: Float,
+    val changeGiven: Float
+)
+
+
 class VendingMachine (var slotLimit: Int, var itemLimit: Int){
 
-    init{
-        require(slotLimit >= 10) { "It must have at least 10 slots." }
-        require(itemLimit >= 8) {"It must have at least 8 items per slot."}      
+    init {
+        require(slotLimit >= 8) { "Machine must have at least 8 slots." }
+        require(itemLimit >= 10) { "Each slot must hold at least 10 items." }
     }
 
     //have it loop, compare with check
@@ -13,68 +28,95 @@ class VendingMachine (var slotLimit: Int, var itemLimit: Int){
 // privatize attributes, publicize the methods
 // composition or aggregation for item??
 
-    val bank: cash = Array(12) { 0 }
-    val slots = arrayOfNulls<Item>(slotLimit)// change to array of pair(items, quantity)
+    private val slots = Array(slotLimit) { Slot(null, 0, 0f) }
+
     //var summary: empty at init should have a local copy of restock
-    
-    fun collectChange(){
+       /** Adds a new item to the first available empty slot. */
+    fun addItem(name: String, price: Float, calories: Int, stock: Int) {
+        // TODO:
+        // 1. Validate input (no duplicate names, stock ≤ itemLimit)
+        // 2. Find first empty slot
+        // 3. Place new Item + quantity
     }
 
-    fun payMachine(){
+    /** Removes an item completely from a slot. */
+    fun removeItem(slotIndex: Int) {
+        // TODO:
+        // 1. Validate index
+        // 2. Clear item and reset stock
     }
 
-    fun displayBalance(){
+    /** Reduces stock of a specific item. */
+    fun removeStock(slotIndex: Int, amount: Int) {
+        // TODO:
+        // 1. Validate index and sufficient stock
+        // 2. Subtract amount
     }
 
-    fun addItem(name: String, stock: Int, price: Float, calories: Int){
-        //find the first empty slot
-        //make sure no duplicates in the name
-        //input validation for the rest
+    /** Updates the price of a given item. */
+    fun changePrice(slotIndex: Int, newPrice: Float) {
+        // TODO:
+        // 1. Validate slotIndex
+        // 2. Update price
     }
 
-    fun restockMachine(){
-        //ez add more
-        val restockSlots = Array<Int>(slotLimit)
-        //rewrite the summary, set this as restock
+    /** Restocks items in the vending machine. */
+    fun restockMachine() {
+        // TODO:
+        // 1. Iterate all slots
+        // 2. Allow user input for new stock per slot
+        // 3. Record restock summary (start/end inventory)
     }
 
-    fun removeItem(){
-        //deletes item
+    /** Displays total balance (in pesos). */
+    fun displayBalance() {
+        val total = bank.entries.sumOf { it.key * it.value } / 100.0
+        println("Machine Balance: ₱%.2f".format(total))
     }
 
-    fun removeStock(){
+    /** Handles user payment and transaction process. */
+    fun transaction(payment: cash) {
+        // TODO:
+        // 1. Compute total payment
+        // 2. Ask for desired item
+        // 3. Check sufficient payment and stock
+        // 4. Check if change can be produced
+        // 5. Update stock, add to transactions, and print result
     }
 
-    fun changePrice(){
-
+    /** Returns change in denominations, if possible. */
+    fun collectChange(amount: Int): cash {
+        // TODO:
+        // 1. Compute which denominations to use (greedy algorithm)
+        // 2. Check if enough bills/coins exist
+        // 3. Deduct from bank
+        // 4. Return change map
+        return mutableMapOf()
     }
 
-    fun transaction(payment: cash){
-
-        //save state of the cash on hand local var
-        //compute total
-
-        //add to bank
-
-        //ask what they want, use slot IDs
-        //cancelling just gets the equivalent from the local var out from bank subract balance
-
-        //check if difference is positive
-        //check if there can be change generated properly
-        //cancel if not
-
-        //if yes
-        //subtract 1 quantity
-        
-        //display details, emphasis on calories
-        //give change
-
-        // save summary of the transaction
-
+    /** Collects all cash from the machine (for operator). */
+    fun collectMoney() {
+        // TODO:
+        // 1. Display breakdown
+        // 2. Clear bank contents
     }
 
-    fun displaySummary(){
-
+    /** Displays transaction summary. */
+    fun displaySummary() {
+        // TODO:
+        // 1. Print each item sold and total revenue
+        // 2. Include calories and sales info since last restock
     }
 
+    /** Helper to print available items and slots. */
+    fun displaySlots() {
+        println("=== ITEMS IN MACHINE ===")
+        for (i in slots.indices) {
+            val slot = slots[i]
+            if (slot.item != null)
+                println("[${i + 1}] ${slot.item!!.name} - (${slot.quantity} pcs, ${slot.item!!.calories} cal)")
+            else
+                println("[${i + 1}] <Empty>")
+        }
+    }
 }
