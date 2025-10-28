@@ -20,7 +20,7 @@ class VendingMachine (var slotLimit: Int, var itemLimit: Int){
         require(itemLimit >= 10) { "Each slot must hold at least 10 items." }
     }
 
-    //have it loop, compare with check
+//have it loop, compare with check
     
 // add getters and setters, adjust visibility
 // learn about packages
@@ -31,12 +31,22 @@ class VendingMachine (var slotLimit: Int, var itemLimit: Int){
     private val slots = Array(slotLimit) { Slot(null, 0, 0f) }
 
     //var summary: empty at init should have a local copy of restock
-       /** Adds a new item to the first available empty slot. */
-    fun addItem(name: String, price: Float, calories: Int, stock: Int) {
-        // TODO:
-        // 1. Validate input (no duplicate names, stock ≤ itemLimit)
-        // 2. Find first empty slot
-        // 3. Place new Item + quantity
+
+
+    fun addItem(item: Item, price: Float, quantity: Int ) {
+        
+        // 1. Validate input
+
+        val i = slots.indexOfFirst { it.item == null }
+
+        slots[i].item = item
+        slots[i].price = price
+        slots[i].quantity = quantity
+
+        // do we have a separate function in a different class for creating an item?
+        // can items be used in different machines?
+
+        //where should create item be?
     }
 
     /** Removes an item completely from a slot. */

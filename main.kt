@@ -1,9 +1,12 @@
 typealias cash = MutableMap<Int,Int>
+// can i hardcode the denominations here globally?
 
 data class Item(
     val name: String,
     var calories: Int
 )
+
+//can this have input validation? limited characters for string; non negative calories
 
 fun createRegular(){
 
