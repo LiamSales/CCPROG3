@@ -6,6 +6,22 @@ data class Item(
     var calories: Int
 )
 
+fun inputValidator(input: String, max: Int): String{
+    while (true){
+        
+        return ""
+    }
+}
+
+fun inputValidator(input: Int): Int{
+    return 0
+}
+
+fun inputValidator(input: Float): Float{
+    return 0f
+}
+
+
 //can this have input validation? limited characters for string; non negative calories
 
 fun createRegular(){
