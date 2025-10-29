@@ -6,18 +6,26 @@ data class Item(
     var calories: Int
 )
 
-fun inputValidator(input: String, max: Int): String{
-    while (true){
-        
-        return ""
-    }
-}
+//the whole thing isnt hardcoded, items are saved in a txt file
+//do i save the machines as well?
 
-fun inputValidator(input: Int): Int{
+fun validateInput(input: String?, max: Int): String{
+    var current = input
+    do {
+        if (current != null && current.length <= max && current.isNotEmpty())
+            return current
+        println("Input can only be up to $max characters long. Please try again:")
+        current = readlnOrNull()
+    } while(true)
+}
+//have chatgpt proofread whether null check is actually neessary, workaround needed and if i can just do readln instead of readlnOrNull such that user really cant place null
+
+
+fun validateInput(input: Int): Int{
     return 0
 }
 
-fun inputValidator(input: Float): Float{
+fun validateInput(input: Float): Float{
     return 0f
 }
 
