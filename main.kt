@@ -5,7 +5,6 @@ data class Item(
     var calories: Int
 )
 
-//no need to worry about input validation since GUI will handle all of that
 
 
 fun createRegular(){
@@ -45,11 +44,9 @@ fun testMachine(){
 }
 
 fun testFeatures(){
-    //automatic check whether if special or regular
 }
 
 fun testMaintenance(){
-    // no distinction
 }
 
 
