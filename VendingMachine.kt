@@ -12,21 +12,14 @@ data class Transaction(
     val changeGiven: Float
 )
 
+class CashRegister {
+    private val cash: MutableMap<Int, Int> = mutableMapOf(
+        1 to 0, 5 to 0, 10 to 0, 20 to 0, 50 to 0,
+        100 to 0, 200 to 0, 500 to 0, 1000 to 0
+    )
+}
 
 class VendingMachine (var slotLimit: Int, var itemLimit: Int){
-
-    init {
-        require(slotLimit >= 8) { "Machine must have at least 8 slots." }
-        require(itemLimit >= 10) { "Each slot must hold at least 10 items." }
-    }
-
-//have it loop, compare with check
-    
-// add getters and setters, adjust visibility
-// learn about packages
-
-// privatize attributes, publicize the methods
-// composition or aggregation for item??
 
     private val slots = Array(slotLimit) { Slot(null, 0, 0f) }
 

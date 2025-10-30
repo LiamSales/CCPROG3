@@ -1,4 +1,4 @@
-typealias cash = MutableMap<Int,Int>
+typealias Cash = MutableMap<Int,Int>
 
 data class Item(
     val name: String,
