@@ -1,14 +1,17 @@
-typealias Cash = MutableMap<Int,Int>
+var itemList = ArrayList<Item>()
+var regMachines = ArrayList<VendingMachine>()
 
-data class Item(
-    val name: String,
-    var calories: Int
-)
-
-
+//var specMachines 
 
 fun createRegular(){
 
+    println("slot limit:")
+    val slot = readln().toInt()
+    println("item limit:")
+    val item = readln().toInt()
+
+    val newMachine = VendingMachine(slot, item)
+    regMachines.add(newMachine)
 }
 
 fun createSpecial(){

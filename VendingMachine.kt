@@ -1,3 +1,9 @@
+data class Item(
+    val name: String,
+    var calories: Int
+)
+
+
 data class Slot(
     var item: Item?,
     var quantity: Int,
@@ -13,8 +19,11 @@ data class Transaction(
 )
 
 
-class VendingMachine (var slotLimit: Int, var itemLimit: Int){
+class VendingMachine (val slotLimit: Int, val itemLimit: Int){
 
-    private val slots = Array(slotLimit) { Slot(null, 0, 0f) }
+    val slots = Array(slotLimit) { Slot(null, 0, 0f) }
+    val register = CashRegister()
+    val transactions = ArrayList<Transaction>()
+
 
 }
