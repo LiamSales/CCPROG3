@@ -50,4 +50,9 @@ class VendingMachine (val slotLimit: Int, val itemLimit: Int){
     }
 
 
+    fun transaction(deposit: Cash){
+        
+
+    }
+
 }
