@@ -49,35 +49,60 @@ class VendingMachine (val slotLimit: Int, val itemLimit: Int){
         this.slots[i].quantity = quantity
     }
 
-    //asume the deposit is valid
-    fun transaction(deposit: Cash){
-        //compute the total amount
-        val amount  = deposit.entries.sumOf { (denomination, quantity) -> denomination * quantity }
+fun transaction() {
 
-        // add to the bank
-        this.register
+    val deposit: Cash = mutableMapOf()
+    var totalDeposited = 0
 
-        //validate before giving the choice: so buttons are inactive first 
+    while (true) {
+        println("Current balance: ₱$totalDeposited")
+        println("[1] Insert cash")
+        println("[2] Choose item")
+        println("[3] Cancel and refund")
+        print("Select option: ")
 
-        this.slots.forEach {}
+        when (readln().toInt()) {
+            1 -> {
+                print("Enter denomination: ")
+                val denom = readln().toInt()
+                print("Enter quantity: ")
+                val qty = readln().toInt()
+                deposit[denom] = (deposit[denom] ?: 0) + qty
+                totalDeposited += denom * qty
+                println("Deposited ₱${denom * qty}. New balance: ₱$totalDeposited")
+                //fix this such that its incrememntal
+            }
 
-        //check if the difference is non negative (can pay)
-        //check if change can be generated properly
+            2 -> {
+                println("Select slot number:")
+                val choice = readln().toInt() - 1
 
-        //can we multithread lmao
+                val slot = slots[choice]
+                val item = slot.item
 
-        //user can keep adding cash btw, simultanious checking
 
-        //cancel button
+                //check for available change
 
-        println("choose:")
+                slot.quantity--
+                val change = totalDeposited - slot.price.toInt()
 
-        val choice = readln().toInt()
-    
-        //subtract item quantity
-        //button to dispense change
+                transactions.add(Transaction(
+                    item.name, slot.price, item.calories, totalDeposited.toFloat(), change.toFloat()
+                ))
 
-        // save summary of the transaction
+                break
+            }
+
+            3 -> {
+                //dispense change
+                break
+            }
+
+            else -> println("Invalid option. Try again.")
+        }
+    }
+}
+
         
     }
 
