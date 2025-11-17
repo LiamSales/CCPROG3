@@ -43,13 +43,10 @@ class VendingMachine (val slotLimit: Int, val itemLimit: Int){
         this.slots[i].price = 0f
         
     }
-
-    fun emptySlot(i: Int){
-        
-    }
     
     fun restockQuantity(i: Int, quantity: Int){
         this.slots[i].quantity = quantity
+        //save to transaction
     }
     
     fun changePrice(i: Int, price: Float){
@@ -59,6 +56,18 @@ class VendingMachine (val slotLimit: Int, val itemLimit: Int){
 
     fun checkValid(totalDeposited: Float){
         //deals with register
+    }
+
+    fun replenishCash(){
+
+    }
+
+    fun collect(){
+
+    }
+
+    fun displaySummary(){
+
     }
 
     fun transaction() {
@@ -119,10 +128,4 @@ class VendingMachine (val slotLimit: Int, val itemLimit: Int){
             }
         }
     }    
-    
-    
-    fun collect(){
-
-    }
-
 }
