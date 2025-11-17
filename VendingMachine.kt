@@ -21,7 +21,7 @@ data class Transaction(
 
 class VendingMachine (val slotLimit: Int, val itemLimit: Int){
 
-    private val slots = Array(slotLimit) { Slot(null, 0, 0f) }
+    public val slots = Array(slotLimit) { Slot(null, 0, 0f) }
     private val register = CashRegister()
     private val transactions = ArrayList<Transaction>()
 
@@ -54,8 +54,9 @@ class VendingMachine (val slotLimit: Int, val itemLimit: Int){
     }
 
 
-    fun checkValid(totalDeposited: Float){
+    fun displayValid(totalDeposited: Float){
         //deals with register
+        //now just the big part
     }
 
     fun replenishCash(){
@@ -74,10 +75,10 @@ class VendingMachine (val slotLimit: Int, val itemLimit: Int){
 
         val deposit: Cash = mutableMapOf()
         var totalDeposited = 0.0f
-        var change = 0.0f
 
         while (true) {
             println("Current balance: ₱$totalDeposited")
+            displayValid(totalDeposited)
             println("[1] Insert cash")
             println("[2] Choose item")
             println("[3] Dispense Change")
@@ -94,9 +95,7 @@ class VendingMachine (val slotLimit: Int, val itemLimit: Int){
 
                     totalDeposited += denom //faulty needs fixing
 
-                    println("Deposited ₱$denom. New balance: ₱$totalDeposited")
-
-                    //should update the gui
+                    println("Deposited ₱$denom.")
 
                 }
 
@@ -117,13 +116,8 @@ class VendingMachine (val slotLimit: Int, val itemLimit: Int){
                 }
 
                 3 -> {
-
-                    change = totalDeposited
-
-                    println(change)
-
-                    totalDeposited = 0.0f
-                    change = 0.0f
+                    println(totalDeposited)
+                    break //are we breaking out of the while (true?)
                 }
             }
         }
