@@ -53,10 +53,14 @@ class VendingMachine (val slotLimit: Int, val itemLimit: Int){
 
     }
 
+    fun canDispenseChange(): Boolean{
+
+    }
 
     fun displayValid(totalDeposited: Float){
-        //deals with register
-        //now just the big part
+
+        slots.forEach { i -> if(totalDeposited >= i.price && //can dispense change)  }
+
     }
 
     fun replenishCash(){
@@ -73,7 +77,7 @@ class VendingMachine (val slotLimit: Int, val itemLimit: Int){
 
     fun transaction() {
 
-        val deposit: Cash = mutableMapOf()
+        val deposit: Cash = mutableMapOf() //
         var totalDeposited = 0.0f
 
         while (true) {
@@ -87,15 +91,15 @@ class VendingMachine (val slotLimit: Int, val itemLimit: Int){
             when (readln().toInt()) {
                 1 -> {
                     
-                    print("Enter denomination: ")
-                    val denom = readln().toInt()
-                    // no quantities they just keep adding one by one manually
+                    // print("Enter denomination: ")
+                    // val denom = readln().toInt()
+                    // // no quantities they just keep adding one by one manually
 
-                    //deposit[denom] incrememnts ++
+                    // //deposit[denom] incrememnts ++
 
-                    totalDeposited += denom //faulty needs fixing
+                    // totalDeposited += denom //faulty needs fixing
 
-                    println("Deposited ₱$denom.")
+                    // println("Deposited ₱$denom.")
 
                 }
 
@@ -113,10 +117,13 @@ class VendingMachine (val slotLimit: Int, val itemLimit: Int){
                     //update display
                     //save to transaction
 
+                    //dispense change?
+
                 }
 
                 3 -> {
                     println(totalDeposited)
+
                     break //are we breaking out of the while (true?)
                 }
             }

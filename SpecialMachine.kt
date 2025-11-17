@@ -1,3 +1,3 @@
-class SpecialMachine(change: Int) : VendingMachine(change){
+class SpecialMachine() : VendingMachine(){
     
 }
