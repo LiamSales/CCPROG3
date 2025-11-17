@@ -1,9 +1,7 @@
-
 data class Item(
     val name: String,
     var calories: Int
 )
-
 
 data class Slot(
     var item: Item?,
@@ -19,6 +17,7 @@ data class Transaction(
     val changeGiven: Float
 )
 
+//slot quanitity should be public
 
 class VendingMachine (val slotLimit: Int, val itemLimit: Int){
 
@@ -38,76 +37,92 @@ class VendingMachine (val slotLimit: Int, val itemLimit: Int){
     }
 
     fun clearSlot(i: Int){
-
+        
         this.slots[i].item = null
         this.slots[i].quantity = 0
         this.slots[i].price = 0f
-    
-    }
-
-    fun restockQuantity(i: Int, quantity: Int){
-        this.slots[i].quantity = quantity
-    }
-
-fun transaction() {
-
-    val deposit: Cash = mutableMapOf()
-    var totalDeposited = 0
-
-    while (true) {
-        println("Current balance: ₱$totalDeposited")
-        println("[1] Insert cash")
-        println("[2] Choose item")
-        println("[3] Cancel and refund")
-        print("Select option: ")
-
-        when (readln().toInt()) {
-            1 -> {
-                print("Enter denomination: ")
-                val denom = readln().toInt()
-                print("Enter quantity: ")
-                val qty = readln().toInt()
-                deposit[denom] = (deposit[denom] ?: 0) + qty
-                totalDeposited += denom * qty
-                println("Deposited ₱${denom * qty}. New balance: ₱$totalDeposited")
-                //fix this such that its incrememntal
-            }
-
-            2 -> {
-                println("Select slot number:")
-                val choice = readln().toInt() - 1
-
-                val slot = slots[choice]
-                val item = slot.item
-
-
-                //check for available change
-
-                slot.quantity--
-                val change = totalDeposited - slot.price.toInt()
-
-                transactions.add(Transaction(
-                    item.name, slot.price, item.calories, totalDeposited.toFloat(), change.toFloat()
-                ))
-
-                break
-            }
-
-            3 -> {
-                //dispense change
-                break
-            }
-
-            else -> println("Invalid option. Try again.")
-        }
-    }
-}
-
         
     }
 
+    fun emptySlot(i: Int){
+        
+    }
+    
+    fun restockQuantity(i: Int, quantity: Int){
+        this.slots[i].quantity = quantity
+    }
+    
+    fun changePrice(i: Int, price: Float){
+
+    }
+
+
+    fun checkValid(totalDeposited: Float){
+        //deals with register
+    }
+
+    fun transaction() {
+
+        val deposit: Cash = mutableMapOf()
+        var totalDeposited = 0.0f
+        var change = 0.0f
+
+        while (true) {
+            println("Current balance: ₱$totalDeposited")
+            println("[1] Insert cash")
+            println("[2] Choose item")
+            println("[3] Dispense Change")
+            print("Select option: ")
+
+            when (readln().toInt()) {
+                1 -> {
+                    
+                    print("Enter denomination: ")
+                    val denom = readln().toInt()
+                    // no quantities they just keep adding one by one manually
+
+                    //deposit[denom] incrememnts ++
+
+                    totalDeposited += denom //faulty needs fixing
+
+                    println("Deposited ₱$denom. New balance: ₱$totalDeposited")
+
+                    //should update the gui
+
+                }
+
+                2 -> {
+                    //assume machine only lets users interact with possible options (input validation)
+
+                    val choice = readln().toInt()
+
+                    slots[choice].quantity--
+
+                    //update register
+
+                    totalDeposited-=slots[choice].price
+
+                    //update display
+                    //save to transaction
+
+                }
+
+                3 -> {
+
+                    change = totalDeposited
+
+                    println(change)
+
+                    totalDeposited = 0.0f
+                    change = 0.0f
+                }
+            }
+        }
+    }    
+    
+    
     fun collect(){
-        this.register
+
     }
 
 }
