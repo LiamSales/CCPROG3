@@ -53,13 +53,17 @@ class VendingMachine (val slotLimit: Int, val itemLimit: Int){
 
     }
 
-    fun canDispenseChange(): Boolean{
+    fun canDispenseChange(deposit: Cash): Boolean{
+        return true
+    }
+
+    fun displayValid(deposit: Cash, totalDeposited: Float){
+
+        slots.forEach { i -> if(totalDeposited >= i.price && //can dispense change)  }
 
     }
 
-    fun displayValid(totalDeposited: Float){
-
-        slots.forEach { i -> if(totalDeposited >= i.price && //can dispense change)  }
+    fun updateRegister(price: Float, deposit: Cash){
 
     }
 
@@ -77,12 +81,12 @@ class VendingMachine (val slotLimit: Int, val itemLimit: Int){
 
     fun transaction() {
 
-        val deposit: Cash = mutableMapOf() //
-        var totalDeposited = 0.0f
+        val deposit: Cash = mutableMapOf() // set it to empty
+        var totalDeposited = 0.0f // just to see if enough and thats it but we mostly work in deposit
 
         while (true) {
             println("Current balance: ₱$totalDeposited")
-            displayValid(totalDeposited)
+            displayValid(deposit, totalDeposited)
             println("[1] Insert cash")
             println("[2] Choose item")
             println("[3] Dispense Change")
@@ -91,15 +95,16 @@ class VendingMachine (val slotLimit: Int, val itemLimit: Int){
             when (readln().toInt()) {
                 1 -> {
                     
+                    val denom = readln().toFloat()
+
                     // print("Enter denomination: ")
                     // val denom = readln().toInt()
-                    // // no quantities they just keep adding one by one manually
 
-                    // //deposit[denom] incrememnts ++
+                    // deposit[denom] ++
 
-                    // totalDeposited += denom //faulty needs fixing
+                    totalDeposited += denom
 
-                    // println("Deposited ₱$denom.")
+                    println("Deposited ₱$denom.")
 
                 }
 
@@ -110,21 +115,28 @@ class VendingMachine (val slotLimit: Int, val itemLimit: Int){
 
                     slots[choice].quantity--
 
+                    //--
                     //update register
+
+                    //puts the money in the machine
+                    //compute exact change in denominations
+
+                    //replaces the denom value so the cash on hand has the change alr in computation or whatever
+                    //--
 
                     totalDeposited-=slots[choice].price
 
                     //update display
                     //save to transaction
 
-                    //dispense change?
-
                 }
 
                 3 -> {
-                    println(totalDeposited)
 
-                    break //are we breaking out of the while (true?)
+                    println(totalDeposited)
+                    //give out the change in animation?
+
+                    break
                 }
             }
         }
