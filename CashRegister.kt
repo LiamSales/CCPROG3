@@ -1,6 +1,6 @@
 typealias Cash = MutableMap<Float,Int>
 
-private class CashRegister {
+class CashRegister {
 
     val contents: Cash = mutableMapOf(
 

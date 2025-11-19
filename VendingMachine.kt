@@ -50,16 +50,21 @@ class VendingMachine (val slotLimit: Int, val itemLimit: Int){
     }
     
     fun changePrice(i: Int, price: Float){
+        this.slots[i].price = price
 
     }
 
     fun canDispenseChange(deposit: Cash): Boolean{
-        return true
+        return true // ok this we need math, think of somehting on paper first
     }
 
     fun displayValid(deposit: Cash, totalDeposited: Float){
 
-        slots.forEach { i -> if(totalDeposited >= i.price && //can dispense change)  }
+        slots.forEach { i -> 
+            if(totalDeposited >= i.price && canDispenseChange(deposit)){
+                println(i.item!!.name +" "+ i.item!!.calories +" "+ i.price)
+            }
+        }
 
     }
 
