@@ -19,7 +19,7 @@ data class Transaction(
 
 //slot quanitity should be public
 
-class VendingMachine (val slotLimit: Int, val itemLimit: Int){
+open class VendingMachine (val slotLimit: Int, val itemLimit: Int){
 
     public val slots = Array(slotLimit) { Slot(null, 0, 0f) }
     private val register = CashRegister()
@@ -77,6 +77,10 @@ class VendingMachine (val slotLimit: Int, val itemLimit: Int){
     }
 
     fun collect(){
+
+        register.getContents()
+        //then clear and print the total
+        register.removeCash(denom, quantity)
 
     }
 

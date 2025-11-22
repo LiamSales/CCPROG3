@@ -11,12 +11,16 @@ class CashRegister {
         50.00f to 0, 100.00f to 0, 200.00f to 0, 500.00f to 0, 1000.00f to 0
     )
 
-    fun addCash(denom: Float, quanitity: Int){
+    fun addCash(denom: Float, quantity: Int){
 
     }
 
-    fun removeCash(denom: Float, quanitity: Int){
+    fun removeCash(denom: Float, quantity: Int){
+            
+    }
 
+    fun getContents(): Cash{
+        return this.contents
     }
 
     // i think these should be the only methods? rest of the logic should be in the other class
