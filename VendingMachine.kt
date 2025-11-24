@@ -54,15 +54,19 @@ open class VendingMachine (val slotLimit: Int, val itemLimit: Int){
 
     }
 
-    fun canDispenseChange(deposit: Cash): Boolean{
-        return true // ok this we need math, think of somehting on paper first
+    fun canDispenseChange(hypotheticalBalance: Cash, price: Float): Boolean{
+        // reverse for loop, decrements largest denom first do not overflow
+        //if can reach exact true, if not false
     }
 
     fun displayValid(deposit: Cash, totalDeposited: Float){
 
+        //val hypotheticalBalance: Cash = this.register
+        //add each denomination so we have the hypothetical
+
         slots.forEach { i -> 
-            if(totalDeposited >= i.price && canDispenseChange(deposit)){
-                println(i.item!!.name +" "+ i.item!!.calories +" "+ i.price)
+            if(totalDeposited >= i.price && canDispenseChange(hypotheticalBalance ,i.price))
+                    println(i.item!!.name +" "+ i.item!!.calories +" "+ i.price)
             }
         }
 
@@ -95,7 +99,7 @@ open class VendingMachine (val slotLimit: Int, val itemLimit: Int){
 
         while (true) {
             println("Current balance: ₱$totalDeposited")
-            displayValid(deposit, totalDeposited)
+            displayValid(deposit,totalDeposited)
             println("[1] Insert cash")
             println("[2] Choose item")
             println("[3] Dispense Change")
