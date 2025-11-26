@@ -1,7 +1,7 @@
-var itemList = ArrayList<Item>()
-var regMachines = ArrayList<VendingMachine>()
 
-//var specMachines 
+var itemList = ArrayList<Item>() // itemlist is global but add-ons are specific to each machine
+var regMachines = ArrayList<VendingMachine>()
+var specMachines = ArrayList<SpecialMachine>()
 
 fun createRegular(){
 
@@ -15,7 +15,16 @@ fun createRegular(){
 }
 
 fun createSpecial(){
+    
+    println("slot limit:")
+    val slot = readln().toInt()
+    println("item limit:")
+    val item = readln().toInt()
+    // println("add-on limit:")
+    // val addon = readln().toInt()
 
+    val newMachine = SpecialMachine(slot, item)
+    specMachines.add(newMachine)
 }
 
 fun createMachine(){
@@ -43,13 +52,16 @@ fun createMachine(){
 }
 
 fun testMachine(){
-
+    //display all machines and have a user choose, then direct to test features or test maintenance
+    //iterate through both arrays
 }
 
 fun testFeatures(){
+    //transaction
 }
 
 fun testMaintenance(){
+    //everything else
 }
 
 

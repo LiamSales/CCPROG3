@@ -17,8 +17,6 @@ data class Transaction(
     val changeGiven: Float
 )
 
-//slot quanitity should be public
-
 open class VendingMachine (val slotLimit: Int, val itemLimit: Int){
 
     public val slots = Array(slotLimit) { Slot(null, 0, 0f) }
@@ -82,9 +80,9 @@ open class VendingMachine (val slotLimit: Int, val itemLimit: Int){
 
     fun collect(){
 
-        register.getContents()
+        this.register.getContents()
         //then clear and print the total
-        register.removeCash(denom, quantity)
+        this.register.removeCash(denom, quantity)
 
     }
 
