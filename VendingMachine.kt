@@ -7,7 +7,7 @@ data class Slot(
     var item: Item?,
     var quantity: Int,
     var price: Float
-    )
+)
 
 data class Transaction(
     val name: String,
@@ -17,139 +17,140 @@ data class Transaction(
     val changeGiven: Float
 )
 
-open class VendingMachine (val slotLimit: Int, val itemLimit: Int){
+open class VendingMachine(val slotLimit: Int, val itemLimit: Int) {
 
-    public val slots = Array(slotLimit) { Slot(null, 0, 0f) }
+    val slots = Array(slotLimit) { Slot(null, 0, 0f) }
     private val register = CashRegister()
     private val transactions = ArrayList<Transaction>()
 
-    //should only be available to the user if there is an available slot
-    fun setSlot(item: Item, price: Float) {
 
-        val i = this.slots.indexOfFirst { it.item == null }
+    fun setSlot(item: Item, price: Float) {
+        val i = slots.indexOfFirst { it.item == null }
+        if (i == -1) {
+            println("No empty slots available.")
+            return
+        }
 
         slots[i].item = item
         slots[i].price = price
-        println("Added ${item.name} to slot #${i + 1}.")
-
+        println("Added ${item.name} to slot #${i + 1}")
     }
 
-    fun clearSlot(i: Int){
-        
-        this.slots[i].item = null
-        this.slots[i].quantity = 0
-        this.slots[i].price = 0f
-        
-    }
-    
-    fun restockQuantity(i: Int, quantity: Int){
-        this.slots[i].quantity = quantity
-        //save to transaction
-    }
-    
-    fun changePrice(i: Int, price: Float){
-        this.slots[i].price = price
 
+    fun clearSlot(i: Int) {
+        slots[i].item = null
+        slots[i].quantity = 0
+        slots[i].price = 0f
     }
 
-    fun canDispenseChange(hypotheticalBalance: Cash, price: Float): Boolean{
-        // reverse for loop, decrements largest denom first do not overflow
-        //if can reach exact true, if not false
+
+    fun restockQuantity(i: Int, quantity: Int) {
+        slots[i].quantity = quantity
     }
 
-    fun displayValid(deposit: Cash, totalDeposited: Float){
 
-        //val hypotheticalBalance: Cash = this.register
-        //add each denomination so we have the hypothetical
+    fun changePrice(i: Int, price: Float) {
+        slots[i].price = price
+    }
 
-        slots.forEach { i -> 
-            if(totalDeposited >= i.price && canDispenseChange(hypotheticalBalance ,i.price))
-                    println(i.item!!.name +" "+ i.item!!.calories +" "+ i.price)
+
+    fun canDispenseChange(hypotheticalBalance: Cash, price: Float): Boolean {
+        // TODO: implement greedy algorithm
+        return false
+    }
+
+
+    fun displayValid(deposit: Cash, totalDeposited: Float) {
+        slots.forEach { s ->
+            if (s.item != null &&
+                s.quantity > 0 &&
+                totalDeposited >= s.price
+            ) {
+                println("${s.item!!.name} ${s.item!!.calories} kcal — ₱${s.price}")
             }
         }
-
     }
 
-    fun updateRegister(price: Float, deposit: Cash){
 
+    fun updateRegister(price: Float, deposit: Cash) {
+        // TODO: add deposited money, remove change, finalize sale
     }
 
-    fun replenishCash(){
 
+    fun replenishCash() {
+        // TODO: allow maintenance to add bills
     }
 
-    fun collect(){
 
-        this.register.getContents()
-        //then clear and print the total
-        this.register.removeCash(denom, quantity)
-
+    fun collect() {
+        println("Cash collected:")
+        println(register.getContents())
+        // TODO: compute total then clear register
     }
 
-    fun displaySummary(){
 
+    fun displaySummary() {
+        // TODO: show transactions + totals
     }
+
 
     fun transaction() {
-
-        val deposit: Cash = mutableMapOf() // set it to empty
-        var totalDeposited = 0.0f // just to see if enough and thats it but we mostly work in deposit
+        val deposit: Cash = mutableMapOf()
+        var totalDeposited = 0f
 
         while (true) {
-            println("Current balance: ₱$totalDeposited")
-            displayValid(deposit,totalDeposited)
+            println("\nCurrent balance: ₱$totalDeposited")
+            displayValid(deposit, totalDeposited)
+
             println("[1] Insert cash")
             println("[2] Choose item")
-            println("[3] Dispense Change")
-            print("Select option: ")
-
+            println("[3] Dispense change")
             when (readln().toInt()) {
+
                 1 -> {
-                    
+                    print("Enter denomination: ")
                     val denom = readln().toFloat()
-
-                    // print("Enter denomination: ")
-                    // val denom = readln().toInt()
-
-                    // deposit[denom] ++
-
+                    deposit[denom] = deposit.getOrDefault(denom, 0) + 1
                     totalDeposited += denom
-
-                    println("Deposited ₱$denom.")
-
                 }
 
                 2 -> {
-                    //assume machine only lets users interact with possible options (input validation)
+                    print("Choose slot #: ")
+                    val slotChoice = readln().toInt() - 1
 
-                    val choice = readln().toInt()
+                    if (slotChoice !in slots.indices) {
+                        println("Invalid slot.")
+                        continue
+                    }
 
-                    slots[choice].quantity--
+                    val slot = slots[slotChoice]
 
-                    //--
-                    //update register
+                    if (slot.item == null || slot.quantity <= 0) {
+                        println("Slot empty.")
+                        continue
+                    }
 
-                    //puts the money in the machine
-                    //compute exact change in denominations
+                    if (totalDeposited < slot.price) {
+                        println("Insufficient balance.")
+                        continue
+                    }
 
-                    //replaces the denom value so the cash on hand has the change alr in computation or whatever
-                    //--
+                    slot.quantity--
+                    totalDeposited -= slot.price
 
-                    totalDeposited-=slots[choice].price
-
-                    //update display
-                    //save to transaction
-
+                    println("Dispensed ${slot.item!!.name}")
                 }
 
                 3 -> {
-
-                    println(totalDeposited)
-                    //give out the change in animation?
-
+                    println("Change: ₱$totalDeposited")
+                    // TODO: return actual denominations
                     break
                 }
             }
         }
-    }    
+    }
+
+    fun testMaintenance() {
+        println("Maintenance menu (TODO)")
+    }
 }

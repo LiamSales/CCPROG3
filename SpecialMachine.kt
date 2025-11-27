@@ -1,5 +1,5 @@
-class SpecialMachine(slotLimit: Int, itemLimit: Int) : VendingMachine(slotLimit, itemLimit){
+class SpecialMachine(slotLimit: Int, itemLimit: Int)
+    : VendingMachine(slotLimit, itemLimit) {
 
-    //how to work with add-ons?
-    
+    // TODO: handle add-ons for MCO2
 }
