@@ -54,17 +54,59 @@ open class VendingMachine(val slotLimit: Int, val itemLimit: Int) {
     }
 
 
-    fun canDispenseChange(hypotheticalBalance: Cash, price: Float): Boolean {
-        // TODO: implement greedy algorithm
-        return false
+    fun canDispenseChange(deposit: Cash, totalDeposited: Float, price: Float): Boolean {
+
+        val hypothetical = this.register.contents.toMutableMap()
+
+        for ((denom, count) in deposit) {
+            hypothetical[denom] = (hypothetical[denom] ?: 0) + count
+        }
+
+        val change = totalDeposited - price
+
+        if(change <0.0f )
+            return false
+      
+            // AI generated code below, will fix soon
+            
+
+   var remaining = price
+
+    // Iterate from largest to smallest denomination
+    for (denom in hypothetical.keys.sortedDescending()) {
+
+        // Skip denominations larger than what we need
+        if (denom > remaining) continue
+
+        val available = hypothetical[denom] ?: 0
+        if (available <= 0) continue
+
+        // Max possible coins/bills we could use
+        val needed = (remaining / denom).toInt()
+
+        // How many we actually take (can't exceed available)
+        val toUse = minOf(needed, available)
+
+        // Reduce the remaining change
+        remaining -= denom * toUse
+
+        // If exact change fulfilled
+        if (remaining < 0.009f) return true
+    }
+
+    // If loop ends and change is not zero → impossible
+    return remaining < 0.009f
+}
+
+            
+        }
     }
 
 
     fun displayValid(deposit: Cash, totalDeposited: Float) {
         slots.forEach { s ->
-            if (s.item != null &&
-                s.quantity > 0 &&
-                totalDeposited >= s.price
+            if (s.quantity > 0 &&
+                canDispenseChange(deposit, totalDeposited, s.price)
             ) {
                 println("${s.item!!.name} ${s.item!!.calories} kcal — ₱${s.price}")
             }
