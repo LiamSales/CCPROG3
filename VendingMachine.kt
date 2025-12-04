@@ -54,34 +54,42 @@ open class VendingMachine(val slotLimit: Int, val itemLimit: Int) {
     }
 
 
-    fun DispenseChange(deposit: Cash, price: Float):  Cash? {
+fun dispenseChange(deposit: Cash, price: Float): Cash? {
 
-        val hypothetical = this.register.contents.toMutableMap()
+    val totalDeposited = deposit.entries.sumOf { (d, q) -> (d * q).toDouble() }.toFloat()
 
-        for ((denom, count) in deposit) {
-            hypothetical[denom] = (hypothetical[denom] ?: 0) + count
-        }
+    var changeNeeded = totalDeposited - price
 
-        var change: Cash = mutableMapOf()
+    if (changeNeeded < 0) return null
 
-        //return the change in cash
-        //if change is negative/not possible, return null
+    val hypothetical = this.register.contents.toMutableMap()
+    for ((denom, count) in deposit) {
+        hypothetical[denom] = hypothetical.getOrDefault(denom, 0) + count
+    }
 
-        for (denom in hypothetical.keys.sortedDescending()) {
 
-            if (denom > change) continue
+    // greedy algorithm, I thought of myself but Chatgpt did the implementation here, work on translating thoughts to code!
 
-            val available = hypothetical[denom] ?: 0
-            if (available <= 0) continue
+    val change: Cash = mutableMapOf()
 
-            val needed = (change / denom).toInt()
+    for (denom in hypothetical.keys.sortedDescending()) {
 
-            val toUse = minOf(needed, available)
+        if (denom > changeNeeded) continue
 
-            change -= denom * toUse
-        }
+        var available = hypothetical[denom]!!
+        if (available <= 0) continue
 
-        return change
+        val needed = (changeNeeded / denom).toInt()
+        if (needed <= 0) continue
+
+        val toUse = minOf(needed, available)
+
+        changeNeeded -= denom * toUse
+
+        change[denom] = toUse
+    }
+
+    return if (changeNeeded == 0f) change else null
 }
 
 
@@ -89,7 +97,7 @@ open class VendingMachine(val slotLimit: Int, val itemLimit: Int) {
     fun displayValid(deposit: Cash) {
         slots.forEach { s ->
             if (s.quantity > 0 &&
-                DispenseChange(deposit, s.price) != null
+                dispenseChange(deposit, s.price) != null
             ) {
                 println("${s.item!!.name} ${s.item!!.calories} kcal — ₱${s.price}")
             }
