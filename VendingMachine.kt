@@ -54,7 +54,7 @@ open class VendingMachine(val slotLimit: Int, val itemLimit: Int) {
     }
 
 
-    fun canDispenseChange(deposit: Cash, totalDeposited: Float, price: Float): Boolean {
+    fun DispenseChange(deposit: Cash, price: Float):  Cash? {
 
         val hypothetical = this.register.contents.toMutableMap()
 
@@ -62,51 +62,34 @@ open class VendingMachine(val slotLimit: Int, val itemLimit: Int) {
             hypothetical[denom] = (hypothetical[denom] ?: 0) + count
         }
 
-        val change = totalDeposited - price
+        var change: Cash = mutableMapOf()
 
-        if(change <0.0f )
-            return false
-      
-            // AI generated code below, will fix soon
-            
+        //return the change in cash
+        //if change is negative/not possible, return null
 
-   var remaining = price
+        for (denom in hypothetical.keys.sortedDescending()) {
 
-    // Iterate from largest to smallest denomination
-    for (denom in hypothetical.keys.sortedDescending()) {
+            if (denom > change) continue
 
-        // Skip denominations larger than what we need
-        if (denom > remaining) continue
+            val available = hypothetical[denom] ?: 0
+            if (available <= 0) continue
 
-        val available = hypothetical[denom] ?: 0
-        if (available <= 0) continue
+            val needed = (change / denom).toInt()
 
-        // Max possible coins/bills we could use
-        val needed = (remaining / denom).toInt()
+            val toUse = minOf(needed, available)
 
-        // How many we actually take (can't exceed available)
-        val toUse = minOf(needed, available)
+            change -= denom * toUse
+        }
 
-        // Reduce the remaining change
-        remaining -= denom * toUse
-
-        // If exact change fulfilled
-        if (remaining < 0.009f) return true
-    }
-
-    // If loop ends and change is not zero → impossible
-    return remaining < 0.009f
+        return change
 }
 
-            
-        }
-    }
 
 
-    fun displayValid(deposit: Cash, totalDeposited: Float) {
+    fun displayValid(deposit: Cash) {
         slots.forEach { s ->
             if (s.quantity > 0 &&
-                canDispenseChange(deposit, totalDeposited, s.price)
+                DispenseChange(deposit, s.price) != null
             ) {
                 println("${s.item!!.name} ${s.item!!.calories} kcal — ₱${s.price}")
             }
@@ -142,7 +125,7 @@ open class VendingMachine(val slotLimit: Int, val itemLimit: Int) {
 
         while (true) {
             println("\nCurrent balance: ₱$totalDeposited")
-            displayValid(deposit, totalDeposited)
+            displayValid(deposit)
 
             println("[1] Insert cash")
             println("[2] Choose item")
