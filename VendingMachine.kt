@@ -54,43 +54,42 @@ open class VendingMachine(val slotLimit: Int, val itemLimit: Int) {
     }
 
 
-fun dispenseChange(deposit: Cash, price: Float): Cash? {
+    fun dispenseChange(deposit: Cash, price: Float): Cash? {
 
-    val totalDeposited = deposit.entries.sumOf { (d, q) -> (d * q).toDouble() }.toFloat()
+        val totalDeposited = deposit.entries.sumOf { (d, q) -> (d * q).toDouble() }.toFloat()
 
-    var changeNeeded = totalDeposited - price
+        var changeNeeded = totalDeposited - price
 
-    if (changeNeeded < 0) return null
+        if (changeNeeded < 0) return null
 
-    val hypothetical = this.register.contents.toMutableMap()
-    for ((denom, count) in deposit) {
-        hypothetical[denom] = hypothetical.getOrDefault(denom, 0) + count
+        val hypothetical = this.register.contents.toMutableMap()
+        for ((denom, count) in deposit) {
+            hypothetical[denom] = hypothetical.getOrDefault(denom, 0) + count
+        }
+
+        // greedy algorithm, I thought of myself but Chatgpt did the implementation here, work on translating thoughts to code!
+
+        val change: Cash = mutableMapOf()
+
+        for (denom in hypothetical.keys.sortedDescending()) {
+
+            if (denom > changeNeeded) continue
+
+            var available = hypothetical[denom]!!
+            if (available <= 0) continue
+
+            val needed = (changeNeeded / denom).toInt()
+            if (needed <= 0) continue
+
+            val toUse = minOf(needed, available)
+
+            changeNeeded -= denom * toUse
+
+            change[denom] = toUse
+        }
+
+        return if (changeNeeded == 0f) change else null
     }
-
-
-    // greedy algorithm, I thought of myself but Chatgpt did the implementation here, work on translating thoughts to code!
-
-    val change: Cash = mutableMapOf()
-
-    for (denom in hypothetical.keys.sortedDescending()) {
-
-        if (denom > changeNeeded) continue
-
-        var available = hypothetical[denom]!!
-        if (available <= 0) continue
-
-        val needed = (changeNeeded / denom).toInt()
-        if (needed <= 0) continue
-
-        val toUse = minOf(needed, available)
-
-        changeNeeded -= denom * toUse
-
-        change[denom] = toUse
-    }
-
-    return if (changeNeeded == 0f) change else null
-}
 
 
 
@@ -158,25 +157,21 @@ fun dispenseChange(deposit: Cash, price: Float): Cash? {
 
                     val slot = slots[slotChoice]
 
-                    if (slot.item == null || slot.quantity <= 0) {
-                        println("Slot empty.")
-                        continue
-                    }
-
-                    if (totalDeposited < slot.price) {
-                        println("Insufficient balance.")
-                        continue
-                    }
-
                     slot.quantity--
                     totalDeposited -= slot.price
+
+                    //update the cash value as well
+                    //cash becomes 0, 
+                    //cash from dispense change becomes the new total deposited
+
+
 
                     println("Dispensed ${slot.item!!.name}")
                 }
 
                 3 -> {
                     println("Change: ₱$totalDeposited")
-                    // TODO: return actual denominations
+                    //print out the current cash one by one ez
                     break
                 }
             }
