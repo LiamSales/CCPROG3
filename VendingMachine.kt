@@ -105,19 +105,28 @@ open class VendingMachine(val slotLimit: Int, val itemLimit: Int) {
 
 
     fun updateRegister(price: Float, deposit: Cash) {
+        
         // TODO: add deposited money, remove change, finalize sale
     }
 
 
     fun replenishCash() {
-        // TODO: allow maintenance to add bills
+
+        val replenishment: Cash = mutableMapOf()
+        replenishment.forEach { (denom, _) ->
+            print("$denom add amount: ")
+            register.addCash(denom, readln().toInt())
+        }
+
+
     }
 
 
     fun collect() {
         println("Cash collected:")
-        println(register.getContents())
-        // TODO: compute total then clear register
+
+        //register get contents then get total
+        register.forEach{( denom, _) -> } 
     }
 
 
