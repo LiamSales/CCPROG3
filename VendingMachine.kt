@@ -117,16 +117,18 @@ open class VendingMachine(val slotLimit: Int, val itemLimit: Int) {
             print("$denom add amount: ")
             register.addCash(denom, readln().toInt())
         }
-
-
     }
 
 
     fun collect() {
-        println("Cash collected:")
 
-        //register get contents then get total
-        register.forEach{( denom, _) -> } 
+        var total: Float = 0.0f
+        
+        register.contents.forEach { ( denom, quantity) ->
+            total += quantity.toFloat() * denom
+            register.removeCash(denom, quantity)
+        } 
+        println("Cash collected: $total")
     }
 
 

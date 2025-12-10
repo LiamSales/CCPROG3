@@ -1,6 +1,7 @@
 typealias Cash = MutableMap<Float, Int>
 
 class CashRegister {
+
     val contents: Cash = mutableMapOf(
         0.05f to 0, 0.10f to 0, 0.25f to 0,
         1.00f to 0, 5.00f to 0, 10.00f to 0,
@@ -15,6 +16,3 @@ class CashRegister {
     fun removeCash(denom: Float, quantity: Int) {
         contents[denom] = contents.getOrDefault(denom, 0) - quantity
     }
-
-    fun getContents(): Cash = contents
-}
