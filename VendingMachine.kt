@@ -105,13 +105,14 @@ open class VendingMachine(val slotLimit: Int, val itemLimit: Int) {
 
 
     fun updateRegister(deposit: Cash) {
-        
-        // TODO: add deposited money, remove change, finalize sale
+
+        deposit.forEach { (denom, quantity) ->
+            register.addCash(denom, quantity)
+        }
     }
 
 
     fun replenishCash() {
-
         val replenishment: Cash = mutableMapOf()
         replenishment.forEach { (denom, _) ->
             print("$denom add amount: ")
@@ -174,6 +175,8 @@ open class VendingMachine(val slotLimit: Int, val itemLimit: Int) {
                     //difference goes to update register, while deposit becomes equal to dispenseChange
 
                     println("Dispensed ${slot.item!!.name}")
+
+                    //save in summary
                 }
 
                 3 -> {
