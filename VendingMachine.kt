@@ -104,7 +104,7 @@ open class VendingMachine(val slotLimit: Int, val itemLimit: Int) {
     }
 
 
-    fun updateRegister(price: Float, deposit: Cash) {
+    fun updateRegister(deposit: Cash) {
         
         // TODO: add deposited money, remove change, finalize sale
     }
@@ -161,28 +161,24 @@ open class VendingMachine(val slotLimit: Int, val itemLimit: Int) {
                     print("Choose slot #: ")
                     val slotChoice = readln().toInt() - 1
 
-                    if (slotChoice !in slots.indices) {
-                        println("Invalid slot.")
-                        continue
-                    }
+                    //user can only pick valid slots anyway (whitelist inputs)
 
                     val slot = slots[slotChoice]
 
                     slot.quantity--
                     totalDeposited -= slot.price
 
-                    //update the cash value as well
-                    //cash becomes 0, 
-                    //cash from dispense change becomes the new total deposited
+                    // is this only a copy or does it directly manipulate the values of the actual slot attribute?
 
-
+                    //deposit foreach loop subtracting dispenseChange(deposit, slot.price) same indices
+                    //difference goes to update register, while deposit becomes equal to dispenseChange
 
                     println("Dispensed ${slot.item!!.name}")
                 }
 
                 3 -> {
                     println("Change: ₱$totalDeposited")
-                    //print out the current cash one by one ez
+                    //print out deposit, foreach loop showing quantity and amount pairs
                     break
                 }
             }
