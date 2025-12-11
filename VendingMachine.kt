@@ -169,10 +169,18 @@ open class VendingMachine(val slotLimit: Int, val itemLimit: Int) {
                     slot.quantity--
                     totalDeposited -= slot.price
 
-                    // is this only a copy or does it directly manipulate the values of the actual slot attribute?
+                    val change = dispenseChange(deposit, slot.price) ?: mutableMapOf()
 
-                    //deposit foreach loop subtracting dispenseChange(deposit, slot.price) same indices
-                    //difference goes to update register, while deposit becomes equal to dispenseChange
+                    //study why i cant reassign directly
+                    deposit.forEach { (denom, quantity) ->
+                        deposit[denom] = quantity - (change[denom] ?: 0)
+                    }
+
+                    updateRegister(deposit)
+
+                    deposit.forEach { (denom, _) ->
+                        deposit[denom] = (change[denom] ?: 0)
+                    }
 
                     println("Dispensed ${slot.item!!.name}")
 
