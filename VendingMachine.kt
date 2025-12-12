@@ -22,7 +22,7 @@ open class VendingMachine(val slotLimit: Int, val itemLimit: Int) {
     val slots = Array(slotLimit) { Slot(null, 0, 0f) }
     private val register = CashRegister()
     private val transactions = ArrayList<Transaction>()
-    var summary: List<String> = listOf()
+    val summary: MutableList<String> = mutableListOf()
 
 
     fun setSlot(item: Item, price: Float) {
@@ -46,7 +46,18 @@ open class VendingMachine(val slotLimit: Int, val itemLimit: Int) {
 
 
     fun restockQuantity(i: Int, quantity: Int) {
+
         slots[i].quantity = quantity
+
+        summary.clear()
+
+        //use string builder 
+
+        //list starting inventory then add to list
+
+        slots.forEach { slot ->
+
+        }
     }
 
 
@@ -161,10 +172,8 @@ open class VendingMachine(val slotLimit: Int, val itemLimit: Int) {
 
                 2 -> {
                     print("Choose slot #: ")
+                    
                     val slotChoice = readln().toInt() - 1
-
-                    //user can only pick valid slots anyway (whitelist inputs)
-
                     val slot = slots[slotChoice]
 
                     slot.quantity--
@@ -187,17 +196,15 @@ open class VendingMachine(val slotLimit: Int, val itemLimit: Int) {
 
                     //save in summary
 
-                    //ok so its not a reciept kinda thing 
-                    // each slot item should have a counter, incremenments here, starting inventory and ending inventory updates
-
-                    //vending machine should at least list the quantity of each item sold and the total amount collected in the
-                    //sales starting from the previous stocking. This implies that there should also be a display of the starting
-                    //inventory and the ending inventory from the last restocking.
                 }
 
                 3 -> {
                     println("Change: ₱$totalDeposited")
-                    //print out deposit, foreach loop showing quantity and amount pairs
+
+                    deposit.forEach{ (denom, quantity) ->
+                        println("$denom: $quantity")
+                    }
+
                     break
                 }
             }
