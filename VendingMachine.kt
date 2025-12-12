@@ -51,13 +51,15 @@ open class VendingMachine(val slotLimit: Int, val itemLimit: Int) {
 
         summary.clear()
 
-        //use string builder 
-
-        //list starting inventory then add to list
+        val startingInventory = StringBuilder()
 
         slots.forEach { slot ->
-
+            val item = slot.item
+            if (item != null) {
+                startingInventory.append("${item.name}\t quantity: ${slot.quantity}\n")
+            }
         }
+        summary.add( startingInventory.toString())
     }
 
 
