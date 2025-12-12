@@ -22,6 +22,7 @@ open class VendingMachine(val slotLimit: Int, val itemLimit: Int) {
     val slots = Array(slotLimit) { Slot(null, 0, 0f) }
     private val register = CashRegister()
     private val transactions = ArrayList<Transaction>()
+    var summary: List<String> = listOf()
 
 
     fun setSlot(item: Item, price: Float) {
@@ -185,6 +186,13 @@ open class VendingMachine(val slotLimit: Int, val itemLimit: Int) {
                     println("Dispensed ${slot.item!!.name}")
 
                     //save in summary
+
+                    //ok so its not a reciept kinda thing 
+                    // each slot item should have a counter, incremenments here, starting inventory and ending inventory updates
+
+                    //vending machine should at least list the quantity of each item sold and the total amount collected in the
+                    //sales starting from the previous stocking. This implies that there should also be a display of the starting
+                    //inventory and the ending inventory from the last restocking.
                 }
 
                 3 -> {
