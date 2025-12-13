@@ -245,16 +245,23 @@ open class VendingMachine(val slotLimit: Int, val itemLimit: Int) {
             println("=== Test Maintenance ===")
             println("[S] Set Slot")
             println("[C] Clear Slot")
-            //for all the methods that are not transaction       
+            println("[R] Restock Quantity")
+            println("[P] Change Price")
+            println("[H] Relenish Cash")
+            println("[L] Collect Balance")
+            println("[D] Display Summary")    
             println("[X] Exit")
             print("Enter choice: ")
 
 
-            // input validation here which will also ask if they keep going, while true exit
-            //basically the main function of every non-transaction thing here.
             when (readLine()?.trim()?.uppercase()) {
-                "V" -> createRegular()
-                "M" -> createSpecial()
+                "S" ->{} 
+                "C" ->{}
+                "R" ->{}
+                "P" ->{}
+                "H" -> replenishCash()
+                "L" -> collect()
+                "D" -> displaySummary()
                 "X" -> return
                 else -> println("Invalid choice.")
             }
