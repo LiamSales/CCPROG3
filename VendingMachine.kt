@@ -23,8 +23,7 @@ open class VendingMachine(val slotLimit: Int, val itemLimit: Int) {
     val slots = Array(slotLimit) { Slot(null, 0, 0f, 0) }
     private val register = CashRegister()
     private val transactions = ArrayList<Transaction>()
-    val summary: MutableList<String> = mutableListOf()
-
+    val startingInventory = StringBuilder()
 
     fun setSlot(item: Item, price: Float) {
         val i = slots.indexOfFirst { it.item == null }
@@ -50,9 +49,7 @@ open class VendingMachine(val slotLimit: Int, val itemLimit: Int) {
 
         slots[i].quantity = quantity
 
-        summary.clear()
-
-        val startingInventory = StringBuilder()
+        startingInventory.clear()
 
         startingInventory.append("Starting Inventory: \n")
 
@@ -66,7 +63,6 @@ open class VendingMachine(val slotLimit: Int, val itemLimit: Int) {
 
         startingInventory.append("\n ---------------------------------------- \n")
 
-        summary.add(startingInventory.toString())
     }
 
 
@@ -160,18 +156,25 @@ open class VendingMachine(val slotLimit: Int, val itemLimit: Int) {
         val currentInventory = StringBuilder()
         var totalEarned: Float = 0.0f
 
+        println(startingInventory.toString())
+
+        currentInventory.append("\n ---------------------------------------- \n")
+        currentInventory.append("Current Inventory: \n")
+
         slots.forEach { slot ->
             val item = slot.item
             if (item != null && slot.sold > 0) {
-                summary.add("${item.name}\t quantity sold: ${slot.sold} \t amount collected ${slot.sold.toFloat() * slot.price}\n")
+                val amountCollected = slot.sold.toFloat() * slot.price
+
+                println("${item.name}\t quantity sold: ${slot.sold} \t amount collected: PhP${amountCollected}\n")
+                totalEarned+=amountCollected
+
+                currentInventory.append("${item.name}\t quantity: ${slot.quantity}\n")
             }
         }
 
-        summary.forEach{ item ->
-            print(item)
-        }
-
-        currentInventory.append("Current Inventory")
+        println(currentInventory.toString())
+        println("Total amount earned since restock: $totalEarned")
 
     }
 
