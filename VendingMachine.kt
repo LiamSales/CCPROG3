@@ -6,7 +6,8 @@ data class Item(
 data class Slot(
     var item: Item?,
     var quantity: Int,
-    var price: Float
+    var price: Float,
+    var sold: Int
 )
 
 data class Transaction(
@@ -19,7 +20,7 @@ data class Transaction(
 
 open class VendingMachine(val slotLimit: Int, val itemLimit: Int) {
 
-    val slots = Array(slotLimit) { Slot(null, 0, 0f) }
+    val slots = Array(slotLimit) { Slot(null, 0, 0f, 0) }
     private val register = CashRegister()
     private val transactions = ArrayList<Transaction>()
     val summary: MutableList<String> = mutableListOf()
@@ -53,13 +54,19 @@ open class VendingMachine(val slotLimit: Int, val itemLimit: Int) {
 
         val startingInventory = StringBuilder()
 
+        startingInventory.append("Starting Inventory: \n")
+
         slots.forEach { slot ->
             val item = slot.item
             if (item != null) {
+                slot.sold = 0
                 startingInventory.append("${item.name}\t quantity: ${slot.quantity}\n")
             }
         }
-        summary.add( startingInventory.toString())
+
+        startingInventory.append("\n ---------------------------------------- \n")
+
+        summary.add(startingInventory.toString())
     }
 
 
@@ -148,7 +155,24 @@ open class VendingMachine(val slotLimit: Int, val itemLimit: Int) {
 
 
     fun displaySummary() {
-        // TODO: show transactions + totals
+
+
+        val currentInventory = StringBuilder()
+        var totalEarned: Float = 0.0f
+
+        slots.forEach { slot ->
+            val item = slot.item
+            if (item != null && slot.sold > 0) {
+                summary.add("${item.name}\t quantity sold: ${slot.sold} \t amount collected ${slot.sold.toFloat() * slot.price}\n")
+            }
+        }
+
+        summary.forEach{ item ->
+            print(item)
+        }
+
+        currentInventory.append("Current Inventory")
+
     }
 
 
@@ -196,7 +220,7 @@ open class VendingMachine(val slotLimit: Int, val itemLimit: Int) {
 
                     println("Dispensed ${slot.item!!.name}")
 
-                    //save in summary
+                    slot.sold++
 
                 }
 
