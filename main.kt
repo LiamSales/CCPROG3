@@ -1,6 +1,20 @@
+import java.awt.image.BufferedImage
+import javax.imageio.ImageIO
+import java.io.InputStream
+
 var itemList = ArrayList<Item>()
 var regMachines = ArrayList<VendingMachine>()
 var specMachines = ArrayList<SpecialMachine>()
+
+
+fun inputValidation(input: Any?): Any  {
+    while (true){
+        when (input) {
+                is null -> continue
+            }
+        
+        }
+    }
 
 fun createRegular() {
     println("slot limit:")

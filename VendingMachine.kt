@@ -1,28 +1,14 @@
-data class Item(
-    val name: String,
-    var calories: Int
-)
-
 data class Slot(
     var item: Item?,
-    var quantity: Int,
+    var quantity: Int = 0,
     var price: Float,
-    var sold: Int
-)
-
-data class Transaction(
-    val name: String,
-    val price: Float,
-    val calories: Int,
-    val payment: Float,
-    val changeGiven: Float
+    var sold: Int = 0
 )
 
 open class VendingMachine(val slotLimit: Int, val itemLimit: Int) {
 
     val slots = Array(slotLimit) { Slot(null, 0, 0f, 0) }
     private val register = CashRegister()
-    private val transactions = ArrayList<Transaction>()
     val startingInventory = StringBuilder()
 
     fun setSlot(item: Item, price: Float) {
@@ -31,6 +17,8 @@ open class VendingMachine(val slotLimit: Int, val itemLimit: Int) {
             println("No empty slots available.")
             return
         }
+
+        println(slots.count{it.item==null}.toString() + "available slots")
 
         slots[i].item = item
         slots[i].price = price
@@ -240,6 +228,7 @@ open class VendingMachine(val slotLimit: Int, val itemLimit: Int) {
         }
     }
 
+
     fun testMaintenance() {
         while (true) {
             println("=== Test Maintenance ===")
@@ -255,7 +244,14 @@ open class VendingMachine(val slotLimit: Int, val itemLimit: Int) {
 
 
             when (readLine()?.trim()?.uppercase()) {
-                "S" ->{} 
+                "S" ->{
+                    // create item or add existing item
+                    
+                    val item: Item
+                    val price: Float = inputValidation(readln().toFloat()).toFloat()
+
+                    setSlot(item, price)
+                }
                 "C" ->{}
                 "R" ->{}
                 "P" ->{}
