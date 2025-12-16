@@ -260,9 +260,16 @@ open class VendingMachine(val slotLimit: Int, val itemLimit: Int) {
                     setSlot(item, price)
                 }
 
-                "C" ->{}
-                "R" ->{}
-                "P" ->{}
+                "C" ->{
+                    //validate, has to be a non null slot#, thats basically it, no need for helper function
+                }
+                "R" ->{
+                    val quantity = inputValidation(0) as Int
+                    // validate has to be existing slot
+                }
+                "P" ->{
+                    //same logic as R
+                }
                 "H" -> replenishCash()
                 "L" -> collect()
                 "D" -> displaySummary()
