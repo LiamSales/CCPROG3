@@ -7,14 +7,31 @@ var regMachines = ArrayList<VendingMachine>()
 var specMachines = ArrayList<SpecialMachine>()
 
 
-fun inputValidation(input: Any?): Any  {
-    while (true){
+fun inputValidation(input: Any?): Any {
+    while (true) {
+        val value = readln()
+
         when (input) {
-                is null -> continue
+            is Int -> {
+                val n = value.toIntOrNull()
+                if (n != null && n >= 0) return n
             }
-        
+
+            is Float -> {
+                val f = value.toFloatOrNull()
+                if (f != null && f >= 0f) return f
+            }
+
+            is String -> {
+                if (value.isNotBlank() && value.length <= 10) return value
+            }
+
+            else -> return value
         }
+
+        println("Invalid input, try again:")
     }
+}
 
 fun createRegular() {
     println("slot limit:")

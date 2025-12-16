@@ -244,14 +244,22 @@ open class VendingMachine(val slotLimit: Int, val itemLimit: Int) {
 
 
             when (readLine()?.trim()?.uppercase()) {
-                "S" ->{
-                    // create item or add existing item
-                    
-                    val item: Item
-                    val price: Float = inputValidation(readln().toFloat()).toFloat()
+                "S" -> {
+                    println("[1] Upload item from file")
+                    println("[2] Create new item")
+
+                    val item = when (readln().toInt()) {
+                        1 -> loadItemFromFile()
+                        2 -> createItemAndSave()
+                        else -> return
+                    }
+
+                    print("Price: ")
+                    val price = inputValidation(0f) as Float
 
                     setSlot(item, price)
                 }
+
                 "C" ->{}
                 "R" ->{}
                 "P" ->{}
@@ -264,3 +272,4 @@ open class VendingMachine(val slotLimit: Int, val itemLimit: Int) {
             println()
         }
     }
+}

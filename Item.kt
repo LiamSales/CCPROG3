@@ -4,6 +4,23 @@ data class Item(
     val icon: BufferedImage?
 )
 
-                    val name = inputValidation(readln())
-                    val icon = ImageIO.read(input)
-                    val calories = inputValidation(readln().toInt())
+fun createItemAndSave(): Item {
+    print("Name: ")
+    val name = readln()
+
+    print("Calories: ")
+    val calories = inputValidation(0) as Int
+
+    print("Image path (blank = none): ")
+    val path = readln()
+    val icon = if (path.isBlank()) null else ImageIO.read(File(path))
+
+    val item = Item(name, calories, icon)
+    saveItemToFile(item)
+
+    return item
+}
+
+fun loadItemFromFile(): Item {
+    
+}
