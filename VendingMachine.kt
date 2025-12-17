@@ -261,15 +261,43 @@ open class VendingMachine(val slotLimit: Int, val itemLimit: Int) {
                 }
 
                 "C" ->{
-                    //validate, has to be a non null slot#, thats basically it, no need for helper function
+                    slots.forEach { slot -> 
+                        if (slot.item != null)
+                            println("$slot: ${slot.item!!.name}, ${slot.quantity}, ${slot.price}")
+                    }
+                    println("slot #: ")
+                    val i = readln().toInt()
+                    clearSlot(i)              
                 }
+
                 "R" ->{
+                    slots.forEach { slot -> 
+                        if (slot.item != null)
+                            println("$slot: ${slot.item!!.name}, ${slot.quantity}")
+                    }
+                    println("slot #: ")
+                    
+                    val i = readln().toInt()
+                    
                     val quantity = inputValidation(0) as Int
-                    // validate has to be existing slot
+
+                    restockQuantity(i, quantity)
                 }
+
                 "P" ->{
-                    //same logic as R
+                    slots.forEach { slot -> 
+                        if (slot.item != null)
+                            println("$slot: ${slot.item!!.name}, ${slot.price}")
+                    }
+                    println("slot #: ")
+                    
+                    val i = readln().toInt()
+                    
+                    val price = inputValidation(0) as Float
+
+                    changePrice(i, price)
                 }
+                
                 "H" -> replenishCash()
                 "L" -> collect()
                 "D" -> displaySummary()

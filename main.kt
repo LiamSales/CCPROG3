@@ -9,6 +9,7 @@ var specMachines = ArrayList<SpecialMachine>()
 
 fun inputValidation(input: Any?): Any {
     while (true) {
+        
         val value = readln()
 
         when (input) {
