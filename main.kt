@@ -1,18 +1,22 @@
-import java.awt.image.BufferedImage
-import javax.imageio.ImageIO
-import java.io.InputStream
+/*notes from gpt fixes
 
-var itemList = ArrayList<Item>()
-var regMachines = ArrayList<VendingMachine>()
-var specMachines = ArrayList<SpecialMachine>()
+new trick:
+if (i !in indices) return
+to prevent errors
 
+move imports to the files that actually use them for more modularization
+*/
+// REMOVED unused imports (BufferedImage, ImageIO, InputStream)
+// main.kt does not deal with images directly
 
-fun inputValidation(input: Any?): Any {
+var regMachines = mutableListOf<VendingMachine>()
+var specMachines = mutableListOf<SpecialMachine>()
+
+fun inputValidation(template: Any?): Any {
     while (true) {
-        
         val value = readln()
 
-        when (input) {
+        when (template) {
             is Int -> {
                 val n = value.toIntOrNull()
                 if (n != null && n >= 0) return n
@@ -35,34 +39,28 @@ fun inputValidation(input: Any?): Any {
 }
 
 fun createRegular() {
-    println("slot limit:")
-    val slot = readln().toInt()
+    print("Slot limit: ")
+    val slotLimit = inputValidation(0) as Int
+    print("Item limit: ")
+    val itemLimit = inputValidation(0) as Int
 
-    println("item limit:")
-    val item = readln().toInt()
-
-    val newMachine = VendingMachine(slot, item)
-    regMachines.add(newMachine)
-
+    regMachines.add(VendingMachine(slotLimit, itemLimit))
     println("Regular Vending Machine created.")
 }
 
 fun createSpecial() {
-    println("slot limit:")
-    val slot = readln().toInt()
+    print("Slot limit: ")
+    val slotLimit = inputValidation(0) as Int
+    print("Item limit: ")
+    val itemLimit = inputValidation(0) as Int
 
-    println("item limit:")
-    val item = readln().toInt()
-
-    val newMachine = SpecialMachine(slot, item)
-    specMachines.add(newMachine)
-
+    specMachines.add(SpecialMachine(slotLimit, itemLimit))
     println("Special Vending Machine created.")
 }
 
 fun createMachine() {
     while (true) {
-        println("=== Create a Vending Machine ===")
+        println("\n=== Create a Vending Machine ===")
         println("[R] Regular")
         println("[S] Special")
         println("[X] Exit")
@@ -74,65 +72,58 @@ fun createMachine() {
             "X" -> return
             else -> println("Invalid choice.")
         }
-        println()
     }
 }
 
-
 fun testMachine() {
-    println("\n=== Select a Machine to Test ===")
-
     if (regMachines.isEmpty() && specMachines.isEmpty()) {
         println("No machines available.")
         return
     }
 
-    var index = 1
+    println("\n=== Select a Machine ===")
 
+    var index = 1
     regMachines.forEach {
-        println("$index) Regular VM")
+        println("$index) Regular Vending Machine")
         index++
     }
-
     specMachines.forEach {
-        println("$index) Special VM")
+        println("$index) Special Vending Machine")
         index++
     }
 
     print("Choose machine #: ")
-    val choice = readln().toInt()
+    val choice = inputValidation(0) as Int
 
-    val selected = when {
-        choice <= regMachines.size -> regMachines[choice - 1]
-        choice <= regMachines.size + specMachines.size ->
-            specMachines[choice - 1 - regMachines.size]
+    val selected: VendingMachine = when {
+        choice in 1..regMachines.size ->
+            regMachines[choice - 1]
+
+        choice in (regMachines.size + 1)..(regMachines.size + specMachines.size) ->
+            specMachines[choice - regMachines.size - 1]
+
         else -> {
-            println("Invalid machine #.")
+            println("Invalid machine number.")
             return
         }
     }
 
     println("[1] Test Features")
     println("[2] Test Maintenance")
-    when (readln().toInt()) {
+
+    when (inputValidation(0) as Int) {
         1 -> selected.transaction()
         2 -> selected.testMaintenance()
+        else -> println("Invalid choice.")
     }
-}
-
-fun testFeatures(){
-    //transaction
-}
-
-fun testMaintenance(){
-    //everything else
 }
 
 fun main() {
     while (true) {
         println("\n=== Vending Machine Menu ===")
-        println("[C] Create")
-        println("[T] Test")
+        println("[C] Create Machine")
+        println("[T] Test Machine")
         println("[X] Exit")
         print("Enter choice: ")
 
