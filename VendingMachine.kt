@@ -67,8 +67,7 @@ open class VendingMachine(
 
     fun dispenseChange(deposit: Cash, price: Float): Cash? {
 
-        val totalDeposited =
-            deposit.entries.sumOf { (d, q) -> d * q }
+        val totalDeposited = deposit.entries.sumOf { (d, q) -> (d * q).toDouble() }.toFloat()
 
         var changeNeeded = totalDeposited - price
         if (changeNeeded < 0f) return null
@@ -115,13 +114,13 @@ open class VendingMachine(
         }
     }
 
-
     fun replenishCash() {
-        // ⚠ Incomplete: no denominations listed
-        // This should iterate over known denominations from CashRegister
-        println("Replenish cash not fully implemented.")
+        register.contents.forEach { (denom, _) ->
+            print("Add quantity for ₱$denom: ")
+            val amount = inputValidation(0) as Int
+            register.addCash(denom, amount)
+        }
     }
-
 
     fun collect() {
         var total = 0f

@@ -1,13 +1,18 @@
 /*notes from gpt fixes
 
-new trick:
-if (i !in indices) return
-to prevent errors
+new trick to prevent errors:
+
+        if (i !in indices) return
+
+
+Use Double for calculations
+Use Float only for storage/display
+
+Convert once at boundaries
 
 move imports to the files that actually use them for more modularization
 */
-// REMOVED unused imports (BufferedImage, ImageIO, InputStream)
-// main.kt does not deal with images directly
+
 
 var regMachines = mutableListOf<VendingMachine>()
 var specMachines = mutableListOf<SpecialMachine>()
