@@ -1,23 +1,23 @@
 import java.io.File
-import java.awt.image.BufferedImage
-import javax.imageio.ImageIO
+import java.awt.image.BufferedImage //in-memory bitmap image (pixels live in heap memory), as vector values
+import javax.imageio.ImageIO //utility class to decode image files (PNG, JPG) into BufferedImage
 
 
 data class Item(
     val name: String = "",
     val calories: Int = 0,
-    val icon: BufferedImage? = null
+    val icon: BufferedImage? = null //a pointer to the heap mem or pix
 )
 
-fun saveItemToFile(item: Item, iconFileName: String?) {
-    val file = File("items/${item.name}.txt")
-    file.parentFile.mkdirs()
+fun saveItemToFile(item: Item, iconFileName: String?) { //serializes metadata, Images stay as files; text files store references.
+    val file = File("items/${item.name}.txt") //This does not create the file yet, It’s just a path abstraction
+    file.parentFile.mkdirs() //Checks filesystem, creates directories if missing; safe to call repeatedly
 
-    file.writeText(
+    file.writeText( //Now we actually touch disk.
         buildString {
             appendLine(item.name)
             appendLine(item.calories)
-            appendLine(iconFileName ?: "NONE")
+            appendLine(iconFileName ?: "NONE") // no nulls are written to disk
         }
     )
 }
@@ -43,7 +43,7 @@ fun createItemAndSave(): Item {
         iconFileName = source.name
 
         val dest = File("src/icons/$iconFileName")
-        dest.parentFile.mkdirs()
+        dest.parentFile.mkdirs() //Ensures src/icons/ exists.
         source.copyTo(dest, overwrite = true)
 
         icon = ImageIO.read(dest)

@@ -15,6 +15,11 @@ move imports to the files that actually use them for more modularization
 you can place print prompts in the function arg
     val slotLimit = readPositiveInt("Slot limit: ")
 
+    buildString{
+    } is a better string builder implementation
+
+    you can set variables to a when clause
+
 */
 
 

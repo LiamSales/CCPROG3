@@ -14,7 +14,7 @@ open class VendingMachine(
     private val register = CashRegister()
     private val startingInventory = StringBuilder()
 
-    private fun setSlot(item: Item, price: Float) {
+    private fun setSlot(item: Item, price: Float) {   
         val i = slots.indexOfFirst { it.item == null }
         if (i == -1) {
             println("No empty slots available.")
