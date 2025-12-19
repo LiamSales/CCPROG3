@@ -10,11 +10,11 @@ open class VendingMachine(
     val itemLimit: Int
 ) {
 
-    val slots = Array(slotLimit) { Slot() }
+    private val slots = Array(slotLimit) { Slot() }
     private val register = CashRegister()
-    val startingInventory = StringBuilder()
+    private val startingInventory = StringBuilder()
 
-    fun setSlot(item: Item, price: Float) {
+    private fun setSlot(item: Item, price: Float) {
         val i = slots.indexOfFirst { it.item == null }
         if (i == -1) {
             println("No empty slots available.")
@@ -30,14 +30,14 @@ open class VendingMachine(
     }
 
 
-    fun clearSlot(i: Int) {
+    private fun clearSlot(i: Int) {
         if (i !in slots.indices) return
 
         slots[i] = Slot()
     }
 
 
-    fun restockQuantity(i: Int, quantity: Int) {
+    private fun restockQuantity(i: Int, quantity: Int) {
         if (i !in slots.indices) return
         if (slots[i].item == null) return
 
@@ -57,7 +57,7 @@ open class VendingMachine(
     }
 
 
-    fun changePrice(i: Int, price: Float) {
+    private fun changePrice(i: Int, price: Float) {
         if (i !in slots.indices) return
         if (slots[i].item == null) return
 
@@ -114,7 +114,7 @@ open class VendingMachine(
         }
     }
 
-    fun replenishCash() {
+    private fun replenishCash() {
         register.contents.forEach { (denom, _) ->
             print("Add quantity for ₱$denom: ")
             val amount = inputValidation(0) as Int
@@ -122,7 +122,7 @@ open class VendingMachine(
         }
     }
 
-    fun collect() {
+    private fun collect() {
         var total = 0f
 
         register.contents.forEach { (denom, quantity) ->
@@ -134,7 +134,7 @@ open class VendingMachine(
     }
 
 
-    fun displaySummary() {
+    private fun displaySummary() {
         println(startingInventory)
 
         var totalEarned = 0f
@@ -215,7 +215,7 @@ open class VendingMachine(
     }
 
 
-    fun testMaintenance() {
+    private fun testMaintenance() {
         while (true) {
             println("=== Test Maintenance ===")
             println("[S] Set Slot")

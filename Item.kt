@@ -4,9 +4,9 @@ import javax.imageio.ImageIO
 
 
 data class Item(
-    val name: String,
-    val calories: Int,
-    val icon: BufferedImage?
+    val name: String = "",
+    val calories: Int = 0,
+    val icon: BufferedImage? = null
 )
 
 fun saveItemToFile(item: Item, iconFileName: String?) {

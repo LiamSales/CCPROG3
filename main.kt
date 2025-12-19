@@ -11,6 +11,10 @@ Use Float only for storage/display
 Convert once at boundaries
 
 move imports to the files that actually use them for more modularization
+
+you can place print prompts in the function arg
+    val slotLimit = readPositiveInt("Slot limit: ")
+
 */
 
 
@@ -43,21 +47,26 @@ fun inputValidation(template: Any?): Any {
     }
 }
 
+fun readPositiveInt(prompt: String): Int {
+    while (true) {
+        print(prompt)
+        val n = inputValidation(0) as Int
+        if (n >= 1) return n
+        println("Value must be at least 1.")
+    }
+}
+
 fun createRegular() {
-    print("Slot limit: ")
-    val slotLimit = inputValidation(0) as Int
-    print("Item limit: ")
-    val itemLimit = inputValidation(0) as Int
+    val slotLimit = readPositiveInt("Slot limit: ")
+    val itemLimit = readPositiveInt("Item limit: ")
 
     regMachines.add(VendingMachine(slotLimit, itemLimit))
     println("Regular Vending Machine created.")
 }
 
 fun createSpecial() {
-    print("Slot limit: ")
-    val slotLimit = inputValidation(0) as Int
-    print("Item limit: ")
-    val itemLimit = inputValidation(0) as Int
+    val slotLimit = readPositiveInt("Slot limit: ")
+    val itemLimit = readPositiveInt("Item limit: ")
 
     specMachines.add(SpecialMachine(slotLimit, itemLimit))
     println("Special Vending Machine created.")
