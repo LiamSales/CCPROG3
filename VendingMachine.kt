@@ -5,6 +5,9 @@ data class Slot(
     var sold: Int = 0
 )
 
+//WE NEED TO MODIFY THE CONTENTS WITH ADD AND REMOVE, NOT THE COPY IN THE GETTER!!
+
+
 open class VendingMachine(
     val slotLimit: Int,
     val itemLimit: Int
@@ -72,6 +75,8 @@ open class VendingMachine(
         var changeNeeded = totalDeposited - price
         if (changeNeeded < 0f) return null
 
+        //contents is private, we use the getter method
+
         val hypothetical = register.contents.toMutableMap()
         deposit.forEach { (d, q) ->
             hypothetical[d] = hypothetical.getOrDefault(d, 0) + q
@@ -117,7 +122,7 @@ open class VendingMachine(
     private fun replenishCash() {
         register.contents.forEach { (denom, _) ->
             print("Add quantity for ₱$denom: ")
-            val amount = inputValidation(0) as Int
+            val amount = inputValidation(0,0) as Int
             register.addCash(denom, amount)
         }
     }
@@ -215,7 +220,7 @@ open class VendingMachine(
     }
 
 
-    private fun testMaintenance() {
+    fun testMaintenance() {
         while (true) {
             println("=== Test Maintenance ===")
             println("[S] Set Slot")
@@ -241,7 +246,7 @@ open class VendingMachine(
                     }
 
                     print("Price: ")
-                    val price = inputValidation(0f) as Float
+                    val price = inputValidation(0,0) as Float
                     setSlot(item, price)
                 }
 
@@ -258,14 +263,14 @@ open class VendingMachine(
                 "R" -> {
                     print("Slot #: ")
                     val i = readln().toInt() - 1
-                    val quantity = inputValidation(0) as Int
+                    val quantity = inputValidation(0,0) as Int
                     restockQuantity(i, quantity)
                 }
 
                 "P" -> {
                     print("Slot #: ")
                     val i = readln().toInt() - 1
-                    val price = inputValidation(0f) as Float
+                    val price = inputValidation(0,0) as Float
                     changePrice(i, price)
                 }
 

@@ -24,10 +24,10 @@ fun saveItemToFile(item: Item, iconFileName: String?) { //serializes metadata, I
 
 fun createItemAndSave(): Item {
     print("Name: ")
-    val name = inputValidation("") as String
+    val name = inputValidation("", 10) as String
 
     print("Calories: ")
-    val calories = inputValidation(0) as Int
+    val calories = inputValidation(0,0) as Int
 
     print("Image path (blank = none): ")
     val path = readln()
@@ -57,7 +57,7 @@ fun createItemAndSave(): Item {
 
 fun loadItemFromFile(): Item {
     print("Enter item name to load: ")
-    val name = inputValidation("") as String
+    val name = inputValidation("",0) as String
 
     val file = File("items/$name.txt")
     if (!file.exists()) error("Item file not found.")

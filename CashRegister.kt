@@ -9,10 +9,15 @@ class CashRegister {
         200.00f to 0, 500.00f to 0, 1000.00f to 0
     )
 
-    private fun addCash(denom: Float, quantity: Int) {
+    fun getContents(): Cash{
+    
+    }
+
+    fun addCash(denom: Float, quantity: Int) {
         contents[denom] = contents.getOrDefault(denom, 0) + quantity
     }
 
-    private fun removeCash(denom: Float, quantity: Int) {
+    fun removeCash(denom: Float, quantity: Int) {
         contents[denom] = contents.getOrDefault(denom, 0) - quantity
     }
+

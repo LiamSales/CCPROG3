@@ -1,4 +1,6 @@
-/*notes from gpt fixes
+
+
+import machines/*notes from gpt fixes
 
 new trick to prevent errors:
 
@@ -18,31 +20,28 @@ you can place print prompts in the function arg
     buildString{
     } is a better string builder implementation
 
-    you can set variables to a when clause
-
 */
 
 
-var regMachines = mutableListOf<VendingMachine>()
-var specMachines = mutableListOf<SpecialMachine>()
+val machines: MutableList<VendingMachine> = mutableListOf()
 
-fun inputValidation(template: Any?): Any {
+fun inputValidation(template: Any?, limit: Int): Any {
     while (true) {
         val value = readln()
 
         when (template) {
             is Int -> {
                 val n = value.toIntOrNull()
-                if (n != null && n >= 0) return n
+                if (n != null && n >= limit) return n
             }
 
             is Float -> {
                 val f = value.toFloatOrNull()
-                if (f != null && f >= 0f) return f
+                if (f != null && f >= limit.toFloat()) return f
             }
 
             is String -> {
-                if (value.isNotBlank() && value.length <= 10) return value
+                if (value.isNotBlank() && value.length <= limit) return value
             }
 
             else -> return value
@@ -52,29 +51,18 @@ fun inputValidation(template: Any?): Any {
     }
 }
 
-fun readPositiveInt(prompt: String): Int {
-    while (true) {
-        print(prompt)
-        val n = inputValidation(0) as Int
-        if (n >= 1) return n
-        println("Value must be at least 1.")
-    }
-}
-
 fun createRegular() {
-    val slotLimit = readPositiveInt("Slot limit: ")
-    val itemLimit = readPositiveInt("Item limit: ")
+    println("Slot Limit: ")
+    val slotLimit = inputValidation(0, 8) as Int
+    println("Item Limit: ")
+    val itemLimit = inputValidation(0, 10) as Int
 
-    regMachines.add(VendingMachine(slotLimit, itemLimit))
+    machines.add(VendingMachine(slotLimit, itemLimit))
     println("Regular Vending Machine created.")
 }
 
 fun createSpecial() {
-    val slotLimit = readPositiveInt("Slot limit: ")
-    val itemLimit = readPositiveInt("Item limit: ")
 
-    specMachines.add(SpecialMachine(slotLimit, itemLimit))
-    println("Special Vending Machine created.")
 }
 
 fun createMachine() {
@@ -95,7 +83,7 @@ fun createMachine() {
 }
 
 fun testMachine() {
-    if (regMachines.isEmpty() && specMachines.isEmpty()) {
+    if (machines.isEmpty()) {
         println("No machines available.")
         return
     }
@@ -103,38 +91,28 @@ fun testMachine() {
     println("\n=== Select a Machine ===")
 
     var index = 1
-    regMachines.forEach {
+    machines.forEach {
         println("$index) Regular Vending Machine")
-        index++
-    }
-    specMachines.forEach {
-        println("$index) Special Vending Machine")
         index++
     }
 
     print("Choose machine #: ")
-    val choice = inputValidation(0) as Int
+    val choice = inputValidation(0, machines.size -1) as Int
 
-    val selected: VendingMachine = when {
-        choice in 1..regMachines.size ->
-            regMachines[choice - 1]
+    //fix in the ui?
 
-        choice in (regMachines.size + 1)..(regMachines.size + specMachines.size) ->
-            specMachines[choice - regMachines.size - 1]
+    while (true){
+        println("[1] Test Features")
+        println("[2] Test Maintenance")
+        println("[X] Exit")
+        print("Enter choice: ")
 
-        else -> {
-            println("Invalid machine number.")
-            return
+        when (readLine()?.trim()?.uppercase()) {
+            "1" -> machines[choice].transaction()
+            "2" -> machines[choice].testMaintenance()
+            "X" -> return
+            else -> println("Invalid choice.")
         }
-    }
-
-    println("[1] Test Features")
-    println("[2] Test Maintenance")
-
-    when (inputValidation(0) as Int) {
-        1 -> selected.transaction()
-        2 -> selected.testMaintenance()
-        else -> println("Invalid choice.")
     }
 }
 
