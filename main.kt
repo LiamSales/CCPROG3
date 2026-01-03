@@ -1,6 +1,4 @@
-
-
-import machines/*notes from gpt fixes
+/*notes from gpt fixes
 
 new trick to prevent errors:
 
