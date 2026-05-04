@@ -56,8 +56,7 @@ fun createItemAndSave(): Item {
 }
 
 fun loadItemFromFile(): Item {
-    print("Enter item name to load: ")
-    val name = inputValidation("",0) as String
+    val name = readText("Enter item name to load: ", 50)
 
     val file = File("items/$name.txt")
     if (!file.exists()) error("Item file not found.")

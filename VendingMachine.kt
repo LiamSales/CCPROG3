@@ -77,7 +77,7 @@ open class VendingMachine(
 
         //contents is private, we use the getter method
 
-        val hypothetical = register.contents.toMutableMap()
+        val hypothetical = register.getContents()
         deposit.forEach { (d, q) ->
             hypothetical[d] = hypothetical.getOrDefault(d, 0) + q
         }
@@ -120,7 +120,7 @@ open class VendingMachine(
     }
 
     private fun replenishCash() {
-        register.contents.forEach { (denom, _) ->
+        register.getContents().forEach { (denom, _) ->
             print("Add quantity for ₱$denom: ")
             val amount = inputValidation(0,0) as Int
             register.addCash(denom, amount)
@@ -130,7 +130,7 @@ open class VendingMachine(
     private fun collect() {
         var total = 0f
 
-        register.contents.forEach { (denom, quantity) ->
+        register.getContents().forEach { (denom, quantity) ->
             total += denom * quantity
             register.removeCash(denom, quantity)
         }
@@ -174,19 +174,16 @@ open class VendingMachine(
             println("[2] Choose item")
             println("[3] Cancel / Get change")
 
-            when (readln().toInt()) {
-
+            when (readInt("Enter choice: ", 1, 3)) {
                 1 -> {
-                    print("Enter denomination: ")
-                    val denom = readln().toFloat()
+                    val denom = readFloat("Enter denomination: ", 0.01f)
 
                     deposit[denom] = deposit.getOrDefault(denom, 0) + 1
                     totalDeposited += denom
                 }
 
                 2 -> {
-                    print("Choose slot #: ")
-                    val i = readln().toInt() - 1
+                    val i = readInt("Choose slot #: ", 1, slots.size) - 1
                     if (i !in slots.indices) continue
 
                     val slot = slots[i]
@@ -239,14 +236,13 @@ open class VendingMachine(
                     println("[1] Upload item from file")
                     println("[2] Create new item")
 
-                    val item = when (readln().toInt()) {
+                    val item = when (readInt("Choose option: ", 1, 2)) {
                         1 -> loadItemFromFile()
                         2 -> createItemAndSave()
                         else -> continue
                     }
 
-                    print("Price: ")
-                    val price = inputValidation(0,0) as Float
+                    val price = readFloat("Price: ", 0.01f)
                     setSlot(item, price)
                 }
 
@@ -256,22 +252,20 @@ open class VendingMachine(
                             println("[${i + 1}] ${it.name}")
                         }
                     }
-                    print("Slot #: ")
-                    clearSlot(readln().toInt() - 1)
+                    val slotNumber = readInt("Slot #: ", 1, slots.size)
+                    clearSlot(slotNumber - 1)
                 }
 
                 "R" -> {
-                    print("Slot #: ")
-                    val i = readln().toInt() - 1
-                    val quantity = inputValidation(0,0) as Int
-                    restockQuantity(i, quantity)
+                    val slotNumber = readInt("Slot #: ", 1, slots.size)
+                    val quantity = readInt("Quantity: ", 0)
+                    restockQuantity(slotNumber - 1, quantity)
                 }
 
                 "P" -> {
-                    print("Slot #: ")
-                    val i = readln().toInt() - 1
-                    val price = inputValidation(0,0) as Float
-                    changePrice(i, price)
+                    val slotNumber = readInt("Slot #: ", 1, slots.size)
+                    val price = readFloat("Price: ", 0.01f)
+                    changePrice(slotNumber - 1, price)
                 }
 
                 "H" -> replenishCash()

@@ -9,15 +9,19 @@ class CashRegister {
         200.00f to 0, 500.00f to 0, 1000.00f to 0
     )
 
-    fun getContents(): Cash{
-    
+    fun getContents(): Cash {
+        return contents.toMutableMap()
     }
 
     fun addCash(denom: Float, quantity: Int) {
+        if (quantity <= 0) return
         contents[denom] = contents.getOrDefault(denom, 0) + quantity
     }
 
     fun removeCash(denom: Float, quantity: Int) {
-        contents[denom] = contents.getOrDefault(denom, 0) - quantity
+        if (quantity <= 0) return
+        val current = contents.getOrDefault(denom, 0)
+        contents[denom] = maxOf(0, current - quantity)
     }
+}
 

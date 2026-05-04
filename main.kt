@@ -23,6 +23,33 @@ you can place print prompts in the function arg
 
 val machines: MutableList<VendingMachine> = mutableListOf()
 
+fun readInt(prompt: String, min: Int = Int.MIN_VALUE, max: Int = Int.MAX_VALUE): Int {
+    while (true) {
+        print(prompt)
+        val value = readln().toIntOrNull()
+        if (value != null && value in min..max) return value
+        println("Invalid input, try again:")
+    }
+}
+
+fun readFloat(prompt: String, min: Float = Float.MIN_VALUE, max: Float = Float.MAX_VALUE): Float {
+    while (true) {
+        print(prompt)
+        val value = readln().toFloatOrNull()
+        if (value != null && value in min..max) return value
+        println("Invalid input, try again:")
+    }
+}
+
+fun readText(prompt: String, maxLength: Int = Int.MAX_VALUE): String {
+    while (true) {
+        print(prompt)
+        val value = readln()
+        if (value.isNotBlank() && value.length <= maxLength) return value
+        println("Invalid input, try again:")
+    }
+}
+
 fun inputValidation(template: Any?, limit: Int): Any {
     while (true) {
         val value = readln()
@@ -50,17 +77,20 @@ fun inputValidation(template: Any?, limit: Int): Any {
 }
 
 fun createRegular() {
-    println("Slot Limit: ")
-    val slotLimit = inputValidation(0, 8) as Int
-    println("Item Limit: ")
-    val itemLimit = inputValidation(0, 10) as Int
+    val slotLimit = readInt("Slot limit (1-8): ", 1, 8)
+    val itemLimit = readInt("Item limit (1-10): ", 1, 10)
 
     machines.add(VendingMachine(slotLimit, itemLimit))
     println("Regular Vending Machine created.")
 }
 
 fun createSpecial() {
-//TODO
+    val slotLimit = readInt("Slot limit (1-8): ", 1, 8)
+    val itemLimit = readInt("Item limit (1-10): ", 1, 10)
+    val addOnLimit = readInt("Add-on slot limit (1-5): ", 1, 5)
+
+    machines.add(SpecialMachine(slotLimit, itemLimit, addOnLimit))
+    println("Special Vending Machine created.")
 }
 
 fun createMachine() {
@@ -88,14 +118,15 @@ fun testMachine() {
 
     println("\n=== Select a Machine ===")
 
-    var index = 1
-    machines.forEach {
-        println("$index) Regular Vending Machine")
-        index++
+    machines.forEachIndexed { index, machine ->
+        val label = when (machine) {
+            is SpecialMachine -> "Special Vending Machine"
+            else -> "Regular Vending Machine"
+        }
+        println("${index + 1}) $label")
     }
 
-    print("Choose machine #: ")
-    val choice = inputValidation(0, machines.size -1) as Int
+    val choice = readInt("Choose machine #: ", 1, machines.size) - 1
 
     //fix in the ui?
 
