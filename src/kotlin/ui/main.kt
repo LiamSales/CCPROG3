@@ -18,6 +18,15 @@ you can place print prompts in the function arg
     buildString{
     } is a better string builder implementation
 
+
+REWRITE (UI layer)
+main()
+createMachine()
+testMachine()
+all println / readln
+
+Kotlin + JavaFX + FXML
+
 */
 
 
