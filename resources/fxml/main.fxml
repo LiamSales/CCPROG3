@@ -5,9 +5,28 @@
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="ui.MainController">
 
-    <Button text="Create Machine" onAction="#handleCreate"/>
-    <Button text="Test Machine" onAction="#handleTest"/>
+    <!-- Display -->
+    <Label fx:id="display" text="₱0.00"
+           style="-fx-font-size: 20px; -fx-border-color: black; -fx-padding: 10;" />
 
-    <ListView fx:id="machineList" prefHeight="200"/>
+    <!-- Slots (grid) -->
+    <GridPane hgap="10" vgap="10">
+
+        <Button text="A1" onAction="#handleSlot"/>
+        <Button text="A2" onAction="#handleSlot"/>
+        <Button text="A3" onAction="#handleSlot"/>
+
+        <Button text="B1" GridPane.rowIndex="1" onAction="#handleSlot"/>
+        <Button text="B2" GridPane.rowIndex="1" GridPane.columnIndex="1" onAction="#handleSlot"/>
+        <Button text="B3" GridPane.rowIndex="1" GridPane.columnIndex="2" onAction="#handleSlot"/>
+
+    </GridPane>
+
+    <!-- Money input -->
+    <HBox spacing="10">
+        <Button text="₱1" onAction="#insertOne"/>
+        <Button text="₱5" onAction="#insertFive"/>
+        <Button text="₱10" onAction="#insertTen"/>
+    </HBox>
 
 </VBox>
