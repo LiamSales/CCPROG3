@@ -7,6 +7,8 @@ data class Slot(
 
 //WE NEED TO MODIFY THE CONTENTS WITH ADD AND REMOVE, NOT THE COPY IN THE GETTER!!
 
+//no need for ui loops, just the logic but the ux part is done elsewhere
+
 
 open class VendingMachine(
     val slotLimit: Int,
@@ -15,55 +17,30 @@ open class VendingMachine(
 
     private val slots = Array(slotLimit) { Slot() }
     private val register = CashRegister()
-    private val startingInventory = StringBuilder()
-
     private fun setSlot(item: Item, price: Float) {   
         val i = slots.indexOfFirst { it.item == null }
-        if (i == -1) {
-            println("No empty slots available.")
-            return
-        }
 
         slots[i].item = item
         slots[i].price = price
         slots[i].quantity = 0
         slots[i].sold = 0
 
-        println("Added ${item.name} to slot #${i + 1}")
     }
 
 
     private fun clearSlot(i: Int) {
         if (i !in slots.indices) return
-
         slots[i] = Slot()
     }
 
 
     private fun restockQuantity(i: Int, quantity: Int) {
-        if (i !in slots.indices) return
-        if (slots[i].item == null) return
-
         slots[i].quantity = quantity
         slots[i].sold = 0
-
-        startingInventory.clear()
-        startingInventory.append("Starting Inventory:\n")
-
-        slots.forEach { slot ->
-            slot.item?.let {
-                startingInventory.append("${it.name}\t quantity: ${slot.quantity}\n")
-            }
-        }
-
-        startingInventory.append("\n----------------------------------------\n")
     }
 
 
     private fun changePrice(i: Int, price: Float) {
-        if (i !in slots.indices) return
-        if (slots[i].item == null) return
-
         slots[i].price = price
     }
 
@@ -166,6 +143,8 @@ open class VendingMachine(
         val deposit: Cash = mutableMapOf()
         var totalDeposited = 0f
 
+        //this is the part we need to fix
+        
         while (true) {
             println("\nCurrent balance: ₱$totalDeposited")
             displayValid(deposit)
@@ -218,6 +197,9 @@ open class VendingMachine(
 
 
     fun testMaintenance() {
+
+        //this too, no need for looping
+        
         while (true) {
             println("=== Test Maintenance ===")
             println("[S] Set Slot")
