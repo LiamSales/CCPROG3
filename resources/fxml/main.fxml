@@ -1,32 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<VBox spacing="10" alignment="CENTER"
+<VBox spacing="15" alignment="CENTER"
       xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="ui.MainController">
+      <!-- VBox = vertical layout container
+           fx:controller = connects this UI to MainController class -->
 
-    <!-- Display -->
-    <Label fx:id="display" text="₱0.00"
-           style="-fx-font-size: 20px; -fx-border-color: black; -fx-padding: 10;" />
+    <Label text="Vending Machines"
+           style="-fx-font-size: 24px; -fx-font-weight: bold;" />
 
-    <!-- Slots (grid) -->
-    <GridPane hgap="10" vgap="10">
 
-        <Button text="A1" onAction="#handleSlot"/>
-        <Button text="A2" onAction="#handleSlot"/>
-        <Button text="A3" onAction="#handleSlot"/>
+    <ListView fx:id="machineList"
+              prefHeight="200"
+              prefWidth="250"/>
+    <!-- fx:id links this element to controller field
+         prefHeight/Width are layout hints (not absolute size) -->
 
-        <Button text="B1" GridPane.rowIndex="1" onAction="#handleSlot"/>
-        <Button text="B2" GridPane.rowIndex="1" GridPane.columnIndex="1" onAction="#handleSlot"/>
-        <Button text="B3" GridPane.rowIndex="1" GridPane.columnIndex="2" onAction="#handleSlot"/>
+    <HBox spacing="10" alignment="CENTER">
+        <!-- HBox = horizontal container -->
 
-    </GridPane>
+        <Button text="Create Machine"
+                onAction="#handleCreate"/>
+        <!-- onAction calls controller method via reflection -->
 
-    <!-- Money input -->
-    <HBox spacing="10">
-        <Button text="₱1" onAction="#insertOne"/>
-        <Button text="₱5" onAction="#insertFive"/>
-        <Button text="₱10" onAction="#insertTen"/>
+        <Button text="Open Machine"
+                onAction="#handleOpen"/>
     </HBox>
 
 </VBox>
