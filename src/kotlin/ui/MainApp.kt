@@ -38,3 +38,14 @@ fun main() {
     // Creates UI thread
     // Calls start() internally
 } //what about the backend?
+
+/*
+main()
+Application.launch()
+JavaFX runtime starts
+new MainApp()
+start(Stage)
+FXMLLoader parses XML
+Scene graph created
+Stage shows window
+*/
