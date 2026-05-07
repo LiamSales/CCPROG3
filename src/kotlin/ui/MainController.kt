@@ -15,39 +15,36 @@ class MainController {
     // lateinit = initialized later by FXMLLoader (not constructor)
     // ListView<String> internally holds ObservableList<String>
 
+    @FXML
+    fun handleCreate() {
+        // Called when "Create Machine" button is clicked
 
-   // this part is actual code i think i can work with this
+        val machine = VendingMachine(8, 10)
+        // Allocates a new VendingMachine object in memory
 
-    // @FXML
-    // fun handleCreate() {
-    //     // Called when "Create Machine" button is clicked
+        machines.add(machine)
+        // Stores reference in MutableList
 
-    //     val machine = VendingMachine(8, 10)
-    //     // Allocates a new VendingMachine object in memory
+        refreshList()
+        // Updates UI list to reflect new data
+    }
 
-    //     machines.add(machine)
-    //     // Stores reference in MutableList
+    @FXML
+    fun handleOpen() {
+        // Called when "Open Machine" button is clicked
 
-    //     refreshList()
-    //     // Updates UI list to reflect new data
-    // }
+        val index = machineList.selectionModel.selectedIndex
+        // selectionModel tracks user selection
+        // returns -1 if nothing selected
 
-    // @FXML
-    // fun handleOpen() {
-    //     // Called when "Open Machine" button is clicked
+        if (index < 0) {
+            showError("Select a machine first.")
+            return
+        }
 
-    //     val index = machineList.selectionModel.selectedIndex
-    //     // selectionModel tracks user selection
-    //     // returns -1 if nothing selected
-
-    //     if (index < 0) {
-    //         showError("Select a machine first.")
-    //         return
-    //     }
-
-    //     println("Opening machine #$index")
-    //     // Placeholder, later you switch scene or open new window
-    // }
+        println("Opening machine #$index")
+        // Placeholder, later you switch scene or open new window
+    }
 
     private fun refreshList() {
         // Syncs backend list with UI list
@@ -61,8 +58,6 @@ class MainController {
             // Adds display string (not the object itself)
         }
     }
-
-    //same with this
 
     private fun showError(message: String) {
         val alert = Alert(Alert.AlertType.ERROR)
