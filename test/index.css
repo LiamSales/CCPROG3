@@ -1,7 +1,7 @@
 
 body {
-    background-color: #1e1e1e;
-    color: white;
+    background-color: #F0F0F0;
+    color: #00000;
     margin: 0;
     padding: 40px;
     font-family: "Segoe UI", Arial, sans-serif;
@@ -12,69 +12,3 @@ h1 {
     margin-bottom: 30px;
 }
 
-.machine-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 20px;
-}
-
-
-.machine-card {
-    background-color: #2b2b2b;
-    border-radius: 16px;
-    padding: 20px;
-    box-shadow: 0px 4px 12px rgba(0,0,0,0.4);
-    transition: transform 0.2s ease, background-color 0.2s ease;
-}
-
-
-.machine-card:hover {
-    transform: translateY(-4px);
-    background-color: #343434;
-}
-
-
-.machine-card h2 {
-    margin-top: 0;
-    font-size: 24px;
-    margin-bottom: 10px;
-}
-
-
-.machine-card p {
-    color: #cfcfcf;
-    line-height: 1.5;
-}
-
-
-button {
-    border: none;
-    border-radius: 10px;
-    padding: 12px 18px;
-    background-color: #4cafef;
-    color: white;
-    font-size: 15px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.1s ease;
-}
-
-
-button:hover {
-    background-color: #66c2ff;
-}
-
-
-button:active {
-    transform: scale(0.98);
-}
-
-
-.create-button {
-    margin-top: 30px;
-    background-color: #57c76f;
-}
-
-.create-button:hover {
-    background-color: #6fdd86;
-}
