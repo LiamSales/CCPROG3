@@ -1,223 +1,80 @@
 
 body {
-
-    /* Dark background similar to modern desktop apps */
     background-color: #1e1e1e;
-
-    /* Default text color */
     color: white;
-
-    /* Removes default browser spacing */
     margin: 0;
-
-    /*
-        Padding adds space INSIDE the body edges.
-
-        Equivalent idea in JavaFX:
-        VBox padding
-    */
     padding: 40px;
-
-    /*
-        Font stack:
-        browser tries Segoe UI first,
-        then Arial,
-        then generic sans-serif.
-    */
     font-family: "Segoe UI", Arial, sans-serif;
 }
 
 h1 {
-
     font-size: 40px;
-
     margin-bottom: 30px;
 }
 
 .machine-grid {
-
-
     display: grid;
-
-    grid-template-columns:
-        repeat(auto-fit, minmax(260px, 1fr));
-
-
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     gap: 20px;
 }
 
 
 .machine-card {
-
-    /* Dark gray card */
     background-color: #2b2b2b;
-
-    /*
-        Rounded corners.
-
-        JavaFX equivalent:
-        background-radius
-    */
     border-radius: 16px;
-
-    /*
-        Inner spacing.
-    */
     padding: 20px;
-
-    /*
-        Soft shadow for depth.
-    */
-    box-shadow:
-        0px 4px 12px rgba(0,0,0,0.4);
-
-    /*
-        Smooth hover animation.
-    */
-    transition:
-        transform 0.2s ease,
-        background-color 0.2s ease;
+    box-shadow: 0px 4px 12px rgba(0,0,0,0.4);
+    transition: transform 0.2s ease, background-color 0.2s ease;
 }
 
 
-/* =========================================================
-   CARD HOVER EFFECT
-   ========================================================= */
-
-/*
-    :hover activates when mouse is over card.
-*/
 .machine-card:hover {
-
-    /*
-        Moves card slightly upward.
-    */
     transform: translateY(-4px);
-
-    /*
-        Slightly brighter on hover.
-    */
     background-color: #343434;
 }
 
 
-/* =========================================================
-   MACHINE TITLE
-   ========================================================= */
-
 .machine-card h2 {
-
     margin-top: 0;
-
     font-size: 24px;
-
     margin-bottom: 10px;
 }
 
 
-/* =========================================================
-   MACHINE DESCRIPTION TEXT
-   ========================================================= */
-
 .machine-card p {
-
-    /*
-        Slightly dimmed text.
-    */
     color: #cfcfcf;
-
     line-height: 1.5;
 }
 
 
-/* =========================================================
-   BUTTONS
-   ========================================================= */
-
 button {
-
-    /*
-        Removes ugly browser default border.
-    */
     border: none;
-
-    /*
-        Rounded corners.
-    */
     border-radius: 10px;
-
-    /*
-        Internal spacing.
-    */
     padding: 12px 18px;
-
-    /*
-        Bright accent color.
-    */
     background-color: #4cafef;
-
     color: white;
-
     font-size: 15px;
-
     font-weight: bold;
-
-    /*
-        Mouse pointer hand icon.
-    */
     cursor: pointer;
-
-    /*
-        Smooth animations.
-    */
-    transition:
-        background-color 0.2s ease,
-        transform 0.1s ease;
+    transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
 
-/* =========================================================
-   BUTTON HOVER
-   ========================================================= */
-
 button:hover {
-
-    /*
-        Slightly brighter blue.
-    */
     background-color: #66c2ff;
 }
 
 
-/* =========================================================
-   BUTTON CLICK EFFECT
-   ========================================================= */
-
 button:active {
-
-    /*
-        Tiny press-down effect.
-    */
     transform: scale(0.98);
 }
 
 
-/* =========================================================
-   CREATE MACHINE BUTTON
-   ========================================================= */
-
-/*
-    Separate styling for the main action button.
-*/
 .create-button {
-
     margin-top: 30px;
-
     background-color: #57c76f;
 }
 
-
 .create-button:hover {
-
     background-color: #6fdd86;
 }
