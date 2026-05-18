@@ -1,10 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<!--
-    Import JavaFX layout classes.
-
-    FXML needs imports similarly to Kotlin.
--->
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
@@ -12,15 +6,6 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-
-<!--
-    ROOT CONTAINER
-
-    VBox stacks children vertically.
-
-    Equivalent HTML idea:
-    flex-direction: column;
--->
 <VBox
         xmlns="http://javafx.com/javafx/17"
         xmlns:fx="http://javafx.com/fxml"
@@ -29,74 +14,39 @@
         spacing="20"
 
         style="
-            -fx-background-color: #1e1e1e;
+            -fx-background-color: #F0F0F0;
             -fx-padding: 30;
         ">
-
-
-    <!-- =========================================================
-         PAGE TITLE
-         ========================================================= -->
 
     <Label
             text="Vending Machines"
 
             style="
-                -fx-text-fill: white;
+                -fx-text-fill: Black;
                 -fx-font-size: 32px;
                 -fx-font-weight: bold;
             "
     />
 
-
-    <!-- =========================================================
-         SCROLLABLE MACHINE LIST
-         =========================================================
-
-         ScrollPane creates scrollbars automatically.
-
-         Equivalent HTML idea:
-         overflow-x: scroll;
-    -->
     <ScrollPane
 
             fitToHeight="true"
-
             hbarPolicy="AS_NEEDED"
             vbarPolicy="NEVER"
-
             pannable="true"
-
             style="
                 -fx-background: transparent;
                 -fx-background-color: transparent;
             "
     >
 
-
-        <!-- =====================================================
-             HORIZONTAL CONTAINER
-
-             HBox arranges children side-by-side.
-
-             Equivalent HTML:
-             display: flex;
-             flex-direction: row;
-             ===================================================== -->
         <content>
 
             <HBox spacing="20">
 
-
-                <!-- =================================================
-                     MACHINE CARD
-                     ================================================= -->
-
                 <VBox
-
                         prefWidth="220"
                         spacing="10"
-
                         style="
                             -fx-background-color: #2b2b2b;
                             -fx-background-radius: 15;
@@ -133,13 +83,6 @@
                     />
 
                 </VBox>
-
-
-
-                <!-- =================================================
-                     MACHINE CARD
-                     ================================================= -->
-
                 <VBox
 
                         prefWidth="220"
@@ -182,12 +125,6 @@
 
                 </VBox>
 
-
-
-                <!-- =================================================
-                     CREATE MACHINE CARD
-                     ================================================= -->
-
                 <VBox
 
                         alignment="CENTER"
@@ -202,9 +139,6 @@
                         "
                 >
 
-                    <!--
-                        Large plus button.
-                    -->
                     <Button
 
                             text="+"
