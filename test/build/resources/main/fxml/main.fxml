@@ -39,6 +39,8 @@
                 THIS becomes the dynamic container.
 
                 fx:id lets controller access it.
+
+                make a scroll pane for items
             -->
             <HBox
                     fx:id="machineContainer"
