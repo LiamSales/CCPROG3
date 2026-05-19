@@ -39,6 +39,8 @@
                 THIS becomes the dynamic container.
 
                 fx:id lets controller access it.
+
+                make a scroll pane for items
             -->
             <HBox
                     fx:id="machineContainer"
@@ -53,9 +55,13 @@
                         spacing="15"
 
                         style="
-                            -fx-background-color: #343434;
+                            -fx-background-color: #DCDCDC;
                             -fx-background-radius: 15;
                             -fx-padding: 20;
+                            -fx-border-color: black;
+                            -fx-border-width: 2;
+                            -fx-border-radius: 15;
+
                         "
                 >
 
@@ -75,20 +81,7 @@
                             "
                     />
 
-                    <Label
-
-                            text="Create Machine"
-
-                            style="
-                                -fx-text-fill: white;
-                                -fx-font-size: 16px;
-                            "
-                    />
-
                 </VBox>
-
-
-            </HBox>
 
         </content>
 
