@@ -1,74 +1,124 @@
 import java.io.File
-import java.awt.image.BufferedImage //in-memory bitmap image (pixels live in heap memory), as vector values
-import javax.imageio.ImageIO //utility class to decode image files (PNG, JPG) into BufferedImage
-
 
 data class Item(
-    val name: String = "",
-    val calories: Int = 0,
-    val icon: BufferedImage? = null //a pointer to the heap mem or pix
+    val name: String,
+    val calories: Int,
+    val iconPath: String
 )
 
-fun saveItemToFile(item: Item, iconFileName: String?) { //serializes metadata, Images stay as files; text files store references.
-    val file = File("items/${item.name}.txt") //This does not create the file yet, It’s just a path abstraction
-    file.parentFile.mkdirs() //Checks filesystem, creates directories if missing; safe to call repeatedly
 
-    file.writeText( //Now we actually touch disk.
-        buildString {
-            appendLine(item.name)
-            appendLine(item.calories)
-            appendLine(iconFileName ?: "NONE") // no nulls are written to disk
-        }
-    )
+private const val CSV_PATH =
+    "items.csv"
+
+fun saveItem(item: Item) {
+
+    val file =
+        File(CSV_PATH)
+
+    val line =
+        "${item.name}," +
+        "${item.calories}," +
+        "${item.iconPath}\n"
+
+    file.appendText(line)
 }
 
-fun createItemAndSave(): Item {
-    print("Name: ")
-    val name = inputValidation("", 10) as String
 
-    print("Calories: ")
-    val calories = inputValidation(0,0) as Int
+fun loadItems(): MutableList<Item> {
 
-    print("Image path (blank = none): ")
-    val path = readln()
+    val file =
+        File(CSV_PATH)
 
-    val iconFileName: String?
-    val icon: BufferedImage?
-
-    if (path.isBlank()) {
-        icon = null
-        iconFileName = null
-    } else {
-        val source = File(path)
-        iconFileName = source.name
-
-        val dest = File("src/icons/$iconFileName")
-        dest.parentFile.mkdirs() //Ensures src/icons/ exists.
-        source.copyTo(dest, overwrite = true)
-
-        icon = ImageIO.read(dest)
+    if (!file.exists()) {
+        return mutableListOf()
     }
 
-    val item = Item(name, calories, icon)
-    saveItemToFile(item, iconFileName)
 
-    return item
+    val lines =
+        file.readLines()
+
+
+    val items =
+        mutableListOf<Item>()
+
+    for (line in lines) {
+        
+        if (line.isBlank()) continue
+
+        val parts =
+            line.split(",")
+
+        if (parts.size < 3) continue
+
+
+        val item = Item(
+
+            name = parts[0],
+
+            calories = parts[1].toInt(),
+
+            iconPath = parts[2]
+        )
+
+
+        items.add(item)
+    }
+
+
+    return items
 }
 
-fun loadItemFromFile(): Item {
-    val name = readText("Enter item name to load: ", 50)
 
-    val file = File("items/$name.txt")
-    if (!file.exists()) error("Item file not found.")
+fun createItemAndSave(): Item {
 
-    val lines = file.readLines()
-    val itemName = lines[0]
-    val calories = lines[1].toInt()
-    val iconName = lines[2]
+    print("Name: ")
 
-    val icon =
-        if (iconName == "NONE") null
-        else ImageIO.read(File("src/icons/$iconName"))
+    val name =
+        inputValidation("", 20) as String
 
-    return Item(itemName, calories, icon)
+
+    print("Calories: ")
+
+    val calories =
+        inputValidation(0, 0) as Int
+
+
+    print("Image path: ")
+
+    val path =
+        readln()
+
+    val source =
+        File(path)
+
+    val destination =
+        File("assets/${source.name}")
+
+    destination.parentFile.mkdirs()
+
+
+    source.copyTo(
+        destination,
+        overwrite = true
+    )
+
+    val item = Item(
+
+        name = name,
+
+        calories = calories,
+
+        /*
+            Stored RELATIVE path.
+
+            Better portability.
+        */
+        iconPath =
+            "assets/${source.name}"
+    )
+
+    saveItem(item)
+
+
+    return item
 }
