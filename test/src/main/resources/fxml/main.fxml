@@ -25,6 +25,7 @@
                 -fx-text-fill: Black;
                 -fx-font-size: 32px;
                 -fx-font-weight: bold;
+                -fx-align: center;
             "
     />
 
@@ -95,6 +96,7 @@
                 -fx-text-fill: Black;
                 -fx-font-size: 32px;
                 -fx-font-weight: bold;
+                -fx-align: center;
             "
     />
 
