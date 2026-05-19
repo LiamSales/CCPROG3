@@ -108,11 +108,6 @@ fun createItemAndSave(): Item {
 
         calories = calories,
 
-        /*
-            Stored RELATIVE path.
-
-            Better portability.
-        */
         iconPath =
             "assets/${source.name}"
     )
