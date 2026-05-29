@@ -6,6 +6,7 @@ import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 import javafx.stage.FileChooser
 import java.io.File
+import model.Item
 
 class CreateItemController {
 

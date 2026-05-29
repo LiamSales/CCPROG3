@@ -1,3 +1,5 @@
+package model
+
 typealias Cash = MutableMap<Float, Int>
 
 class CashRegister {
