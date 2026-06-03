@@ -35,11 +35,55 @@
             vbarPolicy="NEVER">
 
         <content>
-            <!-- dynamic container for machines (controller injects children) -->
+
+            <!--
+                THIS becomes the dynamic container.
+
+                fx:id lets controller access it.
+
+                make a scroll pane for items
+            -->
             <HBox
                     fx:id="machineContainer"
                     spacing="20"
             />
+
+                <VBox
+
+                        alignment="CENTER"
+
+                        prefWidth="220"
+                        spacing="15"
+
+                        style="
+                            -fx-background-color: #DCDCDC;
+                            -fx-background-radius: 15;
+                            -fx-padding: 20;
+                            -fx-border-color: black;
+                            -fx-border-width: 2;
+                            -fx-border-radius: 15;
+
+                        "
+                >
+
+                    <Button
+
+                            text="+"
+
+                            prefWidth="80"
+                            prefHeight="80"
+
+                            style="
+                                -fx-background-color: #57c76f;
+                                -fx-text-fill: white;
+                                -fx-font-size: 32px;
+                                -fx-font-weight: bold;
+                                -fx-background-radius: 100;
+                            "
+                    />
+
+                </VBox>
+
         </content>
 
     </ScrollPane>

@@ -1,15 +1,10 @@
 package ui
 
 import javafx.fxml.FXML
-import javafx.fxml.FXMLLoader
-import javafx.scene.Parent
-import javafx.scene.Scene
 import javafx.scene.control.Button
 import javafx.scene.control.Label
 import javafx.scene.layout.HBox
 import javafx.scene.layout.VBox
-import javafx.stage.Modality
-import javafx.stage.Stage
 
 class MainController {
 
@@ -109,22 +104,6 @@ class MainController {
 
         plusButton.prefWidth = 80.0
         plusButton.prefHeight = 80.0
-
-        // open the Create Machine page when clicked
-        plusButton.setOnAction {
-            try {
-                val loader = FXMLLoader(javaClass.getResource("/fxml/create-machine.fxml"))
-                val root = loader.load<Parent>()
-
-                val stage = Stage()
-                stage.title = "Create Vending Machine"
-                stage.initModality(Modality.APPLICATION_MODAL)
-                stage.scene = Scene(root)
-                stage.showAndWait()
-            } catch (ex: Exception) {
-                ex.printStackTrace()
-            }
-        }
 
 
         val label = Label("Create Machine")
