@@ -4,9 +4,10 @@ import javafx.fxml.FXML
 import javafx.scene.control.TextField
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
-import javafx.stage.FileChooser
-import java.io.File
+import javafx.scene.control.TextInputDialog
 import model.Item
+import model.saveItem
+import javafx.stage.Stage
 
 class CreateItemController {
 
@@ -32,43 +33,20 @@ class CreateItemController {
     @FXML
     fun uploadImage() {
 
-        val chooser = FileChooser()
+        val dialog = TextInputDialog()
+        dialog.title = "Image URL"
+        dialog.headerText = "Enter image URL"
+        dialog.contentText = "URL:"
 
-        chooser.title = "Select Item Image"
-
-        chooser.extensionFilters.add(
-            FileChooser.ExtensionFilter(
-                "Images",
-                "*.png",
-                "*.jpg",
-                "*.jpeg"
-            )
-        )
-
-
-        /*
-            Opens operating system dialog.
-        */
-        val file: File? =
-            chooser.showOpenDialog(null)
-
-
-        if (file != null) {
-
-            selectedImagePath = file.absolutePath
-
-
-            /*
-                JavaFX Image object.
-
-                Internally:
-                decoded image data
-                uploaded for rendering.
-            */
-            val image =
-                Image(file.toURI().toString())
-
-            previewImage.image = image
+        val result = dialog.showAndWait()
+        result.ifPresent { url ->
+            try {
+                val image = Image(url, true)
+                previewImage.image = image
+                selectedImagePath = url
+            } catch (ex: Exception) {
+                ex.printStackTrace()
+            }
         }
     }
 
@@ -89,6 +67,11 @@ class CreateItemController {
         )
 
 
-        println(item)
+        // persist item to CSV
+        saveItem(item)
+
+        // close modal window
+        val stage = nameField.scene.window as Stage
+        stage.close()
     }
 }
