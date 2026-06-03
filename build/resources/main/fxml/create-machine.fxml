@@ -30,6 +30,8 @@
 
     <TextField fx:id="nameField" promptText="Machine Name" />
 
+    <TextField fx:id="locationField" promptText="Location (optional)" />
+
     <Button text="Save Machine" onAction="#saveMachine" />
 
 </VBox>
