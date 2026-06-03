@@ -29,6 +29,10 @@
     />
 
     <TextField fx:id="nameField" promptText="Machine Name" />
+    <TextField fx:id="nameField" promptText="Slots number (+ and -)" />
+
+// dropdown for special then add on slots
+    <TextField fx:id="nameField" promptText="Machine Name" />
 
     <Button text="Save Machine" onAction="#saveMachine" />
 
