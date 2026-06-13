@@ -1,5 +1,3 @@
-package model
-
 data class Slot(
     var item: Item? = null,
     var quantity: Int = 0,

@@ -1,5 +1,3 @@
-package model
-
 class SpecialMachine(slotLimit: Int, itemLimit: Int, AddOnLimit: Int)
     : VendingMachine(slotLimit, itemLimit) {
 
