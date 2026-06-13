@@ -8,61 +8,51 @@ import javafx.scene.layout.VBox
 
 class MainController {
 
-    /*
-        Injected from FXML.
-
-        This variable becomes a reference
-        to the HBox in the XML.
-    */
     @FXML
     private lateinit var machineContainer: HBox
 
-
-    /*
-        Called automatically after FXML loads.
-    */
     @FXML
     fun initialize() {
 
-        /*
-            Example backend data.
-
-            Later this becomes:
-            your real machines list.
-        */
         val machines = listOf(
             "Machine 1",
             "Machine 2",
             "Machine 3"
-        )
+        ) //backend data which well update
+        //would be simply a list of strings?
 
+        val items = listOf(
+            "Item 1",
+            "Item 2",
+            "Item 3",
+
+        ) //strings, and png
 
         /*
             Loop through backend data
             and generate UI cards.
         */
+
+        //this is all handled in the xml file, 
         for (machine in machines) {
 
             val card = createMachineCard(machine)
-
-            /*
-                Add generated card
-                into horizontal container.
-            */
             machineContainer.children.add(card)
         }
 
-
-        /*
-            Add "+" create button LAST.
-        */
         machineContainer.children.add(createAddCard())
     }
 
+            for (item in items) {
 
-    /*
-        Creates one machine card dynamically.
-    */
+            val card = createItemCard(item)
+            itemContainer.children.add(card)
+        }
+
+        itemContainer.children.add(createAddCard())
+    }
+
+
     private fun createMachineCard(name: String): VBox {
 
         val title = Label(name)
@@ -94,10 +84,40 @@ class MainController {
         return card
     }
 
+    private fun createItemCard(name: String, icon: String): VBox {
 
-    /*
-        Creates "+" button card.
-    */
+        val title = Label(name)
+
+        //then we add the picture as well
+
+        title.style =
+            "-fx-text-fill: white;" +
+            "-fx-font-size: 20px;" +
+            "-fx-font-weight: bold;"
+
+
+        val button = Button("Open")
+
+
+        val card = VBox(10.0)
+
+        card.children.addAll(
+            title,
+            button
+        )
+
+        card.prefWidth = 220.0
+
+        card.style =
+            "-fx-background-color: #2b2b2b;" +
+            "-fx-background-radius: 15;" +
+            "-fx-padding: 20;"
+
+
+        return card
+    }
+
+
     private fun createAddCard(): VBox {
 
         val plusButton = Button("+")
