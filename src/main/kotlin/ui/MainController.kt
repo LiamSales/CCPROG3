@@ -5,11 +5,15 @@ import javafx.scene.control.Button
 import javafx.scene.control.Label
 import javafx.scene.layout.HBox
 import javafx.scene.layout.VBox
+import model.Item
 
 class MainController {
 
     @FXML
     private lateinit var machineContainer: HBox
+
+    @FXML
+    private lateinit var itemContainer: HBox
 
     @FXML
     fun initialize() {
@@ -18,43 +22,30 @@ class MainController {
             "Machine 1",
             "Machine 2",
             "Machine 3"
-        ) //backend data which well update
-        //would be simply a list of strings?
+        )
 
         val items = listOf(
-            "Item 1",
-            "Item 2",
-            "Item 3",
+            Item("Soda", 150, "assets/soda.png"),
+            Item("Chips", 250, "assets/chips.png"),
+            Item("Candy", 200, "assets/candy.png")
+        )
 
-        ) //strings, and png
-
-        /*
-            Loop through backend data
-            and generate UI cards.
-        */
-
-        //this is all handled in the xml file, 
         for (machine in machines) {
-
             val card = createMachineCard(machine)
             machineContainer.children.add(card)
         }
 
-        machineContainer.children.add(createAddCard())
-    }
+        machineContainer.children.add(createAddCard("Create Machine"))
 
-            for (item in items) {
-
+        for (item in items) {
             val card = createItemCard(item)
             itemContainer.children.add(card)
         }
 
-        itemContainer.children.add(createAddCard())
+        itemContainer.children.add(createAddCard("Create Item"))
     }
-
 
     private fun createMachineCard(name: String): VBox {
-
         val title = Label(name)
 
         title.style =
@@ -62,89 +53,58 @@ class MainController {
             "-fx-font-size: 20px;" +
             "-fx-font-weight: bold;"
 
-
         val button = Button("Open")
 
-
         val card = VBox(10.0)
-
-        card.children.addAll(
-            title,
-            button
-        )
-
+        card.children.addAll(title, button)
         card.prefWidth = 220.0
-
         card.style =
             "-fx-background-color: #2b2b2b;" +
             "-fx-background-radius: 15;" +
             "-fx-padding: 20;"
 
-
         return card
     }
 
-    private fun createItemCard(name: String, icon: String): VBox {
-
-        val title = Label(name)
-
-        //then we add the picture as well
+    private fun createItemCard(item: Item): VBox {
+        val title = Label(item.name)
+        val calories = Label("${item.calories} kcal")
+        val iconLabel = Label("Icon: ${item.iconPath}")
 
         title.style =
             "-fx-text-fill: white;" +
             "-fx-font-size: 20px;" +
             "-fx-font-weight: bold;"
 
-
         val button = Button("Open")
 
-
         val card = VBox(10.0)
-
-        card.children.addAll(
-            title,
-            button
-        )
-
+        card.children.addAll(title, calories, iconLabel, button)
         card.prefWidth = 220.0
-
         card.style =
             "-fx-background-color: #2b2b2b;" +
             "-fx-background-radius: 15;" +
             "-fx-padding: 20;"
 
-
         return card
     }
 
-
-    private fun createAddCard(): VBox {
-
+    private fun createAddCard(labelText: String): VBox {
         val plusButton = Button("+")
 
         plusButton.prefWidth = 80.0
         plusButton.prefHeight = 80.0
 
-
-        val label = Label("Create Machine")
-
+        val label = Label(labelText)
         label.style = "-fx-text-fill: white;"
 
-
         val card = VBox(15.0)
-
-        card.children.addAll(
-            plusButton,
-            label
-        )
-
+        card.children.addAll(plusButton, label)
         card.prefWidth = 220.0
-
         card.style =
             "-fx-background-color: #343434;" +
             "-fx-background-radius: 15;" +
             "-fx-padding: 20;"
-
 
         return card
     }
