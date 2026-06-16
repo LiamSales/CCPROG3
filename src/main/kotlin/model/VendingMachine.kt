@@ -1,3 +1,5 @@
+package model
+
 data class Slot(
     var item: Item? = null,
     var quantity: Int = 0,
@@ -17,6 +19,9 @@ open class VendingMachine(
 
     private val slots = Array(slotLimit) { Slot() }
     private val register = CashRegister()
+    
+    // TODO: Populate this with actual starting inventory snapshot when items are added
+    private var startingInventory: String = "[STARTING INVENTORY]"
     private fun setSlot(item: Item, price: Float) {   
         val i = slots.indexOfFirst { it.item == null }
 
@@ -240,7 +245,7 @@ open class VendingMachine(
 
                 "R" -> {
                     val slotNumber = readInt("Slot #: ", 1, slots.size)
-                    val quantity = readInt("Quantity: ", 0)
+                    val quantity = readInt("Quantity: ", 0, 100)
                     restockQuantity(slotNumber - 1, quantity)
                 }
 

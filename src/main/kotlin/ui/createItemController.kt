@@ -6,6 +6,7 @@ import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 import javafx.stage.FileChooser
 import java.io.File
+import model.Item
 
 class CreateItemController {
 
@@ -84,10 +85,10 @@ class CreateItemController {
         val item = Item(
             name = name,
             calories = calories,
-            iconPath = selectedImagePath
+            iconPath = selectedImagePath ?: "assets/default.png"
         )
 
 
-        println(item)
+        println(item.toString())
     }
 }
