@@ -1,10 +1,14 @@
 package ui
 
 import javafx.fxml.FXML
+import javafx.fxml.FXMLLoader
+import javafx.scene.Parent
+import javafx.scene.Scene
 import javafx.scene.control.Button
 import javafx.scene.control.Label
 import javafx.scene.layout.HBox
 import javafx.scene.layout.VBox
+import javafx.stage.Stage
 import model.Item
 
 class MainController {
@@ -30,22 +34,21 @@ class MainController {
             Item("Candy", 200, "assets/candy.png")
         )
 
-        for (machine in machines) {
-            val card = createMachineCard(machine)
-            machineContainer.children.add(card)
+        machines.forEach {
+            machineContainer.children.add(createMachineCard(it))
         }
 
         machineContainer.children.add(createAddCard("Create Machine"))
 
-        for (item in items) {
-            val card = createItemCard(item)
-            itemContainer.children.add(card)
+        items.forEach {
+            itemContainer.children.add(createItemCard(it))
         }
 
         itemContainer.children.add(createAddCard("Create Item"))
     }
 
     private fun createMachineCard(name: String): VBox {
+
         val title = Label(name)
 
         title.style =
@@ -56,8 +59,11 @@ class MainController {
         val button = Button("Open")
 
         val card = VBox(10.0)
+
         card.children.addAll(title, button)
+
         card.prefWidth = 220.0
+
         card.style =
             "-fx-background-color: #2b2b2b;" +
             "-fx-background-radius: 15;" +
@@ -67,20 +73,32 @@ class MainController {
     }
 
     private fun createItemCard(item: Item): VBox {
+
         val title = Label(item.name)
         val calories = Label("${item.calories} kcal")
-        val iconLabel = Label("Icon: ${item.iconPath}")
+        val path = Label(item.iconPath)
 
         title.style =
             "-fx-text-fill: white;" +
             "-fx-font-size: 20px;" +
             "-fx-font-weight: bold;"
 
+        calories.style = "-fx-text-fill: white;"
+        path.style = "-fx-text-fill: lightgray;"
+
         val button = Button("Open")
 
         val card = VBox(10.0)
-        card.children.addAll(title, calories, iconLabel, button)
+
+        card.children.addAll(
+            title,
+            calories,
+            path,
+            button
+        )
+
         card.prefWidth = 220.0
+
         card.style =
             "-fx-background-color: #2b2b2b;" +
             "-fx-background-radius: 15;" +
@@ -90,22 +108,54 @@ class MainController {
     }
 
     private fun createAddCard(labelText: String): VBox {
+
         val plusButton = Button("+")
 
         plusButton.prefWidth = 80.0
         plusButton.prefHeight = 80.0
 
+        if (labelText == "Create Item") {
+
+            plusButton.setOnAction {
+
+                openCreateItemPage()
+
+            }
+
+        }
+
         val label = Label(labelText)
-        label.style = "-fx-text-fill: white;"
+
+        label.style =
+            "-fx-text-fill: white;"
 
         val card = VBox(15.0)
-        card.children.addAll(plusButton, label)
+
+        card.children.addAll(
+            plusButton,
+            label
+        )
+
         card.prefWidth = 220.0
+
         card.style =
             "-fx-background-color: #343434;" +
             "-fx-background-radius: 15;" +
             "-fx-padding: 20;"
 
         return card
+    }
+
+    private fun openCreateItemPage() {
+
+        val root: Parent =
+            FXMLLoader.load(
+                javaClass.getResource("/fxml/create-item.fxml")
+            )
+
+        val stage =
+            machineContainer.scene.window as Stage
+
+        stage.scene = Scene(root)
     }
 }
