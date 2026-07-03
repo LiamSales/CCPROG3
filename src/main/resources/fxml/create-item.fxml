@@ -1,19 +1,88 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
 <VBox
 
         xmlns="http://javafx.com/javafx/17"
-
         xmlns:fx="http://javafx.com/fxml"
 
         fx:controller="ui.CreateItemController"
 
-        alignment="CENTER"
-
+        alignment="TOP_CENTER"
         spacing="20"
 
-        style="-fx-background-color: white;">
+        style="
+            -fx-background-color: #F0F0F0;
+            -fx-padding: 30;
+        ">
+
+    <Label
+
+            text="Create Item"
+
+            style="
+                -fx-font-size: 32px;
+                -fx-font-weight: bold;
+            "
+    />
+
+    <VBox
+            spacing="15"
+            prefWidth="450"
+
+            style="
+                -fx-background-color: white;
+                -fx-padding: 25;
+                -fx-background-radius: 15;
+                -fx-border-color: lightgray;
+                -fx-border-radius: 15;
+            ">
+
+        <Label text="Item Name"/>
+
+        <TextField
+                fx:id="nameField"
+                promptText="Enter item name"/>
+
+        <Label text="Calories"/>
+
+        <Spinner
+                fx:id="calorieSpinner"
+                editable="true"/>
+
+        <Label text="Image Path"/>
+
+        <HBox spacing="10">
+
+            <TextField
+
+                    fx:id="imagePathField"
+
+                    promptText="assets/image.png"
+
+                    HBox.hgrow="ALWAYS"/>
+
+            <Button
+
+                    text="Browse"
+
+                    onAction="#browseImage"/>
+
+        </HBox>
+
+        <Button
+
+                text="Submit"
+
+                onAction="#submitItem"/>
+
+    </VBox>
 
 </VBox>
