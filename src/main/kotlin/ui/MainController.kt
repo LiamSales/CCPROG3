@@ -114,20 +114,24 @@ class MainController {
         plusButton.prefWidth = 80.0
         plusButton.prefHeight = 80.0
 
-        if (labelText == "Create Item") {
+        when (labelText) {
 
-            plusButton.setOnAction {
-
-                openCreateItemPage()
-
+            "Create Machine" -> {
+                plusButton.setOnAction {
+                    openCreateMachinePage()
+                }
             }
 
+            "Create Item" -> {
+                plusButton.setOnAction {
+                    openCreateItemPage()
+                }
+            }
         }
 
         val label = Label(labelText)
 
-        label.style =
-            "-fx-text-fill: white;"
+        label.style = "-fx-text-fill: white;"
 
         val card = VBox(15.0)
 
@@ -146,15 +150,22 @@ class MainController {
         return card
     }
 
+    private fun openCreateMachinePage() {
+        changeScene("/fxml/create-machine.fxml")
+    }
+
     private fun openCreateItemPage() {
+        changeScene("/fxml/create-item.fxml")
+    }
 
-        val root: Parent =
-            FXMLLoader.load(
-                javaClass.getResource("/fxml/create-item.fxml")
-            )
+    private fun changeScene(fxmlPath: String) {
 
-        val stage =
-            machineContainer.scene.window as Stage
+        val resource = javaClass.getResource(fxmlPath)
+            ?: error("Cannot find FXML: $fxmlPath")
+
+        val root: Parent = FXMLLoader.load(resource)
+
+        val stage = machineContainer.scene.window as Stage
 
         stage.scene = Scene(root)
     }
