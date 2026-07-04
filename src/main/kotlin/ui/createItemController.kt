@@ -5,9 +5,9 @@ import javafx.fxml.FXML
 import javafx.fxml.FXMLLoader
 import javafx.scene.Parent
 import javafx.scene.Scene
-import javafx.scene.control.TextField
+import javafx.scene.control.Alert
 import javafx.scene.control.Spinner
-import javafx.scene.control.SpinnerValueFactory
+import javafx.scene.control.TextField
 import javafx.stage.FileChooser
 import javafx.stage.Stage
 import java.io.File
@@ -16,7 +16,6 @@ class CreateItemController {
 
     @FXML
     private lateinit var nameField: TextField
-
 
     @FXML
     private lateinit var calorieSpinner: Spinner<Int>
@@ -32,33 +31,62 @@ class CreateItemController {
         chooser.title = "Choose Item Image"
 
         chooser.extensionFilters.add(
-
             FileChooser.ExtensionFilter(
                 "Images",
                 "*.png",
                 "*.jpg",
                 "*.jpeg"
             )
-
         )
 
-        val stage =
-            nameField.scene.window as Stage
+        val stage = nameField.scene.window as Stage
 
-        val file: File? =
-            chooser.showOpenDialog(stage)
+        val file: File? = chooser.showOpenDialog(stage)
 
         if (file != null) {
-
             imagePathField.text = file.absolutePath
-
         }
+    }
+
+    @FXML
+    fun back(event: ActionEvent) {
+
+        openMainPage(event)
+
     }
 
     @FXML
     fun submitItem(event: ActionEvent) {
 
+        val name = nameField.text.trim()
+
+        val calories =
+            calorieSpinner.editor.text.toIntOrNull()
+
+        val imagePath =
+            imagePathField.text.trim()
+
+        if (name.isBlank()) {
+            showError("Please enter an item name.")
+            return
+        }
+
+        if (calories == null || calories <= 0) {
+            showError("Calories must be a whole number greater than zero.")
+            return
+        }
+
+        if (imagePath.isBlank()) {
+            showError("Please choose an image.")
+            return
+        }
+
         // Saving will be added later.
+
+        openMainPage(event)
+    }
+
+    private fun openMainPage(event: ActionEvent) {
 
         val root: Parent =
             FXMLLoader.load(
@@ -73,27 +101,14 @@ class CreateItemController {
         stage.scene = Scene(root)
     }
 
-//     @FXML
-// fun initialize() {
+    private fun showError(message: String) {
 
-//     calorieSpinner.valueFactory =
-//         SpinnerValueFactory.IntegerSpinnerValueFactory(
-//             0,
-//             99999,
-//             0
-//         )
+        Alert(Alert.AlertType.ERROR).apply {
 
-//     calorieSpinner.isEditable = true
+            title = "Invalid Input"
+            headerText = null
+            contentText = message
 
-//     calorieSpinner.editor.textFormatter = TextFormatter<String> { change ->
-
-//         if (change.controlNewText.matches(Regex("\\d*"))) {
-//             change
-//         } else {
-//             null
-//         }
-
-//     }
-// }
-
+        }.showAndWait()
+    }
 }

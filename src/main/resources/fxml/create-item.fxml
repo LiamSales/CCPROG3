@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
 <?import javafx.scene.layout.VBox?>
 
 <VBox
@@ -34,6 +34,7 @@
     />
 
     <VBox
+
             spacing="15"
             prefWidth="450"
 
@@ -57,31 +58,34 @@
                 fx:id="calorieSpinner"
                 editable="true"/>
 
-        <Label text="Image Path"/>
+        <Label text="Image"/>
 
         <HBox spacing="10">
 
             <TextField
-
                     fx:id="imagePathField"
-
-                    promptText="assets/image.png"
-
+                    promptText="Choose an image..."
                     HBox.hgrow="ALWAYS"/>
 
             <Button
-
                     text="Browse"
-
                     onAction="#browseImage"/>
 
         </HBox>
 
-        <Button
+        <HBox
+                spacing="10"
+                alignment="CENTER_RIGHT">
 
-                text="Submit"
+            <Button
+                    text="Back"
+                    onAction="#back"/>
 
-                onAction="#submitItem"/>
+            <Button
+                    text="Submit"
+                    onAction="#submitItem"/>
+
+        </HBox>
 
     </VBox>
 
