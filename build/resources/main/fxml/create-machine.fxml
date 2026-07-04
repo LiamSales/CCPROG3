@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
 <VBox
@@ -9,12 +14,87 @@
 
         fx:controller="ui.CreateMachineController"
 
-        alignment="CENTER"
-
+        alignment="TOP_CENTER"
         spacing="20"
 
         style="
-            -fx-background-color: white;
+            -fx-background-color: #F0F0F0;
+            -fx-padding: 30;
         ">
+
+    <Label
+
+            text="Create Machine"
+
+            style="
+                -fx-font-size: 32px;
+                -fx-font-weight: bold;
+            "
+    />
+
+    <VBox
+
+            spacing="15"
+            prefWidth="450"
+
+            style="
+                -fx-background-color: white;
+                -fx-padding: 25;
+                -fx-background-radius: 15;
+                -fx-border-color: lightgray;
+                -fx-border-radius: 15;
+            ">
+
+        <Label text="Number of Slots"/>
+
+        <Spinner
+                fx:id="slotSpinner"
+                editable="true"/>
+
+        <Label text="Maximum Items Per Slot"/>
+
+        <Spinner
+                fx:id="itemLimitSpinner"
+                editable="true"/>
+
+        <Label text="Cash Register Capacity"/>
+
+        <Spinner
+                fx:id="cashCapacitySpinner"
+                editable="true"/>
+
+        <CheckBox
+
+                fx:id="specialCheckBox"
+
+                text="Special Machine"/>
+
+        <Label text="Number of Add-on Items"/>
+
+        <Spinner
+                fx:id="addonSpinner"
+                editable="true"/>
+
+        <HBox
+
+                spacing="10"
+
+                alignment="CENTER_RIGHT">
+
+            <Button
+
+                    text="Back"
+
+                    onAction="#back"/>
+
+            <Button
+
+                    text="Submit"
+
+                    onAction="#submitMachine"/>
+
+        </HBox>
+
+    </VBox>
 
 </VBox>
