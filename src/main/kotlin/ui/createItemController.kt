@@ -73,4 +73,27 @@ class CreateItemController {
         stage.scene = Scene(root)
     }
 
+//     @FXML
+// fun initialize() {
+
+//     calorieSpinner.valueFactory =
+//         SpinnerValueFactory.IntegerSpinnerValueFactory(
+//             0,
+//             99999,
+//             0
+//         )
+
+//     calorieSpinner.isEditable = true
+
+//     calorieSpinner.editor.textFormatter = TextFormatter<String> { change ->
+
+//         if (change.controlNewText.matches(Regex("\\d*"))) {
+//             change
+//         } else {
+//             null
+//         }
+
+//     }
+// }
+
 }
