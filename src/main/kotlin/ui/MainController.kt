@@ -1,7 +1,9 @@
 package ui
 
+import javafx.event.ActionEvent
 import javafx.fxml.FXML
 import javafx.fxml.FXMLLoader
+import javafx.scene.Node
 import javafx.scene.Parent
 import javafx.scene.Scene
 import javafx.scene.control.Alert
@@ -12,6 +14,16 @@ import javafx.scene.layout.HBox
 import javafx.scene.layout.VBox
 import javafx.stage.Stage
 import model.Item
+
+class BlankPageController {
+    @FXML
+    fun backToMainPage(event: ActionEvent) {
+        val source = event.source as? Node ?: return
+        val stage = source.scene?.window as? Stage ?: return
+        val root = FXMLLoader.load<Parent>(BlankPageController::class.java.getResource("/fxml/main.fxml"))
+        stage.scene = Scene(root)
+    }
+}
 
 class MainController {
 
@@ -67,11 +79,23 @@ class MainController {
             "-fx-font-size: 20px;" +
             "-fx-font-weight: bold;"
 
-        val button = Button("Open")
+        val testButton = Button("Test")
+        val maintenanceButton = Button("Maintenance")
+
+        testButton.setOnAction {
+            openTestPage()
+        }
+
+        maintenanceButton.setOnAction {
+            openMaintenancePage()
+        }
+
+        val buttonContainer = VBox(8.0)
+        buttonContainer.children.addAll(testButton, maintenanceButton)
 
         val card = VBox(10.0)
 
-        card.children.addAll(title, button)
+        card.children.addAll(title, buttonContainer)
 
         card.prefWidth = 220.0
 
@@ -183,6 +207,14 @@ class MainController {
 
     private fun openCreateItemPage() {
         changeScene("/fxml/create-item.fxml")
+    }
+
+    private fun openTestPage() {
+        changeScene("/fxml/test-page.fxml")
+    }
+
+    private fun openMaintenancePage() {
+        changeScene("/fxml/maintenance-page.fxml")
     }
 
     private fun changeScene(fxmlPath: String) {
