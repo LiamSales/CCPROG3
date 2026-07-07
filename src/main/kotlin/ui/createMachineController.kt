@@ -19,9 +19,6 @@ class CreateMachineController {
     private lateinit var itemLimitSpinner: Spinner<Int>
 
     @FXML
-    private lateinit var cashCapacitySpinner: Spinner<Int>
-
-    @FXML
     private lateinit var specialCheckBox: CheckBox
 
     @FXML
@@ -42,9 +39,6 @@ class CreateMachineController {
 
         val itemLimit =
             itemLimitSpinner.editor.text.toIntOrNull()
-
-        val cashCapacity =
-            cashCapacitySpinner.editor.text.toIntOrNull()
 
         val addOnItems =
             addonSpinner.editor.text.toIntOrNull()
@@ -67,14 +61,6 @@ class CreateMachineController {
             return
         }
 
-        if (cashCapacity == null || cashCapacity < 100) {
-
-            showError(
-                "Cash register capacity must be at least 100."
-            )
-
-            return
-        }
 
         if (addOnItems == null || addOnItems < 1) {
 

@@ -47,6 +47,8 @@
 
         <Label text="Number of Slots"/>
 
+        <!-- no text input button only -->
+
         <Spinner
                 fx:id="slotSpinner"
                 editable="true"/>
@@ -57,11 +59,6 @@
                 fx:id="itemLimitSpinner"
                 editable="true"/>
 
-        <Label text="Cash Register Capacity"/>
-
-        <Spinner
-                fx:id="cashCapacitySpinner"
-                editable="true"/>
 
         <CheckBox
 
