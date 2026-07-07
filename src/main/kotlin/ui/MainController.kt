@@ -4,7 +4,9 @@ import javafx.fxml.FXML
 import javafx.fxml.FXMLLoader
 import javafx.scene.Parent
 import javafx.scene.Scene
+import javafx.scene.control.Alert
 import javafx.scene.control.Button
+import javafx.scene.control.ButtonType
 import javafx.scene.control.Label
 import javafx.scene.layout.HBox
 import javafx.scene.layout.VBox
@@ -19,6 +21,8 @@ class MainController {
     @FXML
     private lateinit var itemContainer: HBox
 
+    private val items = mutableListOf<Item>()
+
     @FXML
     fun initialize() {
 
@@ -28,10 +32,13 @@ class MainController {
             "Machine 3"
         )
 
-        val items = listOf(
-            Item("Soda", 150, "assets/soda.png"),
-            Item("Chips", 250, "assets/chips.png"),
-            Item("Candy", 200, "assets/candy.png")
+        items.clear()
+        items.addAll(
+            listOf(
+                Item("Soda", 150, "assets/soda.png"),
+                Item("Chips", 250, "assets/chips.png"),
+                Item("Candy", 200, "assets/candy.png")
+            )
         )
 
         machines.forEach {
@@ -40,10 +47,14 @@ class MainController {
 
         machineContainer.children.add(createAddCard("Create Machine"))
 
+        renderItems()
+    }
+
+    private fun renderItems() {
+        itemContainer.children.clear()
         items.forEach {
             itemContainer.children.add(createItemCard(it))
         }
-
         itemContainer.children.add(createAddCard("Create Item"))
     }
 
@@ -86,7 +97,10 @@ class MainController {
         calories.style = "-fx-text-fill: white;"
         path.style = "-fx-text-fill: lightgray;"
 
-        val button = Button("Open")
+        val button = Button("Remove")
+        button.setOnAction {
+            confirmRemoveItem(item)
+        }
 
         val card = VBox(10.0)
 
@@ -105,6 +119,19 @@ class MainController {
             "-fx-padding: 20;"
 
         return card
+    }
+
+    private fun confirmRemoveItem(item: Item) {
+        val alert = Alert(Alert.AlertType.CONFIRMATION)
+        alert.title = "Remove Item"
+        alert.headerText = "Delete ${item.name}?"
+        alert.contentText = "This item will be removed from the main page."
+
+        val result = alert.showAndWait()
+        if (result.isPresent && result.get() == ButtonType.OK) {
+            items.remove(item)
+            renderItems()
+        }
     }
 
     private fun createAddCard(labelText: String): VBox {
