@@ -214,7 +214,7 @@ class MainController {
     }
 
     private fun openMaintenancePage() {
-        changeScene("/fxml/maintenance-page.fxml")
+        changeScene("/fxml/maintenance.fxml")
     }
 
     private fun changeScene(fxmlPath: String) {
