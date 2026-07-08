@@ -11,6 +11,7 @@ import javafx.scene.control.Button
 import javafx.scene.control.ButtonType
 import javafx.scene.control.Label
 import javafx.scene.layout.GridPane
+import javafx.scene.layout.HBox
 import javafx.scene.layout.VBox
 import javafx.stage.Stage
 
@@ -20,45 +21,78 @@ class MaintenanceController {
     private lateinit var slotGrid: GridPane
 
     @FXML
-    private lateinit var selectedSlotLabel: Label
-
-    private var selectedSlot = -1
-
-    @FXML
     fun initialize() {
 
         for (i in 1..8) {
 
-            val card = VBox(8.0)
+            val card = VBox(10.0)
 
             card.alignment = Pos.CENTER
-            card.prefWidth = 120.0
-            card.prefHeight = 120.0
+            card.prefWidth = 220.0
+            card.prefHeight = 220.0
 
             card.style =
-                "-fx-background-color:white;" +
-                "-fx-border-color:gray;" +
-                "-fx-background-radius:10;" +
-                "-fx-border-radius:10;"
+                "-fx-background-color: white;" +
+                "-fx-background-radius: 12;" +
+                "-fx-border-color: lightgray;" +
+                "-fx-border-radius: 12;" +
+                "-fx-padding: 15;"
 
-            val slot = Label("Slot $i")
-            val item = Label("Empty")
+            val slotLabel = Label("Slot $i")
 
-            val button = Button("Select")
+            slotLabel.style =
+                "-fx-font-size:18px;" +
+                "-fx-font-weight:bold;"
 
-            button.setOnAction {
+            val itemLabel = Label("Item: Empty")
+            val qtyLabel = Label("Quantity: 0")
+            val priceLabel = Label("Price: ₱0")
 
-                selectedSlot = i
+            val setButton = Button("Set")
+            val clearButton = Button("Clear")
+            val restockButton = Button("Restock")
+            val priceButton = Button("Price")
 
-                selectedSlotLabel.text =
-                    "Selected Slot: $i"
-
+            setButton.setOnAction {
+                popup("Set Slot", "Set Slot $i")
             }
 
+            clearButton.setOnAction {
+                popup("Clear Slot", "Clear Slot $i")
+            }
+
+            restockButton.setOnAction {
+
+                val root: Parent =
+                    FXMLLoader.load(
+                        javaClass.getResource("/fxml/restock.fxml")
+                    )
+
+                val stage =
+                    slotGrid.scene.window as Stage
+
+                stage.scene = Scene(root)
+            }
+
+            priceButton.setOnAction {
+                popup("Change Price", "Change price for Slot $i")
+            }
+
+            val row1 = HBox(10.0)
+            row1.alignment = Pos.CENTER
+            row1.children.addAll(setButton, clearButton)
+
+            val row2 = HBox(10.0)
+            row2.alignment = Pos.CENTER
+            row2.children.addAll(restockButton, priceButton)
+
             card.children.addAll(
-                slot,
-                item,
-                button
+                slotLabel,
+                itemLabel,
+                qtyLabel,
+                priceLabel,
+                row1,
+                row2
             )
 
             slotGrid.add(
@@ -70,43 +104,13 @@ class MaintenanceController {
     }
 
     @FXML
-    fun setSlot() {
-        popup("Set Slot", "Set Slot for Slot $selectedSlot")
-    }
-
-    @FXML
-    fun clearSlot() {
-        popup("Clear Slot", "Clear Slot $selectedSlot")
-    }
-
-    @FXML
-    fun restockSlot(event: ActionEvent) {
-
-        val root: Parent =
-            FXMLLoader.load(
-                javaClass.getResource("/fxml/restock.fxml")
-            )
-
-        val stage =
-            (event.source as javafx.scene.Node)
-                .scene.window as Stage
-
-        stage.scene = Scene(root)
-    }
-
-    @FXML
-    fun changePrice() {
-        popup("Change Price", "Change price for Slot $selectedSlot")
-    }
-
-    @FXML
     fun replenishCash() {
-        popup("Cash", "Cash replenished.")
+        popup("Replenish Cash", "Cash replenished.")
     }
 
     @FXML
     fun collectBalance() {
-        popup("Balance", "Balance collected.")
+        popup("Collect Balance", "Balance collected.")
     }
 
     @FXML
@@ -117,18 +121,14 @@ class MaintenanceController {
     @FXML
     fun removeMachine(event: ActionEvent) {
 
-        val alert =
-            Alert(Alert.AlertType.CONFIRMATION)
+        val alert = Alert(Alert.AlertType.CONFIRMATION)
 
         alert.title = "Remove Machine"
         alert.headerText = "Remove Machine?"
-        alert.contentText =
-            "This action cannot be undone."
+        alert.contentText = "This action cannot be undone."
 
         if (alert.showAndWait().get() == ButtonType.OK) {
-
             backToMainPage(event)
-
         }
     }
 
@@ -142,19 +142,20 @@ class MaintenanceController {
 
         val stage =
             (event.source as javafx.scene.Node)
-                .scene.window as Stage
+                .scene
+                .window as Stage
 
         stage.scene = Scene(root)
     }
 
     private fun popup(title: String, message: String) {
 
-        Alert(Alert.AlertType.INFORMATION).apply {
+        val alert = Alert(Alert.AlertType.INFORMATION)
 
-            this.title = title
-            headerText = null
-            contentText = message
+        alert.title = title
+        alert.headerText = null
+        alert.contentText = message
 
-        }.showAndWait()
+        alert.showAndWait()
     }
 }
