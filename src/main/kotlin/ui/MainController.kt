@@ -210,7 +210,7 @@ class MainController {
     }
 
     private fun openTestPage() {
-        changeScene("/fxml/test-page.fxml")
+        changeScene("/fxml/test.fxml")
     }
 
     private fun openMaintenancePage() {
