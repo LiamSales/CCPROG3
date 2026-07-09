@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
 <BorderPane
@@ -9,15 +10,22 @@
         xmlns:fx="http://javafx.com/fxml"
         fx:controller="ui.BlankPageController"
 
-        style="-fx-background-color:#EAEAEA;">
+        style="-fx-background-color:#D9D9D9;">
 
-    <!-- ================= TOP ================= -->
+    <!-- ========================================================= -->
+    <!-- HEADER -->
+    <!-- ========================================================= -->
 
     <top>
 
-        <HBox spacing="20"
-              alignment="CENTER_LEFT"
-              style="-fx-padding:20;">
+        <HBox
+                alignment="CENTER_LEFT"
+                spacing="20"
+
+                style="
+                    -fx-background-color:#ECECEC;
+                    -fx-padding:20;
+                ">
 
             <Button
                     text="Back"
@@ -25,7 +33,9 @@
                     onAction="#backToMainPage"/>
 
             <Label
+
                     text="Test Machine"
+
                     style="
                         -fx-font-size:30;
                         -fx-font-weight:bold;
@@ -35,261 +45,579 @@
 
     </top>
 
-    <!-- ================= CENTER ================= -->
+    <!-- ========================================================= -->
+    <!-- CENTER -->
+    <!-- ========================================================= -->
 
     <center>
 
         <HBox
-                spacing="30"
                 alignment="TOP_CENTER"
-                style="-fx-padding:20;">
+                spacing="35"
+
+                style="-fx-padding:25;">
 
             <!-- ================================================= -->
-            <!-- VENDING MACHINE                                   -->
+            <!-- MACHINE BODY -->
             <!-- ================================================= -->
 
             <VBox
-                    spacing="20"
-                    prefWidth="720"
+
+                    prefWidth="760"
+                    spacing="25"
 
                     style="
-                        -fx-background-color:#2D2D2D;
+                        -fx-background-color:#2A2A2A;
                         -fx-background-radius:20;
-                        -fx-padding:20;
+                        -fx-border-color:#666666;
+                        -fx-border-width:5;
+                        -fx-border-radius:20;
+                        -fx-padding:25;
                     ">
 
+                <Label
+
+                        text="ITEMS"
+
+                        style="
+                            -fx-font-size:22;
+                            -fx-font-weight:bold;
+                            -fx-text-fill:white;
+                        "/>
+
+                <!-- ================= FIRST ROW ================= -->
+
                 <GridPane
-                        hgap="15"
-                        vgap="15">
+                        hgap="25"
+                        vgap="25">
 
-                    <!-- SLOT A1 -->
+                    <!-- ================= A1 ================= -->
 
-                    <VBox GridPane.rowIndex="0" GridPane.columnIndex="0"
-                          spacing="6"
-                          alignment="CENTER"
+                    <VBox
+                            GridPane.rowIndex="0"
+                            GridPane.columnIndex="0"
 
-                          prefWidth="150"
+                            alignment="CENTER"
+                            spacing="8"
 
-                          style="
-                              -fx-background-color:white;
-                              -fx-background-radius:10;
-                              -fx-padding:10;
-                          ">
+                            prefWidth="150">
 
-                        <Pane
-                                prefWidth="100"
-                                prefHeight="80"
-                                style="-fx-background-color:#CCCCCC;"/>
+                        <ImageView
+                                fitWidth="90"
+                                fitHeight="110"
+                                preserveRatio="true"/>
 
-                        <Label text="Item Name"/>
-                        <Label text="₱50.00"/>
-                        <Label text="Qty: 10"/>
+                        <Label
+                                text="A1"
 
-                        <Button text="Purchase"/>
+                                style="
+                                    -fx-text-fill:white;
+                                    -fx-font-size:18;
+                                    -fx-font-weight:bold;
+                                "/>
 
-                    </VBox>
+                        <Label
+                                text="Item Name"
+                                style="-fx-text-fill:white;"/>
 
-                    <!-- SLOT A2 -->
+                        <Label
+                                text="₱50.00"
+                                style="-fx-text-fill:#FFE17B;"/>
 
-                    <VBox GridPane.rowIndex="0" GridPane.columnIndex="1"
-                          spacing="6"
-                          alignment="CENTER"
-                          prefWidth="150"
-                          style="-fx-background-color:white;-fx-background-radius:10;-fx-padding:10;">
+                        <Label
+                                text="Qty: 10"
+                                style="-fx-text-fill:#CCCCCC;"/>
 
-                        <Pane prefWidth="100" prefHeight="80"
-                              style="-fx-background-color:#CCCCCC;"/>
-
-                        <Label text="Item Name"/>
-                        <Label text="₱50.00"/>
-                        <Label text="Qty: 10"/>
-
-                        <Button text="Purchase"/>
+                        <Button
+                                text="Purchase"
+                                prefWidth="110"/>
 
                     </VBox>
 
-                    <!-- SLOT A3 -->
+                    <!-- ================= A2 ================= -->
 
-                    <VBox GridPane.rowIndex="0" GridPane.columnIndex="2"
-                          spacing="6"
-                          alignment="CENTER"
-                          prefWidth="150"
-                          style="-fx-background-color:white;-fx-background-radius:10;-fx-padding:10;">
+                    <VBox
+                            GridPane.rowIndex="0"
+                            GridPane.columnIndex="1"
 
-                        <Pane prefWidth="100" prefHeight="80"
-                              style="-fx-background-color:#CCCCCC;"/>
+                            alignment="CENTER"
+                            spacing="8"
 
-                        <Label text="Item Name"/>
-                        <Label text="₱50.00"/>
-                        <Label text="Qty: 10"/>
+                            prefWidth="150">
 
-                        <Button text="Purchase"/>
+                        <ImageView
+                                fitWidth="90"
+                                fitHeight="110"
+                                preserveRatio="true"/>
 
-                    </VBox>
+                        <Label
+                                text="A2"
 
-                    <!-- SLOT A4 -->
+                                style="
+                                    -fx-text-fill:white;
+                                    -fx-font-size:18;
+                                    -fx-font-weight:bold;
+                                "/>
 
-                    <VBox GridPane.rowIndex="0" GridPane.columnIndex="3"
-                          spacing="6"
-                          alignment="CENTER"
-                          prefWidth="150"
-                          style="-fx-background-color:white;-fx-background-radius:10;-fx-padding:10;">
+                        <Label
+                                text="Item Name"
+                                style="-fx-text-fill:white;"/>
 
-                        <Pane prefWidth="100" prefHeight="80"
-                              style="-fx-background-color:#CCCCCC;"/>
+                        <Label
+                                text="₱50.00"
+                                style="-fx-text-fill:#FFE17B;"/>
 
-                        <Label text="Item Name"/>
-                        <Label text="₱50.00"/>
-                        <Label text="Qty: 10"/>
+                        <Label
+                                text="Qty: 10"
+                                style="-fx-text-fill:#CCCCCC;"/>
 
-                        <Button text="Purchase"/>
-
-                    </VBox>
-
-                    <!-- SLOT B1 -->
-
-                    <VBox GridPane.rowIndex="1" GridPane.columnIndex="0"
-                          spacing="6"
-                          alignment="CENTER"
-                          prefWidth="150"
-                          style="-fx-background-color:white;-fx-background-radius:10;-fx-padding:10;">
-
-                        <Pane prefWidth="100" prefHeight="80"
-                              style="-fx-background-color:#CCCCCC;"/>
-
-                        <Label text="Item Name"/>
-                        <Label text="₱50.00"/>
-                        <Label text="Qty: 10"/>
-
-                        <Button text="Purchase"/>
+                        <Button
+                                text="Purchase"
+                                prefWidth="110"/>
 
                     </VBox>
 
-                    <!-- SLOT B2 -->
+                    <!-- ================= A3 ================= -->
 
-                    <VBox GridPane.rowIndex="1" GridPane.columnIndex="1"
-                          spacing="6"
-                          alignment="CENTER"
-                          prefWidth="150"
-                          style="-fx-background-color:white;-fx-background-radius:10;-fx-padding:10;">
+                    <VBox
+                            GridPane.rowIndex="0"
+                            GridPane.columnIndex="2"
 
-                        <Pane prefWidth="100" prefHeight="80"
-                              style="-fx-background-color:#CCCCCC;"/>
+                            alignment="CENTER"
+                            spacing="8"
 
-                        <Label text="Item Name"/>
-                        <Label text="₱50.00"/>
-                        <Label text="Qty: 10"/>
+                            prefWidth="150">
 
-                        <Button text="Purchase"/>
+                        <ImageView
+                                fitWidth="90"
+                                fitHeight="110"
+                                preserveRatio="true"/>
+
+                        <Label
+                                text="A3"
+
+                                style="
+                                    -fx-text-fill:white;
+                                    -fx-font-size:18;
+                                    -fx-font-weight:bold;
+                                "/>
+
+                        <Label
+                                text="Item Name"
+                                style="-fx-text-fill:white;"/>
+
+                        <Label
+                                text="₱50.00"
+                                style="-fx-text-fill:#FFE17B;"/>
+
+                        <Label
+                                text="Qty: 10"
+                                style="-fx-text-fill:#CCCCCC;"/>
+
+                        <Button
+                                text="Purchase"
+                                prefWidth="110"/>
 
                     </VBox>
 
-                    <!-- SLOT B3 -->
+                    <!-- ================= A4 ================= -->
 
-                    <VBox GridPane.rowIndex="1" GridPane.columnIndex="2"
-                          spacing="6"
-                          alignment="CENTER"
-                          prefWidth="150"
-                          style="-fx-background-color:white;-fx-background-radius:10;-fx-padding:10;">
+                    <VBox
+                            GridPane.rowIndex="0"
+                            GridPane.columnIndex="3"
 
-                        <Pane prefWidth="100" prefHeight="80"
-                              style="-fx-background-color:#CCCCCC;"/>
+                            alignment="CENTER"
+                            spacing="8"
 
-                        <Label text="Item Name"/>
-                        <Label text="₱50.00"/>
-                        <Label text="Qty: 10"/>
+                            prefWidth="150">
 
-                        <Button text="Purchase"/>
+                        <ImageView
+                                fitWidth="90"
+                                fitHeight="110"
+                                preserveRatio="true"/>
+
+                        <Label
+                                text="A4"
+
+                                style="
+                                    -fx-text-fill:white;
+                                    -fx-font-size:18;
+                                    -fx-font-weight:bold;
+                                "/>
+
+                        <Label
+                                text="Item Name"
+                                style="-fx-text-fill:white;"/>
+
+                        <Label
+                                text="₱50.00"
+                                style="-fx-text-fill:#FFE17B;"/>
+
+                        <Label
+                                text="Qty: 10"
+                                style="-fx-text-fill:#CCCCCC;"/>
+
+                        <Button
+                                text="Purchase"
+                                prefWidth="110"/>
 
                     </VBox>
 
-                    <!-- SLOT B4 -->
+                    <!-- ================= SECOND ROW ================= -->
 
-                    <VBox GridPane.rowIndex="1" GridPane.columnIndex="3"
-                          spacing="6"
-                          alignment="CENTER"
-                          prefWidth="150"
-                          style="-fx-background-color:white;-fx-background-radius:10;-fx-padding:10;">
+                    <VBox
+                            GridPane.rowIndex="1"
+                            GridPane.columnIndex="0"
+                            alignment="CENTER"
+                            spacing="8"
+                            prefWidth="150">
 
-                        <Pane prefWidth="100" prefHeight="80"
-                              style="-fx-background-color:#CCCCCC;"/>
+                        <ImageView
+                                fitWidth="90"
+                                fitHeight="110"
+                                preserveRatio="true"/>
 
-                        <Label text="Item Name"/>
-                        <Label text="₱50.00"/>
-                        <Label text="Qty: 10"/>
+                        <Label
+                                text="B1"
+                                style="-fx-text-fill:white;-fx-font-size:18;-fx-font-weight:bold;"/>
 
-                        <Button text="Purchase"/>
+                        <Label text="Item Name" style="-fx-text-fill:white;"/>
+                        <Label text="₱50.00" style="-fx-text-fill:#FFE17B;"/>
+                        <Label text="Qty: 10" style="-fx-text-fill:#CCCCCC;"/>
+
+                        <Button
+                                text="Purchase"
+                                prefWidth="110"/>
+
+                    </VBox>
+
+                    <VBox
+                            GridPane.rowIndex="1"
+                            GridPane.columnIndex="1"
+                            alignment="CENTER"
+                            spacing="8"
+                            prefWidth="150">
+
+                        <ImageView
+                                fitWidth="90"
+                                fitHeight="110"
+                                preserveRatio="true"/>
+
+                        <Label
+                                text="B2"
+                                style="-fx-text-fill:white;-fx-font-size:18;-fx-font-weight:bold;"/>
+
+                        <Label text="Item Name" style="-fx-text-fill:white;"/>
+                        <Label text="₱50.00" style="-fx-text-fill:#FFE17B;"/>
+                        <Label text="Qty: 10" style="-fx-text-fill:#CCCCCC;"/>
+
+                        <Button
+                                text="Purchase"
+                                prefWidth="110"/>
+
+                    </VBox>
+
+                    <VBox
+                            GridPane.rowIndex="1"
+                            GridPane.columnIndex="2"
+                            alignment="CENTER"
+                            spacing="8"
+                            prefWidth="150">
+
+                        <ImageView
+                                fitWidth="90"
+                                fitHeight="110"
+                                preserveRatio="true"/>
+
+                        <Label
+                                text="B3"
+                                style="-fx-text-fill:white;-fx-font-size:18;-fx-font-weight:bold;"/>
+
+                        <Label text="Item Name" style="-fx-text-fill:white;"/>
+                        <Label text="₱50.00" style="-fx-text-fill:#FFE17B;"/>
+                        <Label text="Qty: 10" style="-fx-text-fill:#CCCCCC;"/>
+
+                        <Button
+                                text="Purchase"
+                                prefWidth="110"/>
+
+                    </VBox>
+
+                    <VBox
+                            GridPane.rowIndex="1"
+                            GridPane.columnIndex="3"
+                            alignment="CENTER"
+                            spacing="8"
+                            prefWidth="150">
+
+                        <ImageView
+                                fitWidth="90"
+                                fitHeight="110"
+                                preserveRatio="true"/>
+
+                        <Label
+                                text="B4"
+                                style="-fx-text-fill:white;-fx-font-size:18;-fx-font-weight:bold;"/>
+
+                        <Label text="Item Name" style="-fx-text-fill:white;"/>
+                        <Label text="₱50.00" style="-fx-text-fill:#FFE17B;"/>
+                        <Label text="Qty: 10" style="-fx-text-fill:#CCCCCC;"/>
+
+                        <Button
+                                text="Purchase"
+                                prefWidth="110"/>
 
                     </VBox>
 
                 </GridPane>
 
+                <Separator/>
+
+                <!-- ================================================= -->
+                <!-- ADD-ON ITEMS -->
+                <!-- ================================================= -->
+
+                <Label
+                        text="ADD-ONS"
+
+                        style="
+                            -fx-font-size:20;
+                            -fx-font-weight:bold;
+                            -fx-text-fill:white;
+                        "/>
+
+                <HBox
+                        spacing="35"
+                        alignment="CENTER">
+
+                    <VBox
+                            alignment="CENTER"
+                            spacing="8"
+                            prefWidth="150">
+
+                        <ImageView
+                                fitWidth="80"
+                                fitHeight="80"
+                                preserveRatio="true"/>
+
+                        <Label
+                                text="Add-on 1"
+                                style="-fx-text-fill:white;"/>
+
+                        <Label
+                                text="₱15.00"
+                                style="-fx-text-fill:#FFE17B;"/>
+
+                        <Button
+                                text="Add"
+                                prefWidth="90"/>
+
+                    </VBox>
+
+                    <VBox
+                            alignment="CENTER"
+                            spacing="8"
+                            prefWidth="150">
+
+                        <ImageView
+                                fitWidth="80"
+                                fitHeight="80"
+                                preserveRatio="true"/>
+
+                        <Label
+                                text="Add-on 2"
+                                style="-fx-text-fill:white;"/>
+
+                        <Label
+                                text="₱20.00"
+                                style="-fx-text-fill:#FFE17B;"/>
+
+                        <Button
+                                text="Add"
+                                prefWidth="90"/>
+
+                    </VBox>
+
+                    <VBox
+                            alignment="CENTER"
+                            spacing="8"
+                            prefWidth="150">
+
+                        <ImageView
+                                fitWidth="80"
+                                fitHeight="80"
+                                preserveRatio="true"/>
+
+                        <Label
+                                text="Add-on 3"
+                                style="-fx-text-fill:white;"/>
+
+                        <Label
+                                text="₱25.00"
+                                style="-fx-text-fill:#FFE17B;"/>
+
+                        <Button
+                                text="Add"
+                                prefWidth="90"/>
+
+                    </VBox>
+
+                </HBox>
+
             </VBox>
 
             <!-- ================================================= -->
-            <!-- RIGHT PANEL                                       -->
+            <!-- PAYMENT / CONTROL PANEL -->
             <!-- ================================================= -->
 
             <VBox
 
+                    prefWidth="280"
                     spacing="18"
-                    prefWidth="260"
 
                     style="
-                        -fx-background-color:white;
-                        -fx-background-radius:20;
+                        -fx-background-color:#F6F6F6;
+                        -fx-background-radius:18;
+                        -fx-border-color:#BBBBBB;
+                        -fx-border-radius:18;
+                        -fx-border-width:2;
                         -fx-padding:20;
                     ">
 
                 <Label
-                        text="Current Balance"
-                        style="-fx-font-size:20;-fx-font-weight:bold;"/>
 
-                <Label
-                        text="₱0.00"
+                        text="CURRENT BALANCE"
 
                         style="
-                            -fx-font-size:28;
+                            -fx-font-size:16;
                             -fx-font-weight:bold;
-                            -fx-text-fill:#2E8B57;
                         "/>
+
+                <!-- Green 7-segment display -->
+
+                <StackPane
+
+                        prefHeight="70"
+
+                        style="
+                            -fx-background-color:#325C39;
+                            -fx-background-radius:8;
+                            -fx-border-color:#222222;
+                            -fx-border-width:3;
+                        ">
+
+                    <Label
+
+                            text="₱0000.00"
+
+                            style="
+                                -fx-font-family:'Consolas';
+                                -fx-font-size:32;
+                                -fx-font-weight:bold;
+                                -fx-text-fill:#9CFF7A;
+                            "/>
+
+                </StackPane>
 
                 <Separator/>
 
                 <Label
-                        text="Insert Cash"
-                        style="-fx-font-size:18;-fx-font-weight:bold;"/>
+
+                        text="INSERT CASH"
+
+                        style="
+                            -fx-font-size:18;
+                            -fx-font-weight:bold;
+                        "/>
 
                 <GridPane
                         hgap="10"
-                        vgap="10">
+                        vgap="10"
+                        alignment="CENTER">
 
-                    <Button text="₱1" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-                    <Button text="₱5" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                    <Button
+                            text="₱1"
+                            prefWidth="95"
+                            prefHeight="45"
+                            GridPane.rowIndex="0"
+                            GridPane.columnIndex="0"/>
 
-                    <Button text="₱10" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-                    <Button text="₱20" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                    <Button
+                            text="₱5"
+                            prefWidth="95"
+                            prefHeight="45"
+                            GridPane.rowIndex="0"
+                            GridPane.columnIndex="1"/>
 
-                    <Button text="₱50" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-                    <Button text="₱100" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+                    <Button
+                            text="₱10"
+                            prefWidth="95"
+                            prefHeight="45"
+                            GridPane.rowIndex="1"
+                            GridPane.columnIndex="0"/>
 
-                    <Button text="₱200" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
-                    <Button text="₱500" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+                    <Button
+                            text="₱20"
+                            prefWidth="95"
+                            prefHeight="45"
+                            GridPane.rowIndex="1"
+                            GridPane.columnIndex="1"/>
 
-                    <Button text="₱1000"
+                    <Button
+                            text="₱50"
+                            prefWidth="95"
+                            prefHeight="45"
+                            GridPane.rowIndex="2"
+                            GridPane.columnIndex="0"/>
+
+                    <Button
+                            text="₱100"
+                            prefWidth="95"
+                            prefHeight="45"
+                            GridPane.rowIndex="2"
+                            GridPane.columnIndex="1"/>
+
+                    <Button
+                            text="₱200"
+                            prefWidth="95"
+                            prefHeight="45"
+                            GridPane.rowIndex="3"
+                            GridPane.columnIndex="0"/>
+
+                    <Button
+                            text="₱500"
+                            prefWidth="95"
+                            prefHeight="45"
+                            GridPane.rowIndex="3"
+                            GridPane.columnIndex="1"/>
+
+                    <Button
+                            text="₱1000"
+
+                            prefHeight="45"
+                            maxWidth="Infinity"
+
                             GridPane.rowIndex="4"
                             GridPane.columnIndex="0"
-                            GridPane.columnSpan="2"
-                            maxWidth="Infinity"/>
+                            GridPane.columnSpan="2"/>
 
                 </GridPane>
 
                 <Separator/>
 
                 <Button
-                        text="Get Change"
-                        prefHeight="45"
-                        maxWidth="Infinity"/>
+
+                        text="GET CHANGE"
+
+                        prefHeight="55"
+                        maxWidth="Infinity"
+
+                        style="
+                            -fx-background-color:#C0392B;
+                            -fx-text-fill:white;
+                            -fx-font-size:18;
+                            -fx-font-weight:bold;
+                        "/>
 
             </VBox>
 
