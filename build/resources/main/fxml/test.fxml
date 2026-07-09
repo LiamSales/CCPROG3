@@ -619,6 +619,57 @@
                             -fx-font-weight:bold;
                         "/>
 
+                <Separator/>
+
+                <!-- Text Display -->
+
+                <StackPane
+
+                        prefHeight="60"
+
+                        style="
+                            -fx-background-color:#325C39;
+                            -fx-background-radius:8;
+                            -fx-border-color:#222222;
+                            -fx-border-width:3;
+                        ">
+
+                    <Label
+
+                            text="Display Text"
+
+                            style="
+                                -fx-font-family:'Consolas';
+                                -fx-font-size:18;
+                                -fx-font-weight:bold;
+                                -fx-text-fill:#9CFF7A;
+                            "/>
+
+                </StackPane>
+
+                <Separator/>
+
+                <!-- Image Holder (Black Rectangle) -->
+
+                <StackPane
+
+                        prefHeight="150"
+
+                        style="
+                            -fx-background-color:#000000;
+                            -fx-background-radius:8;
+                            -fx-border-color:#222222;
+                            -fx-border-width:3;
+                        ">
+
+                    <ImageView
+
+                            fitWidth="240"
+                            fitHeight="140"
+                            preserveRatio="true"/>
+
+                </StackPane>
+
             </VBox>
 
         </HBox>
