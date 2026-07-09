@@ -108,28 +108,15 @@
                                 preserveRatio="true"/>
 
                         <Label
-                                text="A1"
-
-                                style="
-                                    -fx-text-fill:white;
-                                    -fx-font-size:18;
-                                    -fx-font-weight:bold;
-                                "/>
-
-                        <Label
                                 text="Item Name"
                                 style="-fx-text-fill:white;"/>
 
                         <Label
-                                text="₱50.00"
-                                style="-fx-text-fill:#FFE17B;"/>
-
-                        <Label
-                                text="Qty: 10"
+                                text="Calories"
                                 style="-fx-text-fill:#CCCCCC;"/>
 
                         <Button
-                                text="Purchase"
+                                text="₱50.00"
                                 prefWidth="110"/>
 
                     </VBox>
@@ -151,28 +138,15 @@
                                 preserveRatio="true"/>
 
                         <Label
-                                text="A2"
-
-                                style="
-                                    -fx-text-fill:white;
-                                    -fx-font-size:18;
-                                    -fx-font-weight:bold;
-                                "/>
-
-                        <Label
                                 text="Item Name"
                                 style="-fx-text-fill:white;"/>
 
                         <Label
-                                text="₱50.00"
-                                style="-fx-text-fill:#FFE17B;"/>
-
-                        <Label
-                                text="Qty: 10"
+                                text="Calories"
                                 style="-fx-text-fill:#CCCCCC;"/>
 
                         <Button
-                                text="Purchase"
+                                text="₱50.00"
                                 prefWidth="110"/>
 
                     </VBox>
@@ -194,28 +168,15 @@
                                 preserveRatio="true"/>
 
                         <Label
-                                text="A3"
-
-                                style="
-                                    -fx-text-fill:white;
-                                    -fx-font-size:18;
-                                    -fx-font-weight:bold;
-                                "/>
-
-                        <Label
                                 text="Item Name"
                                 style="-fx-text-fill:white;"/>
 
                         <Label
-                                text="₱50.00"
-                                style="-fx-text-fill:#FFE17B;"/>
-
-                        <Label
-                                text="Qty: 10"
+                                text="Calories"
                                 style="-fx-text-fill:#CCCCCC;"/>
 
                         <Button
-                                text="Purchase"
+                                text="₱50.00"
                                 prefWidth="110"/>
 
                     </VBox>
@@ -237,28 +198,15 @@
                                 preserveRatio="true"/>
 
                         <Label
-                                text="A4"
-
-                                style="
-                                    -fx-text-fill:white;
-                                    -fx-font-size:18;
-                                    -fx-font-weight:bold;
-                                "/>
-
-                        <Label
                                 text="Item Name"
                                 style="-fx-text-fill:white;"/>
 
                         <Label
-                                text="₱50.00"
-                                style="-fx-text-fill:#FFE17B;"/>
-
-                        <Label
-                                text="Qty: 10"
+                                text="Calories"
                                 style="-fx-text-fill:#CCCCCC;"/>
 
                         <Button
-                                text="Purchase"
+                                text="₱50.00"
                                 prefWidth="110"/>
 
                     </VBox>
@@ -277,16 +225,11 @@
                                 fitHeight="110"
                                 preserveRatio="true"/>
 
-                        <Label
-                                text="B1"
-                                style="-fx-text-fill:white;-fx-font-size:18;-fx-font-weight:bold;"/>
-
                         <Label text="Item Name" style="-fx-text-fill:white;"/>
-                        <Label text="₱50.00" style="-fx-text-fill:#FFE17B;"/>
-                        <Label text="Qty: 10" style="-fx-text-fill:#CCCCCC;"/>
+                        <Label text="Calories" style="-fx-text-fill:#CCCCCC;"/>
 
                         <Button
-                                text="Purchase"
+                                text="₱50.00"
                                 prefWidth="110"/>
 
                     </VBox>
@@ -303,16 +246,11 @@
                                 fitHeight="110"
                                 preserveRatio="true"/>
 
-                        <Label
-                                text="B2"
-                                style="-fx-text-fill:white;-fx-font-size:18;-fx-font-weight:bold;"/>
-
                         <Label text="Item Name" style="-fx-text-fill:white;"/>
-                        <Label text="₱50.00" style="-fx-text-fill:#FFE17B;"/>
-                        <Label text="Qty: 10" style="-fx-text-fill:#CCCCCC;"/>
+                        <Label text="Calories" style="-fx-text-fill:#CCCCCC;"/>
 
                         <Button
-                                text="Purchase"
+                                text="₱50.00"
                                 prefWidth="110"/>
 
                     </VBox>
@@ -329,16 +267,11 @@
                                 fitHeight="110"
                                 preserveRatio="true"/>
 
-                        <Label
-                                text="B3"
-                                style="-fx-text-fill:white;-fx-font-size:18;-fx-font-weight:bold;"/>
-
                         <Label text="Item Name" style="-fx-text-fill:white;"/>
-                        <Label text="₱50.00" style="-fx-text-fill:#FFE17B;"/>
-                        <Label text="Qty: 10" style="-fx-text-fill:#CCCCCC;"/>
+                        <Label text="Calories" style="-fx-text-fill:#CCCCCC;"/>
 
                         <Button
-                                text="Purchase"
+                                text="₱50.00"
                                 prefWidth="110"/>
 
                     </VBox>
@@ -355,16 +288,11 @@
                                 fitHeight="110"
                                 preserveRatio="true"/>
 
-                        <Label
-                                text="B4"
-                                style="-fx-text-fill:white;-fx-font-size:18;-fx-font-weight:bold;"/>
-
                         <Label text="Item Name" style="-fx-text-fill:white;"/>
-                        <Label text="₱50.00" style="-fx-text-fill:#FFE17B;"/>
-                        <Label text="Qty: 10" style="-fx-text-fill:#CCCCCC;"/>
+                        <Label text="Calories" style="-fx-text-fill:#CCCCCC;"/>
 
                         <Button
-                                text="Purchase"
+                                text="₱50.00"
                                 prefWidth="110"/>
 
                     </VBox>
@@ -405,11 +333,11 @@
                                 style="-fx-text-fill:white;"/>
 
                         <Label
-                                text="₱15.00"
-                                style="-fx-text-fill:#FFE17B;"/>
+                                text="Calories"
+                                style="-fx-text-fill:#CCCCCC;"/>
 
                         <Button
-                                text="Add"
+                                text="₱15.00"
                                 prefWidth="90"/>
 
                     </VBox>
@@ -429,11 +357,11 @@
                                 style="-fx-text-fill:white;"/>
 
                         <Label
-                                text="₱20.00"
-                                style="-fx-text-fill:#FFE17B;"/>
+                                text="Calories"
+                                style="-fx-text-fill:#CCCCCC;"/>
 
                         <Button
-                                text="Add"
+                                text="₱20.00"
                                 prefWidth="90"/>
 
                     </VBox>
@@ -453,11 +381,11 @@
                                 style="-fx-text-fill:white;"/>
 
                         <Label
-                                text="₱25.00"
-                                style="-fx-text-fill:#FFE17B;"/>
+                                text="Calories"
+                                style="-fx-text-fill:#CCCCCC;"/>
 
                         <Button
-                                text="Add"
+                                text="₱25.00"
                                 prefWidth="90"/>
 
                     </VBox>
