@@ -58,15 +58,6 @@
                         -fx-padding:20;
                     ">
 
-                <Label
-                        text="Select an Item"
-
-                        style="
-                            -fx-text-fill:white;
-                            -fx-font-size:24;
-                            -fx-font-weight:bold;
-                        "/>
-
                 <GridPane
                         hgap="15"
                         vgap="15">
@@ -94,7 +85,7 @@
                         <Label text="₱50.00"/>
                         <Label text="Qty: 10"/>
 
-                        <Button text="Select"/>
+                        <Button text="Purchase"/>
 
                     </VBox>
 
@@ -113,7 +104,7 @@
                         <Label text="₱50.00"/>
                         <Label text="Qty: 10"/>
 
-                        <Button text="Select"/>
+                        <Button text="Purchase"/>
 
                     </VBox>
 
@@ -132,7 +123,7 @@
                         <Label text="₱50.00"/>
                         <Label text="Qty: 10"/>
 
-                        <Button text="Select"/>
+                        <Button text="Purchase"/>
 
                     </VBox>
 
@@ -151,7 +142,7 @@
                         <Label text="₱50.00"/>
                         <Label text="Qty: 10"/>
 
-                        <Button text="Select"/>
+                        <Button text="Purchase"/>
 
                     </VBox>
 
@@ -170,7 +161,7 @@
                         <Label text="₱50.00"/>
                         <Label text="Qty: 10"/>
 
-                        <Button text="Select"/>
+                        <Button text="Purchase"/>
 
                     </VBox>
 
@@ -189,7 +180,7 @@
                         <Label text="₱50.00"/>
                         <Label text="Qty: 10"/>
 
-                        <Button text="Select"/>
+                        <Button text="Purchase"/>
 
                     </VBox>
 
@@ -208,7 +199,7 @@
                         <Label text="₱50.00"/>
                         <Label text="Qty: 10"/>
 
-                        <Button text="Select"/>
+                        <Button text="Purchase"/>
 
                     </VBox>
 
@@ -227,7 +218,7 @@
                         <Label text="₱50.00"/>
                         <Label text="Qty: 10"/>
 
-                        <Button text="Select"/>
+                        <Button text="Purchase"/>
 
                     </VBox>
 
@@ -295,19 +286,8 @@
 
                 <Separator/>
 
-                <Label
-                        text="Selected Item"
-                        style="-fx-font-size:18;-fx-font-weight:bold;"/>
-
-                <Label text="None"/>
-
                 <Button
-                        text="Purchase"
-                        prefHeight="45"
-                        maxWidth="Infinity"/>
-
-                <Button
-                        text="Cancel / Get Change"
+                        text="Get Change"
                         prefHeight="45"
                         maxWidth="Infinity"/>
 
