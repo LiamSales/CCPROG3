@@ -17,6 +17,30 @@ import model.Item
 
 class BlankPageController {
     @FXML
+    private lateinit var balanceLabel: Label
+
+    private var currentBalance: Float = 0f
+
+    @FXML
+    fun initialize() {
+        updateBalanceDisplay()
+    }
+
+    @FXML
+    fun addCash(event: ActionEvent) {
+        val button = event.source as? Button ?: return
+        val text = button.text.replace("₱", "").trim()
+        val amount = text.toFloatOrNull() ?: return
+
+        currentBalance += amount
+        updateBalanceDisplay()
+    }
+
+    private fun updateBalanceDisplay() {
+        balanceLabel.text = String.format("₱%07.2f", currentBalance)
+    }
+
+    @FXML
     fun backToMainPage(event: ActionEvent) {
         val source = event.source as? Node ?: return
         val stage = source.scene?.window as? Stage ?: return

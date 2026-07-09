@@ -435,7 +435,7 @@
                         ">
 
                     <Label
-
+                            fx:id="balanceLabel"
                             text="₱0000.00"
 
                             style="
@@ -464,66 +464,84 @@
                         alignment="CENTER">
 
                     <Button
+                            fx:id="btn1"
                             text="₱1"
                             prefWidth="95"
                             prefHeight="45"
+                            onAction="#addCash"
                             GridPane.rowIndex="0"
                             GridPane.columnIndex="0"/>
 
                     <Button
+                            fx:id="btn5"
                             text="₱5"
                             prefWidth="95"
                             prefHeight="45"
+                            onAction="#addCash"
                             GridPane.rowIndex="0"
                             GridPane.columnIndex="1"/>
 
                     <Button
+                            fx:id="btn10"
                             text="₱10"
                             prefWidth="95"
                             prefHeight="45"
+                            onAction="#addCash"
                             GridPane.rowIndex="1"
                             GridPane.columnIndex="0"/>
 
                     <Button
+                            fx:id="btn20"
                             text="₱20"
                             prefWidth="95"
                             prefHeight="45"
+                            onAction="#addCash"
                             GridPane.rowIndex="1"
                             GridPane.columnIndex="1"/>
 
                     <Button
+                            fx:id="btn50"
                             text="₱50"
                             prefWidth="95"
                             prefHeight="45"
+                            onAction="#addCash"
                             GridPane.rowIndex="2"
                             GridPane.columnIndex="0"/>
 
                     <Button
+                            fx:id="btn100"
                             text="₱100"
                             prefWidth="95"
                             prefHeight="45"
+                            onAction="#addCash"
                             GridPane.rowIndex="2"
                             GridPane.columnIndex="1"/>
 
                     <Button
+                            fx:id="btn200"
                             text="₱200"
                             prefWidth="95"
                             prefHeight="45"
+                            onAction="#addCash"
                             GridPane.rowIndex="3"
                             GridPane.columnIndex="0"/>
 
                     <Button
+                            fx:id="btn500"
                             text="₱500"
                             prefWidth="95"
                             prefHeight="45"
+                            onAction="#addCash"
                             GridPane.rowIndex="3"
                             GridPane.columnIndex="1"/>
 
                     <Button
+                            fx:id="btn1000"
                             text="₱1000"
 
                             prefHeight="45"
                             maxWidth="Infinity"
+                            onAction="#addCash"
 
                             GridPane.rowIndex="4"
                             GridPane.columnIndex="0"
