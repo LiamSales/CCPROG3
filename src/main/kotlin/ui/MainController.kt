@@ -14,16 +14,39 @@ import javafx.scene.layout.HBox
 import javafx.scene.layout.VBox
 import javafx.stage.Stage
 import model.Item
+import javafx.application.Platform
 
 class BlankPageController {
     @FXML
     private lateinit var balanceLabel: Label
 
     private var currentBalance: Float = 0f
+    private val itemButtons = mutableListOf<Button>()
 
     @FXML
     fun initialize() {
         updateBalanceDisplay()
+        // collect item buttons after scene is attached
+        Platform.runLater {
+            val root = balanceLabel.scene?.root
+            if (root != null) {
+                itemButtons.clear()
+                fun collect(node: javafx.scene.Node) {
+                    if (node is Button) {
+                        val text = node.text ?: ""
+                        // item/add-on buttons have no fx:id and show prices starting with ₱
+                        if (node.id == null && text.startsWith("₱")) {
+                            itemButtons.add(node)
+                        }
+                    }
+                    if (node is Parent) {
+                        for (child in node.childrenUnmodifiable) collect(child)
+                    }
+                }
+                collect(root)
+                updateItemButtonsEnabledState()
+            }
+        }
     }
 
     @FXML
@@ -34,6 +57,7 @@ class BlankPageController {
 
         currentBalance += amount
         updateBalanceDisplay()
+        updateItemButtonsEnabledState()
     }
 
     @FXML
@@ -45,12 +69,7 @@ class BlankPageController {
         if (currentBalance >= price) {
             currentBalance -= price
             updateBalanceDisplay()
-        } else {
-            val alert = Alert(Alert.AlertType.WARNING)
-            alert.title = "Insufficient Funds"
-            alert.headerText = null
-            alert.contentText = "Not enough balance to purchase. Insert more cash."
-            alert.showAndWait()
+            updateItemButtonsEnabledState()
         }
     }
 
@@ -58,6 +77,15 @@ class BlankPageController {
     fun getChange(event: ActionEvent) {
         currentBalance = 0f
         updateBalanceDisplay()
+        updateItemButtonsEnabledState()
+    }
+
+    private fun updateItemButtonsEnabledState() {
+        for (btn in itemButtons) {
+            val text = btn.text.replace("₱", "").trim()
+            val price = text.toFloatOrNull() ?: continue
+            btn.isDisable = currentBalance < price
+        }
     }
 
     private fun updateBalanceDisplay() {

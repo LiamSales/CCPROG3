@@ -438,7 +438,7 @@
 
                     <Label
                             fx:id="balanceLabel"
-                            text="₱0000.00"
+                            text="₱0"
 
                             style="
                                 -fx-font-family:'Consolas';
