@@ -7,259 +7,236 @@ data class Slot(
     var sold: Int = 0
 )
 
-//WE NEED TO MODIFY THE CONTENTS WITH ADD AND REMOVE, NOT THE COPY IN THE GETTER!!
-
-//no need for ui loops, just the logic but the ux part is done elsewhere
-
-
 open class VendingMachine(
+
     val slotLimit: Int,
     val itemLimit: Int
+
 ) {
 
-    private val slots = Array(slotLimit) { Slot() }
-    private val register = CashRegister()
-    
-    // TODO: Populate this with actual starting inventory snapshot when items are added
-    private var startingInventory: String = "[STARTING INVENTORY]"
-    private fun setSlot(item: Item, price: Float) {   
-        val i = slots.indexOfFirst { it.item == null }
+    val slots = Array(slotLimit) { Slot() }
 
-        slots[i].item = item
-        slots[i].price = price
-        slots[i].quantity = 0
-        slots[i].sold = 0
+    val register = CashRegister()
 
+    var startingInventory: String = ""
+
+
+
+    /* ==========================================================
+       Slot Operations
+       ========================================================== */
+
+    fun setSlot(slotIndex: Int, item: Item, price: Float) {
+
+        require(slotIndex in slots.indices)
+
+        slots[slotIndex].item = item
+        slots[slotIndex].price = price
+        slots[slotIndex].quantity = 0
+        slots[slotIndex].sold = 0
     }
 
 
-    private fun clearSlot(i: Int) {
-        if (i !in slots.indices) return
-        slots[i] = Slot()
+    fun clearSlot(slotIndex: Int) {
+
+        require(slotIndex in slots.indices)
+
+        slots[slotIndex] = Slot()
     }
 
 
-    private fun restockQuantity(i: Int, quantity: Int) {
-        slots[i].quantity = quantity
-        slots[i].sold = 0
+    fun restockSlot(slotIndex: Int, quantity: Int) {
+
+        require(slotIndex in slots.indices)
+
+        slots[slotIndex].quantity = quantity
+        slots[slotIndex].sold = 0
     }
 
 
-    private fun changePrice(i: Int, price: Float) {
-        slots[i].price = price
+    fun changePrice(slotIndex: Int, price: Float) {
+
+        require(slotIndex in slots.indices)
+
+        slots[slotIndex].price = price
     }
 
 
-    fun dispenseChange(deposit: Cash, price: Float): Cash? {
 
-        val totalDeposited = deposit.entries.sumOf { (d, q) -> (d * q).toDouble() }.toFloat()
+    /* ==========================================================
+       Cash Register
+       ========================================================== */
 
-        var changeNeeded = totalDeposited - price
-        if (changeNeeded < 0f) return null
+    fun replenishCash(
 
-        //contents is private, we use the getter method
+        denomination: Float,
+        quantity: Int
 
-        val hypothetical = register.getContents()
-        deposit.forEach { (d, q) ->
-            hypothetical[d] = hypothetical.getOrDefault(d, 0) + q
-        }
+    ) {
 
-        val change: Cash = mutableMapOf()
-
-        for (denom in hypothetical.keys.sortedDescending()) {
-            if (changeNeeded < denom) continue
-
-            val available = hypothetical[denom] ?: 0
-            if (available <= 0) continue
-
-            val needed = (changeNeeded / denom).toInt()
-            val toUse = minOf(needed, available)
-
-            if (toUse > 0) {
-                change[denom] = toUse
-                changeNeeded -= denom * toUse
-            }
-        }
-
-        return if (changeNeeded == 0f) change else null
+        register.addCash(
+            denomination,
+            quantity
+        )
     }
 
 
-    fun displayValid(deposit: Cash) {
-        slots.forEachIndexed { i, s ->
-            if (s.item != null &&
-                s.quantity > 0 &&
-                dispenseChange(deposit, s.price) != null
-            ) println("[${i + 1}] ${s.item!!.name} ${s.item!!.calories} kcal — ₱${s.price}")
-        }
-    }
+    fun collectCash(): Float {
 
-
-    fun updateRegister(deposit: Cash) {
-        deposit.forEach { (denom, quantity) ->
-            register.addCash(denom, quantity)
-        }
-    }
-
-    private fun replenishCash() {
-        register.getContents().forEach { (denom, _) ->
-            print("Add quantity for ₱$denom: ")
-            val amount = inputValidation(0,0) as Int
-            register.addCash(denom, amount)
-        }
-    }
-
-    private fun collect() {
         var total = 0f
 
-        register.getContents().forEach { (denom, quantity) ->
-            total += denom * quantity
-            register.removeCash(denom, quantity)
+        register.getContents().forEach {
+
+            (denomination, quantity) ->
+
+            total += denomination * quantity
+
+            register.removeCash(
+                denomination,
+                quantity
+            )
         }
 
-        println("Cash collected: ₱$total")
+        return total
     }
 
 
-    private fun displaySummary() {
-        println(startingInventory)
 
-        var totalEarned = 0f
-        println("Current Inventory:")
-        println("----------------------------------------")
+    /* ==========================================================
+       Transactions
+       ========================================================== */
 
-        slots.forEach { slot ->
-            slot.item?.let {
-                val earned = slot.sold * slot.price
-                totalEarned += earned
+    fun updateRegister(
 
-                println(
-                    "${it.name}\t sold: ${slot.sold}\t remaining: ${slot.quantity}\t earned: ₱$earned"
-                )
+        deposit: Cash
+
+    ) {
+
+        deposit.forEach {
+
+            (denomination, quantity) ->
+
+            register.addCash(
+                denomination,
+                quantity
+            )
+        }
+    }
+
+
+    fun dispenseChange(
+
+        deposit: Cash,
+        price: Float
+
+    ): Cash? {
+
+        val deposited =
+
+            deposit.entries.sumOf {
+
+                (denomination, quantity) ->
+
+                (denomination * quantity).toDouble()
+
+            }.toFloat()
+
+        var changeNeeded = deposited - price
+
+        if (changeNeeded < 0f)
+            return null
+
+        val hypothetical =
+            register.getContents()
+
+        deposit.forEach {
+
+            (denomination, quantity) ->
+
+            hypothetical[denomination] =
+                hypothetical.getOrDefault(
+                    denomination,
+                    0
+                ) + quantity
+        }
+
+        val change: Cash =
+            mutableMapOf()
+
+        for (
+
+            denomination in hypothetical
+                .keys
+                .sortedDescending()
+
+        ) {
+
+            if (changeNeeded < denomination)
+                continue
+
+            val available =
+                hypothetical[denomination] ?: 0
+
+            val needed =
+                (changeNeeded / denomination).toInt()
+
+            val used =
+                minOf(needed, available)
+
+            if (used > 0) {
+
+                change[denomination] = used
+
+                changeNeeded -=
+                    denomination * used
             }
         }
 
-        println("----------------------------------------")
-        println("Total earned since restock: ₱$totalEarned")
+        return if (changeNeeded == 0f)
+            change
+        else
+            null
     }
 
 
-    fun transaction() {
-        val deposit: Cash = mutableMapOf()
-        var totalDeposited = 0f
 
-        //this is the part we need to fix
-        
-        while (true) {
-            println("\nCurrent balance: ₱$totalDeposited")
-            displayValid(deposit)
+    /* ==========================================================
+       Information
+       ========================================================== */
 
-            println("[1] Insert cash")
-            println("[2] Choose item")
-            println("[3] Cancel / Get change")
+    fun getValidSlots(
 
-            when (readInt("Enter choice: ", 1, 3)) {
-                1 -> {
-                    val denom = readFloat("Enter denomination: ", 0.01f)
+        deposit: Cash
 
-                    deposit[denom] = deposit.getOrDefault(denom, 0) + 1
-                    totalDeposited += denom
-                }
+    ): List<Int> {
 
-                2 -> {
-                    val i = readInt("Choose slot #: ", 1, slots.size) - 1
-                    if (i !in slots.indices) continue
+        return slots.indices.filter {
 
-                    val slot = slots[i]
-                    if (slot.item == null || slot.quantity <= 0) continue
+            val slot = slots[it]
 
-                    val change = dispenseChange(deposit, slot.price) ?: continue
-
-                    slot.quantity--
-                    slot.sold++
-                    totalDeposited -= slot.price
-
-                    updateRegister(deposit)
-
-                    deposit.clear()
-                    change.forEach { (d, q) ->
-                        deposit[d] = q
-                    }
-
-                    println("Dispensed ${slot.item!!.name}")
-                }
-
-                3 -> {
-                    println("Returned change:")
-                    deposit.forEach { (d, q) ->
-                        println("₱$d x$q")
-                    }
-                    break
-                }
-            }
+            slot.item != null &&
+            slot.quantity > 0 &&
+            dispenseChange(
+                deposit,
+                slot.price
+            ) != null
         }
     }
 
 
-    fun testMaintenance() {
+    fun getTotalSales(): Float {
 
-        //this too, no need for looping
-        
-        while (true) {
-            println("=== Test Maintenance ===")
-            println("[S] Set Slot")
-            println("[C] Clear Slot")
-            println("[R] Restock Quantity")
-            println("[P] Change Price")
-            println("[H] Replenish Cash")
-            println("[L] Collect Balance")
-            println("[D] Display Summary")
-            println("[X] Exit")
-            print("Enter choice: ")
+        return slots.sumOf {
 
-            when (readLine()?.trim()?.uppercase()) {
+            (it.sold * it.price).toDouble()
 
-                "S" -> {
-                    println("[1] Upload item from file")
-                    println("[2] Create new item")
-
-                    val item = when (readInt("Choose option: ", 1, 2)) {
-                        1 -> loadItemFromFile()
-                        2 -> createItemAndSave()
-                        else -> continue
-                    }
-
-                    val price = readFloat("Price: ", 0.01f)
-                    setSlot(item, price)
-                }
-
-                "C" -> {
-                    slots.forEachIndexed { i, s ->
-                        s.item?.let {
-                            println("[${i + 1}] ${it.name}")
-                        }
-                    }
-                    val slotNumber = readInt("Slot #: ", 1, slots.size)
-                    clearSlot(slotNumber - 1)
-                }
-
-                "R" -> {
-                    val slotNumber = readInt("Slot #: ", 1, slots.size)
-                    val quantity = readInt("Quantity: ", 0, 100)
-                    restockQuantity(slotNumber - 1, quantity)
-                }
-
-                "P" -> {
-                    val slotNumber = readInt("Slot #: ", 1, slots.size)
-                    val price = readFloat("Price: ", 0.01f)
-                    changePrice(slotNumber - 1, price)
-                }
-
-                "H" -> replenishCash()
-                "L" -> collect()
-                "D" -> displaySummary()
-                "X" -> return
-            }
-        }
+        }.toFloat()
     }
+
+
+    fun getSummary(): List<Slot> {
+
+        return slots.toList()
+    }
+
 }
