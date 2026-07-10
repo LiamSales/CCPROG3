@@ -36,8 +36,37 @@ class BlankPageController {
         updateBalanceDisplay()
     }
 
+    @FXML
+    fun selectItem(event: ActionEvent) {
+        val button = event.source as? Button ?: return
+        val text = button.text.replace("₱", "").trim()
+        val price = text.toFloatOrNull() ?: return
+
+        if (currentBalance >= price) {
+            currentBalance -= price
+            updateBalanceDisplay()
+        } else {
+            val alert = Alert(Alert.AlertType.WARNING)
+            alert.title = "Insufficient Funds"
+            alert.headerText = null
+            alert.contentText = "Not enough balance to purchase. Insert more cash."
+            alert.showAndWait()
+        }
+    }
+
+    @FXML
+    fun getChange(event: ActionEvent) {
+        currentBalance = 0f
+        updateBalanceDisplay()
+    }
+
     private fun updateBalanceDisplay() {
-        balanceLabel.text = String.format("₱%07.2f", currentBalance)
+        val isWhole = kotlin.math.abs(currentBalance - currentBalance.toInt()) < 0.001f
+        balanceLabel.text = if (isWhole) {
+            "₱${currentBalance.toInt()}"
+        } else {
+            String.format("₱%.2f", currentBalance)
+        }
     }
 
     @FXML

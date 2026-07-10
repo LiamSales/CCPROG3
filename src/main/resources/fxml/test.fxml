@@ -32,15 +32,6 @@
                     prefWidth="90"
                     onAction="#backToMainPage"/>
 
-            <Label
-
-                    text="Test Machine"
-
-                    style="
-                        -fx-font-size:30;
-                        -fx-font-weight:bold;
-                    "/>
-
         </HBox>
 
     </top>
@@ -117,7 +108,8 @@
 
                         <Button
                                 text="₱50.00"
-                                prefWidth="110"/>
+                                prefWidth="110"
+                                onAction="#selectItem"/>
 
                     </VBox>
 
@@ -147,7 +139,8 @@
 
                         <Button
                                 text="₱50.00"
-                                prefWidth="110"/>
+                                prefWidth="110"
+                                onAction="#selectItem"/>
 
                     </VBox>
 
@@ -177,7 +170,8 @@
 
                         <Button
                                 text="₱50.00"
-                                prefWidth="110"/>
+                                prefWidth="110"
+                                onAction="#selectItem"/>
 
                     </VBox>
 
@@ -207,7 +201,8 @@
 
                         <Button
                                 text="₱50.00"
-                                prefWidth="110"/>
+                                prefWidth="110"
+                                onAction="#selectItem"/>
 
                     </VBox>
 
@@ -230,7 +225,8 @@
 
                         <Button
                                 text="₱50.00"
-                                prefWidth="110"/>
+                                prefWidth="110"
+                                onAction="#selectItem"/>
 
                     </VBox>
 
@@ -251,7 +247,8 @@
 
                         <Button
                                 text="₱50.00"
-                                prefWidth="110"/>
+                                prefWidth="110"
+                                onAction="#selectItem"/>
 
                     </VBox>
 
@@ -272,7 +269,8 @@
 
                         <Button
                                 text="₱50.00"
-                                prefWidth="110"/>
+                                prefWidth="110"
+                                onAction="#selectItem"/>
 
                     </VBox>
 
@@ -293,7 +291,8 @@
 
                         <Button
                                 text="₱50.00"
-                                prefWidth="110"/>
+                                prefWidth="110"
+                                onAction="#selectItem"/>
 
                     </VBox>
 
@@ -338,7 +337,8 @@
 
                         <Button
                                 text="₱15.00"
-                                prefWidth="90"/>
+                                prefWidth="90"
+                                onAction="#selectItem"/>
 
                     </VBox>
 
@@ -362,7 +362,8 @@
 
                         <Button
                                 text="₱20.00"
-                                prefWidth="90"/>
+                                prefWidth="90"
+                                onAction="#selectItem"/>
 
                     </VBox>
 
@@ -386,7 +387,8 @@
 
                         <Button
                                 text="₱25.00"
-                                prefWidth="90"/>
+                                prefWidth="90"
+                                onAction="#selectItem"/>
 
                     </VBox>
 
@@ -436,7 +438,7 @@
 
                     <Label
                             fx:id="balanceLabel"
-                            text="₱0000.00"
+                            text="₱0"
 
                             style="
                                 -fx-font-family:'Consolas';
@@ -551,19 +553,20 @@
 
                 <Separator/>
 
-                <Button
+                                <Button
 
-                        text="GET CHANGE"
+                                                text="GET CHANGE"
 
-                        prefHeight="55"
-                        maxWidth="Infinity"
+                                                prefHeight="55"
+                                                maxWidth="Infinity"
+                                                onAction="#getChange"
 
-                        style="
-                            -fx-background-color:#C0392B;
-                            -fx-text-fill:white;
-                            -fx-font-size:18;
-                            -fx-font-weight:bold;
-                        "/>
+                                                style="
+                                                        -fx-background-color:#C0392B;
+                                                        -fx-text-fill:white;
+                                                        -fx-font-size:18;
+                                                        -fx-font-weight:bold;
+                                                "/>
 
                 <Separator/>
 
