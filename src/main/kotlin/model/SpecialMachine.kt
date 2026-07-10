@@ -1,19 +1,159 @@
 package model
 
-class SpecialMachine(slotLimit: Int, itemLimit: Int, AddOnLimit: Int)
-    : VendingMachine(slotLimit, itemLimit) {
+class SpecialMachine(
+    slotLimit: Int,
+    itemLimit: Int,
+    addOnLimit: Int
+) : VendingMachine(slotLimit, itemLimit) {
 
-    
-    private val addOnSlots = Array(AddOnLimit) { Slot() }
+    /*
+        Separate storage for add-ons.
 
-    //getter and setters for addOnSlots
+        Items become add-ons simply
+        because they are placed here.
+    */
+    private val addOnSlots =
+        Array(addOnLimit) { Slot() }
 
-    //after picking an item for transaction, it prompts, do you want to add on 
-    //shows a list of addOns, should not be possible to get add ons before the base item
 
-    //can add edit, then will show preparation phase
+    /*
+        Returns all add-on slots.
+    */
+    fun getAddOnSlots(): Array<Slot> {
+        return addOnSlots
+    }
 
-    //edit the item class to have a preparation attribute/method
-    //class overloading??
 
+    /*
+        Returns one add-on slot.
+    */
+    fun getAddOnSlot(index: Int): Slot? {
+
+        if (index !in addOnSlots.indices)
+            return null
+
+        return addOnSlots[index]
+    }
+
+
+    /*
+        Places an item into an
+        add-on slot.
+    */
+    fun setAddOnSlot(
+        index: Int,
+        item: Item,
+        price: Float
+    ) {
+
+        if (index !in addOnSlots.indices)
+            return
+
+        addOnSlots[index].item = item
+        addOnSlots[index].price = price
+        addOnSlots[index].quantity = 0
+        addOnSlots[index].sold = 0
+    }
+
+
+    /*
+        Clears an add-on slot.
+    */
+    fun clearAddOnSlot(index: Int) {
+
+        if (index !in addOnSlots.indices)
+            return
+
+        addOnSlots[index] = Slot()
+    }
+
+
+    /*
+        Restocks an add-on.
+    */
+    fun restockAddOn(
+        index: Int,
+        quantity: Int
+    ) {
+
+        if (index !in addOnSlots.indices)
+            return
+
+        addOnSlots[index].quantity = quantity
+        addOnSlots[index].sold = 0
+    }
+
+
+    /*
+        Adds more stock.
+    */
+    fun addAddOnStock(
+        index: Int,
+        quantity: Int
+    ) {
+
+        if (index !in addOnSlots.indices)
+            return
+
+        addOnSlots[index].quantity += quantity
+    }
+
+
+    /*
+        Changes add-on price.
+    */
+    fun changeAddOnPrice(
+        index: Int,
+        price: Float
+    ) {
+
+        if (index !in addOnSlots.indices)
+            return
+
+        addOnSlots[index].price = price
+    }
+
+
+    /*
+        Decreases quantity after
+        a successful purchase.
+    */
+    fun dispenseAddOn(index: Int): Boolean {
+
+        if (index !in addOnSlots.indices)
+            return false
+
+        val slot = addOnSlots[index]
+
+        if (slot.item == null)
+            return false
+
+        if (slot.quantity <= 0)
+            return false
+
+        slot.quantity--
+        slot.sold++
+
+        return true
+    }
+
+
+    /*
+        Removes everything from all
+        add-on slots.
+    */
+    fun clearAllAddOns() {
+
+        for (i in addOnSlots.indices) {
+            addOnSlots[i] = Slot()
+        }
+    }
+
+
+    /*
+        Number of available add-on slots.
+    */
+    fun getAddOnSlotCount(): Int {
+        return addOnSlots.size
+    }
 }
