@@ -9,6 +9,9 @@ import javafx.scene.control.Alert
 import javafx.scene.control.CheckBox
 import javafx.scene.control.Spinner
 import javafx.stage.Stage
+import model.SpecialMachine
+import model.VendingMachine
+import java.io.File
 
 class CreateMachineController {
 
@@ -41,7 +44,7 @@ class CreateMachineController {
             itemLimitSpinner.editor.text.toIntOrNull()
 
         val addOnItems =
-            addonSpinner.editor.text.toIntOrNull()
+            addonSpinner.editor.text.toIntOrNull() ?: 0
 
         if (slots == null || slots < 8) {
 
@@ -61,24 +64,63 @@ class CreateMachineController {
             return
         }
 
+        val special =
+            specialCheckBox.isSelected
 
-        if (addOnItems == null || addOnItems < 1) {
+        if (special && addOnItems < 1) {
 
             showError(
-                "There must be at least one add-on item."
+                "A special machine must have at least one add-on slot."
             )
 
             return
         }
 
-        val special =
-            specialCheckBox.isSelected
+        val machine: VendingMachine =
+            if (special) {
 
-        // Saving will be added later.
+                SpecialMachine(
+                    slots,
+                    itemLimit,
+                    addOnItems
+                )
 
-        println(special)
+            } else {
+
+                VendingMachine(
+                    slots,
+                    itemLimit
+                )
+
+            }
+
+        saveMachine(machine)
+
+        println("Machine created.")
+        println(machine)
 
         openMainPage(event)
+    }
+
+    private fun saveMachine(machine: VendingMachine) {
+
+        val file = File("machines.csv")
+
+        val special =
+            machine is SpecialMachine
+
+        val addOnLimit =
+            if (special)
+                (machine as SpecialMachine).getAddOnSlots().size
+            else
+                0
+
+        file.appendText(
+            "${machine.slotLimit}," +
+            "${machine.itemLimit}," +
+            "$special," +
+            "$addOnLimit\n"
+        )
     }
 
     private fun openMainPage(event: ActionEvent) {
