@@ -34,8 +34,8 @@ class BlankPageController {
                 fun collect(node: javafx.scene.Node) {
                     if (node is Button) {
                         val text = node.text ?: ""
-                        // item/add-on buttons have no fx:id and show prices starting with ₱
-                        if (node.id == null && text.startsWith("₱")) {
+                        // item/add-on buttons show prices starting with ₱ and are not cash-denomination buttons.
+                        if (text.startsWith("₱") && node.id?.startsWith("btn") != true) {
                             itemButtons.add(node)
                         }
                     }

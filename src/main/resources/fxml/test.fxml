@@ -84,6 +84,7 @@
                             prefWidth="150">
 
                         <ImageView
+                                fx:id="slotImage0"
                                 fitWidth="90"
                                 fitHeight="110"
                                 preserveRatio="true"/>
@@ -97,6 +98,7 @@
                                 style="-fx-text-fill:#CCCCCC;"/>
 
                         <Button
+                                fx:id="slotButton0"
                                 text="₱50.00"
                                 prefWidth="110"
                                 onAction="#selectItem"/>
@@ -115,6 +117,7 @@
                             prefWidth="150">
 
                         <ImageView
+                                fx:id="slotImage1"
                                 fitWidth="90"
                                 fitHeight="110"
                                 preserveRatio="true"/>
@@ -128,6 +131,7 @@
                                 style="-fx-text-fill:#CCCCCC;"/>
 
                         <Button
+                                fx:id="slotButton1"
                                 text="₱50.00"
                                 prefWidth="110"
                                 onAction="#selectItem"/>
@@ -146,6 +150,7 @@
                             prefWidth="150">
 
                         <ImageView
+                                fx:id="slotImage2"
                                 fitWidth="90"
                                 fitHeight="110"
                                 preserveRatio="true"/>
@@ -159,6 +164,7 @@
                                 style="-fx-text-fill:#CCCCCC;"/>
 
                         <Button
+                                fx:id="slotButton2"
                                 text="₱50.00"
                                 prefWidth="110"
                                 onAction="#selectItem"/>
@@ -177,6 +183,7 @@
                             prefWidth="150">
 
                         <ImageView
+                                fx:id="slotImage3"
                                 fitWidth="90"
                                 fitHeight="110"
                                 preserveRatio="true"/>
@@ -190,6 +197,7 @@
                                 style="-fx-text-fill:#CCCCCC;"/>
 
                         <Button
+                                fx:id="slotButton3"
                                 text="₱50.00"
                                 prefWidth="110"
                                 onAction="#selectItem"/>
@@ -206,6 +214,7 @@
                             prefWidth="150">
 
                         <ImageView
+                                fx:id="slotImage4"
                                 fitWidth="90"
                                 fitHeight="110"
                                 preserveRatio="true"/>
@@ -214,6 +223,7 @@
                         <Label text="Calories" style="-fx-text-fill:#CCCCCC;"/>
 
                         <Button
+                                fx:id="slotButton4"
                                 text="₱50.00"
                                 prefWidth="110"
                                 onAction="#selectItem"/>
@@ -228,6 +238,7 @@
                             prefWidth="150">
 
                         <ImageView
+                                fx:id="slotImage5"
                                 fitWidth="90"
                                 fitHeight="110"
                                 preserveRatio="true"/>
@@ -236,6 +247,7 @@
                         <Label text="Calories" style="-fx-text-fill:#CCCCCC;"/>
 
                         <Button
+                                fx:id="slotButton5"
                                 text="₱50.00"
                                 prefWidth="110"
                                 onAction="#selectItem"/>
@@ -250,6 +262,7 @@
                             prefWidth="150">
 
                         <ImageView
+                                fx:id="slotImage6"
                                 fitWidth="90"
                                 fitHeight="110"
                                 preserveRatio="true"/>
@@ -258,6 +271,7 @@
                         <Label text="Calories" style="-fx-text-fill:#CCCCCC;"/>
 
                         <Button
+                                fx:id="slotButton6"
                                 text="₱50.00"
                                 prefWidth="110"
                                 onAction="#selectItem"/>
@@ -272,6 +286,7 @@
                             prefWidth="150">
 
                         <ImageView
+                                fx:id="slotImage7"
                                 fitWidth="90"
                                 fitHeight="110"
                                 preserveRatio="true"/>
@@ -280,6 +295,7 @@
                         <Label text="Calories" style="-fx-text-fill:#CCCCCC;"/>
 
                         <Button
+                                fx:id="slotButton7"
                                 text="₱50.00"
                                 prefWidth="110"
                                 onAction="#selectItem"/>
@@ -295,6 +311,7 @@
                 <!-- ================================================= -->
 
                 <HBox
+                        fx:id="addOnContainer"
                         spacing="35"
                         alignment="CENTER">
 
@@ -304,6 +321,7 @@
                             prefWidth="150">
 
                         <ImageView
+                                fx:id="addOnImage0"
                                 fitWidth="80"
                                 fitHeight="80"
                                 preserveRatio="true"/>
@@ -317,6 +335,7 @@
                                 style="-fx-text-fill:#CCCCCC;"/>
 
                         <Button
+                                fx:id="addOnButton0"
                                 text="₱15.00"
                                 prefWidth="90"
                                 onAction="#selectItem"/>
@@ -329,6 +348,7 @@
                             prefWidth="150">
 
                         <ImageView
+                                fx:id="addOnImage1"
                                 fitWidth="80"
                                 fitHeight="80"
                                 preserveRatio="true"/>
@@ -342,6 +362,7 @@
                                 style="-fx-text-fill:#CCCCCC;"/>
 
                         <Button
+                                fx:id="addOnButton1"
                                 text="₱20.00"
                                 prefWidth="90"
                                 onAction="#selectItem"/>
@@ -354,6 +375,7 @@
                             prefWidth="150">
 
                         <ImageView
+                                fx:id="addOnImage2"
                                 fitWidth="80"
                                 fitHeight="80"
                                 preserveRatio="true"/>
@@ -367,6 +389,7 @@
                                 style="-fx-text-fill:#CCCCCC;"/>
 
                         <Button
+                                fx:id="addOnButton2"
                                 text="₱25.00"
                                 prefWidth="90"
                                 onAction="#selectItem"/>
@@ -565,7 +588,7 @@
                         ">
 
                     <Label
-
+                            fx:id="displayLabel"
                             text="Display Text"
 
                             style="
