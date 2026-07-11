@@ -8,6 +8,8 @@ import javafx.scene.Scene
 import javafx.scene.control.Alert
 import javafx.scene.control.CheckBox
 import javafx.scene.control.Spinner
+import javafx.scene.control.SpinnerValueFactory
+import javafx.scene.layout.VBox
 import javafx.stage.Stage
 import model.SpecialMachine
 import model.VendingMachine
@@ -28,6 +30,49 @@ class CreateMachineController {
     private lateinit var addonSpinner: Spinner<Int>
 
     @FXML
+    private lateinit var addonSection: VBox
+
+    @FXML
+    private fun initialize() {
+
+        configureAddonSpinner()
+        updateAddonSectionVisibility(specialCheckBox.isSelected)
+
+        specialCheckBox.selectedProperty().addListener { _, _, isSelected ->
+            updateAddonSectionVisibility(isSelected)
+        }
+    }
+
+    private fun configureAddonSpinner() {
+
+        val factory = SpinnerValueFactory.IntegerSpinnerValueFactory(1, Int.MAX_VALUE, 1)
+        addonSpinner.valueFactory = factory
+
+        addonSpinner.editor.textProperty().addListener { _, _, newValue ->
+            val parsedValue = newValue.toIntOrNull()
+
+            if (parsedValue == null || parsedValue < 1) {
+                addonSpinner.editor.text = "1"
+                factory.value = 1
+            } else {
+                factory.value = parsedValue
+            }
+        }
+    }
+
+    private fun updateAddonSectionVisibility(isSelected: Boolean) {
+
+        addonSection.isVisible = isSelected
+        addonSection.isManaged = isSelected
+
+        if (!isSelected) {
+            addonSpinner.editor.text = "0"
+        } else {
+            addonSpinner.editor.text = "1"
+        }
+    }
+
+    @FXML
     fun back(event: ActionEvent) {
 
         openMainPage(event)
@@ -44,7 +89,7 @@ class CreateMachineController {
             itemLimitSpinner.editor.text.toIntOrNull()
 
         val addOnItems =
-            addonSpinner.editor.text.toIntOrNull() ?: 0
+            addonSpinner.value ?: 1
 
         if (slots == null || slots < 8) {
 

@@ -4,7 +4,7 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
-
+<!-- the spinners dont actually increment/decrement any values theyre useless at the moment -->
 <VBox
 
         xmlns="http://javafx.com/javafx/17"

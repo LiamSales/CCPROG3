@@ -47,8 +47,6 @@
 
         <Label text="Number of Slots"/>
 
-        <!-- no text input button only -->
-
         <Spinner
                 fx:id="slotSpinner"
                 editable="true"/>
@@ -59,18 +57,27 @@
                 fx:id="itemLimitSpinner"
                 editable="true"/>
 
-
+<!-- have add-on items only be available to input text in if special machine box is clicked-->
+<!-- if specialcheckbox false, add ons is not visible -->
         <CheckBox
 
                 fx:id="specialCheckBox"
 
                 text="Special Machine"/>
 
-        <Label text="Number of Add-on Items"/>
+        <VBox
+                fx:id="addonSection"
+                spacing="8"
+                visible="false"
+                managed="false">
 
-        <Spinner
-                fx:id="addonSpinner"
-                editable="true"/>
+            <Label text="Number of Add-on Items"/>
+
+            <Spinner
+                    fx:id="addonSpinner"
+                    editable="true"/>
+
+        </VBox>
 
         <HBox
 
