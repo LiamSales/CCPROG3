@@ -1,110 +1,20 @@
 package ui
 
-import javafx.event.ActionEvent
 import javafx.fxml.FXML
 import javafx.fxml.FXMLLoader
-import javafx.scene.Node
 import javafx.scene.Parent
 import javafx.scene.Scene
 import javafx.scene.control.Alert
 import javafx.scene.control.Button
 import javafx.scene.control.ButtonType
 import javafx.scene.control.Label
+import javafx.scene.image.Image
+import javafx.scene.image.ImageView
 import javafx.scene.layout.HBox
 import javafx.scene.layout.VBox
 import javafx.stage.Stage
 import model.Item
-import javafx.application.Platform
-
-class BlankPageController {
-    @FXML
-    private lateinit var balanceLabel: Label
-
-    private var currentBalance: Float = 0f
-    private val itemButtons = mutableListOf<Button>()
-
-    @FXML
-    fun initialize() {
-        updateBalanceDisplay()
-        // collect item buttons after scene is attached
-        Platform.runLater {
-            val root = balanceLabel.scene?.root
-            if (root != null) {
-                itemButtons.clear()
-                fun collect(node: javafx.scene.Node) {
-                    if (node is Button) {
-                        val text = node.text ?: ""
-                        // item/add-on buttons show prices starting with ₱ and are not cash-denomination buttons.
-                        if (text.startsWith("₱") && node.id?.startsWith("btn") != true) {
-                            itemButtons.add(node)
-                        }
-                    }
-                    if (node is Parent) {
-                        for (child in node.childrenUnmodifiable) collect(child)
-                    }
-                }
-                collect(root)
-                updateItemButtonsEnabledState()
-            }
-        }
-    }
-
-    @FXML
-    fun addCash(event: ActionEvent) {
-        val button = event.source as? Button ?: return
-        val text = button.text.replace("₱", "").trim()
-        val amount = text.toFloatOrNull() ?: return
-
-        currentBalance += amount
-        updateBalanceDisplay()
-        updateItemButtonsEnabledState()
-    }
-
-    @FXML
-    fun selectItem(event: ActionEvent) {
-        val button = event.source as? Button ?: return
-        val text = button.text.replace("₱", "").trim()
-        val price = text.toFloatOrNull() ?: return
-
-        if (currentBalance >= price) {
-            currentBalance -= price
-            updateBalanceDisplay()
-            updateItemButtonsEnabledState()
-        }
-    }
-
-    @FXML
-    fun getChange(event: ActionEvent) {
-        currentBalance = 0f
-        updateBalanceDisplay()
-        updateItemButtonsEnabledState()
-    }
-
-    private fun updateItemButtonsEnabledState() {
-        for (btn in itemButtons) {
-            val text = btn.text.replace("₱", "").trim()
-            val price = text.toFloatOrNull() ?: continue
-            btn.isDisable = currentBalance < price
-        }
-    }
-
-    private fun updateBalanceDisplay() {
-        val isWhole = kotlin.math.abs(currentBalance - currentBalance.toInt()) < 0.001f
-        balanceLabel.text = if (isWhole) {
-            "₱${currentBalance.toInt()}"
-        } else {
-            String.format("₱%.2f", currentBalance)
-        }
-    }
-
-    @FXML
-    fun backToMainPage(event: ActionEvent) {
-        val source = event.source as? Node ?: return
-        val stage = source.scene?.window as? Stage ?: return
-        val root = FXMLLoader.load<Parent>(BlankPageController::class.java.getResource("/fxml/main.fxml"))
-        stage.scene = Scene(root)
-    }
-}
+import java.io.File
 
 class MainController {
 
@@ -125,117 +35,251 @@ class MainController {
             "Machine 3"
         )
 
-        items.clear()
-        items.addAll(
-            listOf(
-                Item("Soda", 150, "assets/soda.png"),
-                Item("Chips", 250, "assets/chips.png"),
-                Item("Candy", 200, "assets/candy.png")
-            )
-        )
-
         machines.forEach {
-            machineContainer.children.add(createMachineCard(it))
+            machineContainer.children.add(
+                createMachineCard(it)
+            )
         }
 
-        machineContainer.children.add(createAddCard("Create Machine"))
+        machineContainer.children.add(
+            createAddCard("Create Machine")
+        )
+
+        loadItems()
 
         renderItems()
     }
 
-    private fun renderItems() {
-        itemContainer.children.clear()
-        items.forEach {
-            itemContainer.children.add(createItemCard(it))
+    /*
+     * ==========================================================
+     * ITEM CSV
+     * ==========================================================
+     */
+
+    private fun loadItems() {
+
+        items.clear()
+
+        val file =
+            File("items.csv")
+
+        if (!file.exists())
+            return
+
+        file.readLines().forEach { line ->
+
+            if (line.isBlank())
+                return@forEach
+
+            val parts =
+                line.split(",")
+
+            if (parts.size < 3)
+                return@forEach
+
+            items.add(
+
+                Item(
+
+                    name = parts[0],
+
+                    calories = parts[1].toInt(),
+
+                    iconPath = parts[2]
+
+                )
+
+            )
+
         }
-        itemContainer.children.add(createAddCard("Create Item"))
+
     }
 
-    private fun createMachineCard(name: String): VBox {
+    private fun saveItems() {
+
+        val file =
+            File("items.csv")
+
+        file.printWriter().use { out ->
+
+            items.forEach {
+
+                out.println(
+
+                    "${it.name}," +
+                    "${it.calories}," +
+                    it.iconPath
+
+                )
+
+            }
+
+        }
+
+    }
+
+    /*
+     * ==========================================================
+     * UI Rendering
+     * ==========================================================
+     */
+
+    private fun renderItems() {
+
+        itemContainer.children.clear()
+
+        items.forEach {
+
+            itemContainer.children.add(
+
+                createItemCard(it)
+
+            )
+
+        }
+
+        itemContainer.children.add(
+
+            createAddCard("Create Item")
+
+        )
+    }
+
+        private fun createMachineCard(name: String): VBox {
 
         val title = Label(name)
 
         title.style =
-            "-fx-text-fill: white;" +
-            "-fx-font-size: 20px;" +
-            "-fx-font-weight: bold;"
+            "-fx-text-fill:white;" +
+            "-fx-font-size:20;" +
+            "-fx-font-weight:bold;"
 
         val testButton = Button("Test")
-        val maintenanceButton = Button("Maintenance")
 
         testButton.setOnAction {
             openTestPage()
         }
 
+        val maintenanceButton = Button("Maintenance")
+
         maintenanceButton.setOnAction {
             openMaintenancePage()
         }
 
-        val buttonContainer = VBox(8.0)
-        buttonContainer.children.addAll(testButton, maintenanceButton)
+        val buttons = VBox(8.0)
+
+        buttons.children.addAll(
+            testButton,
+            maintenanceButton
+        )
 
         val card = VBox(10.0)
 
-        card.children.addAll(title, buttonContainer)
+        card.children.addAll(
+            title,
+            buttons
+        )
 
         card.prefWidth = 220.0
 
         card.style =
-            "-fx-background-color: #2b2b2b;" +
-            "-fx-background-radius: 15;" +
-            "-fx-padding: 20;"
+            "-fx-background-color:#2B2B2B;" +
+            "-fx-background-radius:15;" +
+            "-fx-padding:20;"
 
         return card
     }
 
     private fun createItemCard(item: Item): VBox {
 
+        val image = ImageView()
+
+        try {
+
+            image.image = Image(
+                File(item.iconPath)
+                    .toURI()
+                    .toString()
+            )
+
+        } catch (_: Exception) {
+
+        }
+
+        image.fitWidth = 120.0
+        image.fitHeight = 120.0
+        image.isPreserveRatio = true
+
         val title = Label(item.name)
-        val calories = Label("${item.calories} kcal")
-        val path = Label(item.iconPath)
 
         title.style =
-            "-fx-text-fill: white;" +
-            "-fx-font-size: 20px;" +
-            "-fx-font-weight: bold;"
+            "-fx-text-fill:white;" +
+            "-fx-font-size:20;" +
+            "-fx-font-weight:bold;"
 
-        calories.style = "-fx-text-fill: white;"
-        path.style = "-fx-text-fill: lightgray;"
+        val calories =
+            Label("${item.calories} kcal")
 
-        val button = Button("Remove")
-        button.setOnAction {
+        calories.style =
+            "-fx-text-fill:white;"
+
+        val removeButton =
+            Button("Remove")
+
+        removeButton.setOnAction {
+
             confirmRemoveItem(item)
+
         }
 
         val card = VBox(10.0)
 
         card.children.addAll(
+
+            image,
             title,
             calories,
-            path,
-            button
+            removeButton
+
         )
 
         card.prefWidth = 220.0
 
         card.style =
-            "-fx-background-color: #2b2b2b;" +
-            "-fx-background-radius: 15;" +
-            "-fx-padding: 20;"
+            "-fx-background-color:#2B2B2B;" +
+            "-fx-background-radius:15;" +
+            "-fx-padding:20;"
 
         return card
     }
 
     private fun confirmRemoveItem(item: Item) {
-        val alert = Alert(Alert.AlertType.CONFIRMATION)
-        alert.title = "Remove Item"
-        alert.headerText = "Delete ${item.name}?"
-        alert.contentText = "This item will be removed from the main page."
 
-        val result = alert.showAndWait()
-        if (result.isPresent && result.get() == ButtonType.OK) {
+        val alert =
+            Alert(Alert.AlertType.CONFIRMATION)
+
+        alert.title = "Remove Item"
+
+        alert.headerText =
+            "Delete ${item.name}?"
+
+        alert.contentText =
+            "This action cannot be undone."
+
+        val result =
+            alert.showAndWait()
+
+        if (
+            result.isPresent &&
+            result.get() == ButtonType.OK
+        ) {
+
             items.remove(item)
+
+            saveItems()
+
             renderItems()
+
         }
     }
 
@@ -248,22 +292,28 @@ class MainController {
 
         when (labelText) {
 
-            "Create Machine" -> {
-                plusButton.setOnAction {
-                    openCreateMachinePage()
-                }
-            }
+            "Create Machine" ->
 
-            "Create Item" -> {
                 plusButton.setOnAction {
-                    openCreateItemPage()
+
+                    openCreateMachinePage()
+
                 }
-            }
+
+            "Create Item" ->
+
+                plusButton.setOnAction {
+
+                    openCreateItemPage()
+
+                }
+
         }
 
         val label = Label(labelText)
 
-        label.style = "-fx-text-fill: white;"
+        label.style =
+            "-fx-text-fill:white;"
 
         val card = VBox(15.0)
 
@@ -275,56 +325,96 @@ class MainController {
         card.prefWidth = 220.0
 
         card.style =
-            "-fx-background-color: #343434;" +
-            "-fx-background-radius: 15;" +
-            "-fx-padding: 20;"
+            "-fx-background-color:#343434;" +
+            "-fx-background-radius:15;" +
+            "-fx-padding:20;"
 
         return card
     }
 
+        /*
+     * ==========================================================
+     * Navigation
+     * ==========================================================
+     */
+
     private fun openCreateMachinePage() {
-        changeScene("/fxml/create-machine.fxml")
+
+        changeScene(
+            "/fxml/create-machine.fxml"
+        )
+
     }
 
     private fun openCreateItemPage() {
-        changeScene("/fxml/create-item.fxml")
+
+        changeScene(
+            "/fxml/create-item.fxml"
+        )
+
     }
 
     private fun openTestPage() {
-        changeScene("/fxml/test.fxml")
+
+        changeScene(
+            "/fxml/test.fxml"
+        )
+
     }
 
     private fun openMaintenancePage() {
-        changeScene("/fxml/maintenance.fxml")
+
+        changeScene(
+            "/fxml/maintenance.fxml"
+        )
+
     }
 
-    private fun changeScene(fxmlPath: String) {
+    private fun changeScene(
+        fxmlPath: String
+    ) {
 
         try {
-            val resource = javaClass.getResource(fxmlPath)
-                ?: error("Cannot find FXML: $fxmlPath")
 
-            val root: Parent = FXMLLoader.load(resource)
+            val resource =
+                javaClass.getResource(fxmlPath)
+                    ?: error(
+                        "Cannot find FXML: $fxmlPath"
+                    )
 
-            val stage = machineContainer.scene.window as Stage
+            val root: Parent =
+                FXMLLoader.load(resource)
 
-            stage.scene = Scene(root)
+            val stage =
+                machineContainer
+                    .scene
+                    .window as Stage
 
-        } catch (e: Exception) {
-            e.printStackTrace()
-            try {
-                java.io.File("navigation-error.log").printWriter().use { pw ->
-                    pw.println("Navigation error when loading: $fxmlPath")
-                    e.printStackTrace(pw)
-                }
-            } catch (ioe: Exception) {
-                // ignore logging failure
-            }
-            val alert = Alert(Alert.AlertType.ERROR)
-            alert.title = "Navigation Error"
-            alert.headerText = "Failed to open page"
-            alert.contentText = "${e::class.simpleName}: ${e.message}"
-            alert.showAndWait()
+            stage.scene =
+                Scene(root)
+
         }
+
+        catch (e: Exception) {
+
+            e.printStackTrace()
+
+            val alert =
+                Alert(Alert.AlertType.ERROR)
+
+            alert.title =
+                "Navigation Error"
+
+            alert.headerText =
+                "Failed to open page"
+
+            alert.contentText =
+                "${e::class.simpleName}: ${e.message}"
+
+            alert.showAndWait()
+
+        }
+
     }
+
 }
