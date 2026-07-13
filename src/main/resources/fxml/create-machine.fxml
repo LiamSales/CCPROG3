@@ -57,8 +57,6 @@
                 fx:id="itemLimitSpinner"
                 editable="true"/>
 
-<!-- have add-on items only be available to input text in if special machine box is clicked-->
-<!-- if specialcheckbox false, add ons is not visible -->
         <CheckBox
 
                 fx:id="specialCheckBox"

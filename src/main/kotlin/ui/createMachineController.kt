@@ -35,11 +35,50 @@ class CreateMachineController {
     @FXML
     private fun initialize() {
 
+        configureSlotSpinner()
+        configureItemLimitSpinner()
         configureAddonSpinner()
+
         updateAddonSectionVisibility(specialCheckBox.isSelected)
 
         specialCheckBox.selectedProperty().addListener { _, _, isSelected ->
             updateAddonSectionVisibility(isSelected)
+        }
+    }
+
+    private fun configureSlotSpinner() {
+
+        val min = 8
+        val factory = SpinnerValueFactory.IntegerSpinnerValueFactory(min, Int.MAX_VALUE, min)
+        slotSpinner.valueFactory = factory
+
+        slotSpinner.editor.textProperty().addListener { _, _, newValue ->
+            val parsed = newValue.toIntOrNull()
+
+            if (parsed == null || parsed < min) {
+                slotSpinner.editor.text = min.toString()
+                factory.value = min
+            } else {
+                factory.value = parsed
+            }
+        }
+    }
+
+    private fun configureItemLimitSpinner() {
+
+        val min = 10
+        val factory = SpinnerValueFactory.IntegerSpinnerValueFactory(min, Int.MAX_VALUE, min)
+        itemLimitSpinner.valueFactory = factory
+
+        itemLimitSpinner.editor.textProperty().addListener { _, _, newValue ->
+            val parsed = newValue.toIntOrNull()
+
+            if (parsed == null || parsed < min) {
+                itemLimitSpinner.editor.text = min.toString()
+                factory.value = min
+            } else {
+                factory.value = parsed
+            }
         }
     }
 
@@ -65,8 +104,9 @@ class CreateMachineController {
         addonSection.isVisible = isSelected
         addonSection.isManaged = isSelected
 
+        // keep the spinner value at the minimum when hidden or shown
         if (!isSelected) {
-            addonSpinner.editor.text = "0"
+            addonSpinner.editor.text = "1"
         } else {
             addonSpinner.editor.text = "1"
         }
