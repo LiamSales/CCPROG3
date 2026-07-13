@@ -183,7 +183,7 @@ class MainController {
         card.prefWidth = 220.0
 
         card.style =
-            "-fx-background-color:#2B2B2B;" +
+            "-fx-background-color:#1A1A1A;" +
             "-fx-background-radius:15;" +
             "-fx-padding:20;"
 
@@ -246,7 +246,7 @@ class MainController {
         card.prefWidth = 220.0
 
         card.style =
-            "-fx-background-color:#2B2B2B;" +
+            "-fx-background-color:#1A1A1A;" +
             "-fx-background-radius:15;" +
             "-fx-padding:20;"
 
