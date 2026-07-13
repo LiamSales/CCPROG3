@@ -300,13 +300,31 @@ class MainController {
 
     private fun changeScene(fxmlPath: String) {
 
-        val resource = javaClass.getResource(fxmlPath)
-            ?: error("Cannot find FXML: $fxmlPath")
+        try {
+            val resource = javaClass.getResource(fxmlPath)
+                ?: error("Cannot find FXML: $fxmlPath")
 
-        val root: Parent = FXMLLoader.load(resource)
+            val root: Parent = FXMLLoader.load(resource)
 
-        val stage = machineContainer.scene.window as Stage
+            val stage = machineContainer.scene.window as Stage
 
-        stage.scene = Scene(root)
+            stage.scene = Scene(root)
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            try {
+                java.io.File("navigation-error.log").printWriter().use { pw ->
+                    pw.println("Navigation error when loading: $fxmlPath")
+                    e.printStackTrace(pw)
+                }
+            } catch (ioe: Exception) {
+                // ignore logging failure
+            }
+            val alert = Alert(Alert.AlertType.ERROR)
+            alert.title = "Navigation Error"
+            alert.headerText = "Failed to open page"
+            alert.contentText = "${e::class.simpleName}: ${e.message}"
+            alert.showAndWait()
+        }
     }
 }

@@ -72,18 +72,9 @@
 
         </HBox>
 
-        <HBox
-                spacing="10"
-                alignment="CENTER_RIGHT">
-
-            <Button
-                    text="Back"
-                    onAction="#back"/>
-
-            <Button
-                    text="Submit"
-                    onAction="#submitItem"/>
-
+        <HBox spacing="10" alignment="CENTER_RIGHT">
+            <Button text="Back" onAction="#back" focusTraversable="false"/>
+            <Button text="Submit" onAction="#submitItem" focusTraversable="false"/>
         </HBox>
 
     </VBox>

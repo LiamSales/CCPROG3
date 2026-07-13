@@ -52,14 +52,15 @@ class CreateMachineController {
         val factory = SpinnerValueFactory.IntegerSpinnerValueFactory(min, Int.MAX_VALUE, min)
         slotSpinner.valueFactory = factory
 
-        slotSpinner.editor.textProperty().addListener { _, _, newValue ->
-            val parsed = newValue.toIntOrNull()
+        // Allow free typing (including temporary values < min) — only commit valid integers on focus lost
+        slotSpinner.editor.focusedProperty().addListener { _, _, focused ->
+            if (!focused) {
+                val parsed = slotSpinner.editor.text.toIntOrNull()
 
-            if (parsed == null || parsed < min) {
-                slotSpinner.editor.text = min.toString()
-                factory.value = min
-            } else {
-                factory.value = parsed
+                if (parsed != null && parsed >= min) {
+                    factory.value = parsed
+                }
+                // otherwise leave editor text as-is so submit can validate and show errors
             }
         }
     }
@@ -70,31 +71,34 @@ class CreateMachineController {
         val factory = SpinnerValueFactory.IntegerSpinnerValueFactory(min, Int.MAX_VALUE, min)
         itemLimitSpinner.valueFactory = factory
 
-        itemLimitSpinner.editor.textProperty().addListener { _, _, newValue ->
-            val parsed = newValue.toIntOrNull()
+        // Allow free typing (including temporary values < min) — only commit valid integers on focus lost
+        itemLimitSpinner.editor.focusedProperty().addListener { _, _, focused ->
+            if (!focused) {
+                val parsed = itemLimitSpinner.editor.text.toIntOrNull()
 
-            if (parsed == null || parsed < min) {
-                itemLimitSpinner.editor.text = min.toString()
-                factory.value = min
-            } else {
-                factory.value = parsed
+                if (parsed != null && parsed >= min) {
+                    factory.value = parsed
+                }
+                // otherwise leave editor text as-is so submit can validate and show errors
             }
         }
     }
 
     private fun configureAddonSpinner() {
 
-        val factory = SpinnerValueFactory.IntegerSpinnerValueFactory(1, Int.MAX_VALUE, 1)
+        val min = 1
+        val factory = SpinnerValueFactory.IntegerSpinnerValueFactory(min, Int.MAX_VALUE, min)
         addonSpinner.valueFactory = factory
 
-        addonSpinner.editor.textProperty().addListener { _, _, newValue ->
-            val parsedValue = newValue.toIntOrNull()
+        // Allow free typing — commit only valid integers when editor loses focus
+        addonSpinner.editor.focusedProperty().addListener { _, _, focused ->
+            if (!focused) {
+                val parsedValue = addonSpinner.editor.text.toIntOrNull()
 
-            if (parsedValue == null || parsedValue < 1) {
-                addonSpinner.editor.text = "1"
-                factory.value = 1
-            } else {
-                factory.value = parsedValue
+                if (parsedValue != null && parsedValue >= min) {
+                    factory.value = parsedValue
+                }
+                // otherwise leave editor text as-is so submit can validate and show errors
             }
         }
     }
@@ -105,9 +109,10 @@ class CreateMachineController {
         addonSection.isManaged = isSelected
 
         // keep the spinner value at the minimum when hidden or shown
-        if (!isSelected) {
-            addonSpinner.editor.text = "1"
-        } else {
+        try {
+            addonSpinner.valueFactory?.value = 1
+        } catch (e: Exception) {
+            // if valueFactory isn't ready yet, ensure editor shows a sensible default
             addonSpinner.editor.text = "1"
         }
     }
@@ -122,42 +127,30 @@ class CreateMachineController {
     @FXML
     fun submitMachine(event: ActionEvent) {
 
-        val slots =
-            slotSpinner.editor.text.toIntOrNull()
-
-        val itemLimit =
-            itemLimitSpinner.editor.text.toIntOrNull()
-
-        val addOnItems =
-            addonSpinner.value ?: 1
-
-        if (slots == null || slots < 8) {
-
-            showError(
-                "A vending machine must have at least 8 slots."
-            )
-
+        // Validate editor contents explicitly so in-progress typing is checked on submit
+        val slotsParsed = slotSpinner.editor.text.toIntOrNull()
+        if (slotsParsed == null || slotsParsed <= 7) {
+            showError("Number of slots must be an integer of at least 8.")
             return
         }
 
-        if (itemLimit == null || itemLimit < 10) {
-
-            showError(
-                "Each slot must hold at least 10 items."
-            )
-
+        val itemLimitParsed = itemLimitSpinner.editor.text.toIntOrNull()
+        if (itemLimitParsed == null || itemLimitParsed <= 9) {
+            showError("Maximum items per slot must be an integer of at least 10.")
             return
         }
+
+        val slots = slotsParsed
+        val itemLimit = itemLimitParsed
+
+        val addOnItems = addonSpinner.editor.text.toIntOrNull() ?: (addonSpinner.value ?: 1)
+
 
         val special =
             specialCheckBox.isSelected
 
         if (special && addOnItems < 1) {
-
-            showError(
-                "A special machine must have at least one add-on slot."
-            )
-
+            showError("A special machine must have at least one add-on slot.")
             return
         }
 

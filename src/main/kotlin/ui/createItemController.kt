@@ -58,7 +58,8 @@ class CreateItemController {
     @FXML
     fun submitItem(event: ActionEvent) {
 
-        val name = nameField.text.trim()
+        val name =
+            nameField.text.trim()
 
         val calories =
             calorieSpinner.editor.text.toIntOrNull()
@@ -67,23 +68,107 @@ class CreateItemController {
             imagePathField.text.trim()
 
         if (name.isBlank()) {
+
             showError("Please enter an item name.")
             return
+
         }
 
         if (calories == null || calories <= 0) {
+
             showError("Calories must be a whole number greater than zero.")
             return
+
         }
 
         if (imagePath.isBlank()) {
+
             showError("Please choose an image.")
             return
+
         }
 
-        // Saving will be added later.
+        val csv =
+            File("items.csv")
+
+        if (csv.exists()) {
+
+            val duplicate =
+                csv.readLines().any { line ->
+
+                    if (line.isBlank())
+                        false
+                    else
+                        line.split(",")[0]
+                            .trim()
+                            .equals(name, ignoreCase = true)
+
+                }
+
+            if (duplicate) {
+
+                showError("An item with that name already exists.")
+                return
+
+            }
+        }
+
+        val source =
+            File(imagePath)
+
+        if (!source.exists()) {
+
+            showError("The selected image does not exist.")
+            return
+
+        }
+
+        val assetsFolder =
+            File("assets")
+
+        assetsFolder.mkdirs()
+
+        val destination =
+            File(
+                assetsFolder,
+                source.name
+            )
+
+        source.copyTo(
+            destination,
+            overwrite = true
+        )
+
+        saveItem(
+            name,
+            calories,
+            "assets/${source.name}"
+        )
+
+        println("Item saved:")
+        println("$name, $calories, assets/${source.name}")
 
         openMainPage(event)
+    }
+
+    private fun saveItem(
+
+        name: String,
+        calories: Int,
+        imagePath: String
+
+    ) {
+
+        val file =
+            File("items.csv")
+
+        file.appendText(
+
+            "$name," +
+            "$calories," +
+            "$imagePath\n"
+
+        )
     }
 
     private fun openMainPage(event: ActionEvent) {
