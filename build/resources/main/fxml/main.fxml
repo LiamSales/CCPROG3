@@ -28,6 +28,18 @@
             "
     />
 
+    <Label
+
+            fx:id="machineCountLabel"
+
+            text="Vending Machines: 0"
+
+            style="
+                -fx-font-size: 16px;
+                -fx-text-fill: #444444;
+            "
+    />
+
     <ScrollPane
 
             fitToHeight="true"
