@@ -16,6 +16,9 @@ import javafx.stage.Stage
 import model.Item
 import java.io.File
 
+// the parts should not be [4] with special and "add-ons", we just pass the machine anyway, 
+// basically it just counts the number of machines in the csv and thats it, sends it to the 
+
 class MainController {
 
     @FXML
@@ -36,14 +39,6 @@ class MainController {
         machineContainer.children.clear()
 
         loadMachines()
-
-        machineContainer.children.add(
-
-            createAddCard(
-                "Create Machine"
-            )
-
-        )
 
         loadItems()
 
