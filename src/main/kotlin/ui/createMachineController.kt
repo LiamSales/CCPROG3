@@ -16,6 +16,11 @@ import model.VendingMachine
 import model.CashRegister
 import java.io.File
 
+// lets not save in a csv anymore, just the folders for each, so we only save in folders, we just get the latest folder name (machine_xxxx) then increment the name of the folder
+// if the machine is not a special machine the info is basically "slot limit, item limit" thats it thats all there is,
+
+// if the machine is a special machine, then slot limit, item limit, addon limit, basically another line in the text, thats all
+
 class CreateMachineController {
 
     @FXML
