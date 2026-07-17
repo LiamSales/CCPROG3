@@ -12,19 +12,21 @@ data class Item(
 
 )
 
-private const val CSV_PATH = "items.csv"
-
+private val DATA_DIR = File("data")
+private val CSV_FILE = File(DATA_DIR, "items.csv")
 
 
 fun saveItem(item: Item) {
 
-    val file = File(CSV_PATH)
-
-    if (!file.exists()) {
-        file.createNewFile()
+    if (!DATA_DIR.exists()) {
+        DATA_DIR.mkdirs()
     }
 
-    file.appendText(
+    if (!CSV_FILE.exists()) {
+        CSV_FILE.createNewFile()
+    }
+
+    CSV_FILE.appendText(
 
         "${item.name}," +
         "${item.calories}," +
@@ -34,18 +36,15 @@ fun saveItem(item: Item) {
 }
 
 
-
 fun loadItems(): MutableList<Item> {
 
-    val file = File(CSV_PATH)
-
-    if (!file.exists()) {
+    if (!CSV_FILE.exists()) {
         return mutableListOf()
     }
 
     val items = mutableListOf<Item>()
 
-    file.forEachLine { line ->
+    CSV_FILE.forEachLine { line ->
 
         if (line.isBlank()) return@forEachLine
 
@@ -73,7 +72,6 @@ fun loadItems(): MutableList<Item> {
 }
 
 
-
 fun getItem(name: String): Item? {
 
     return loadItems().find {
@@ -86,7 +84,6 @@ fun getItem(name: String): Item? {
     }
 
 }
-
 
 
 fun deleteItem(name: String) {
@@ -107,16 +104,17 @@ fun deleteItem(name: String) {
 }
 
 
-
 fun overwriteItems(items: List<Item>) {
 
-    val file = File(CSV_PATH)
+    if (!DATA_DIR.exists()) {
+        DATA_DIR.mkdirs()
+    }
 
-    file.writeText("")
+    CSV_FILE.writeText("")
 
     items.forEach {
 
-        file.appendText(
+        CSV_FILE.appendText(
 
             "${it.name}," +
             "${it.calories}," +

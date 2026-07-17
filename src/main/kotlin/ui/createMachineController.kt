@@ -16,6 +16,11 @@ import model.VendingMachine
 import model.CashRegister
 import java.io.File
 
+// lets not save in a csv anymore, just the folders for each, so we only save in folders, we just get the latest folder name (machine_xxxx) then increment the name of the folder
+// if the machine is not a special machine the info is basically "slot limit, item limit" thats it thats all there is,
+
+// if the machine is a special machine, then slot limit, item limit, addon limit, basically another line in the text, thats all
+
 class CreateMachineController {
 
     @FXML
@@ -219,22 +224,10 @@ class CreateMachineController {
 
         machineRoot.mkdirs()
 
-        val machineList =
-            File(dataFolder, "machines.csv")
-
-        if (!machineList.exists()) {
-
-            machineList.writeText(
-                "id,slots,itemLimit,special,addonSlots\n"
-            )
-
-        }
-
         val nextId =
-            getNextMachineId(machineList)
+            getNextMachineId(machineRoot)
 
-        val special =
-            machine is SpecialMachine
+        val special = machine is SpecialMachine
 
         val addonSlots =
             if (special)
@@ -243,16 +236,6 @@ class CreateMachineController {
                     .size
             else
                 0
-
-        machineList.appendText(
-
-            "$nextId," +
-            "${machine.slotLimit}," +
-            "${machine.itemLimit}," +
-            "$special," +
-            "$addonSlots\n"
-
-        )
 
         val folder =
 
@@ -292,22 +275,21 @@ class CreateMachineController {
     }
 
     private fun getNextMachineId(
-        csv: File
+        machineRoot: File
     ): Int {
 
-        if (!csv.exists())
+        if (!machineRoot.exists())
             return 1
 
         val ids =
-            csv.readLines()
-                .drop(1)
-                .mapNotNull {
+            machineRoot.listFiles()
+                ?.filter { it.isDirectory && it.name.startsWith("machine_") }
+                ?.mapNotNull { dir ->
 
-                    it.split(",")
-                        .firstOrNull()
-                        ?.toIntOrNull()
+                    dir.name.removePrefix("machine_")
+                        .toIntOrNull()
 
-                }
+                } ?: emptyList()
 
         return (ids.maxOrNull() ?: 0) + 1
     }
