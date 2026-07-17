@@ -224,22 +224,10 @@ class CreateMachineController {
 
         machineRoot.mkdirs()
 
-        val machineList =
-            File(dataFolder, "machines.csv")
-
-        if (!machineList.exists()) {
-
-            machineList.writeText(
-                "id,slots,itemLimit,special,addonSlots\n"
-            )
-
-        }
-
         val nextId =
-            getNextMachineId(machineList)
+            getNextMachineId(machineRoot)
 
-        val special =
-            machine is SpecialMachine
+        val special = machine is SpecialMachine
 
         val addonSlots =
             if (special)
@@ -248,16 +236,6 @@ class CreateMachineController {
                     .size
             else
                 0
-
-        machineList.appendText(
-
-            "$nextId," +
-            "${machine.slotLimit}," +
-            "${machine.itemLimit}," +
-            "$special," +
-            "$addonSlots\n"
-
-        )
 
         val folder =
 
@@ -297,22 +275,21 @@ class CreateMachineController {
     }
 
     private fun getNextMachineId(
-        csv: File
+        machineRoot: File
     ): Int {
 
-        if (!csv.exists())
+        if (!machineRoot.exists())
             return 1
 
         val ids =
-            csv.readLines()
-                .drop(1)
-                .mapNotNull {
+            machineRoot.listFiles()
+                ?.filter { it.isDirectory && it.name.startsWith("machine_") }
+                ?.mapNotNull { dir ->
 
-                    it.split(",")
-                        .firstOrNull()
-                        ?.toIntOrNull()
+                    dir.name.removePrefix("machine_")
+                        .toIntOrNull()
 
-                }
+                } ?: emptyList()
 
         return (ids.maxOrNull() ?: 0) + 1
     }
