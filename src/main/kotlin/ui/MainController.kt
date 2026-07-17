@@ -52,65 +52,62 @@ class MainController {
      */
 
     private fun loadMachines() {
-
         machineContainer.children.clear()
 
-        val machineEntries =
-            mutableListOf<Pair<String, String>>()
+        val machineEntries = mutableListOf<Pair<String, String>>()
 
-        val file =
-            File("data/machines.csv")
+        val machineRoot = File("data/machines")
 
-        if (file.exists()) {
+        if (machineRoot.exists()) {
 
-            file.readLines()
-                .drop(1)
-                .forEach { line ->
+            machineRoot.listFiles()
+                ?.filter { it.isDirectory && it.name.startsWith("machine_") }
+                ?.sortedBy { it.name }
+                ?.forEach { dir ->
 
-                    if (line.isBlank())
-                        return@forEach
+                    val id = dir.name.removePrefix("machine_").toIntOrNull() ?: return@forEach
 
-                    val parts =
-                        line.split(",")
+                    val infoFile = File(dir, "info.csv")
 
-                    if (parts.size < 5)
-                        return@forEach
+                    var slots = "?"
+                    var itemLimit = "?"
+                    var special = false
+                    var addOnSlots = "0"
 
-                    val id =
-                        parts[0].toIntOrNull()
-                            ?: return@forEach
+                    if (infoFile.exists()) {
 
-                    val slots =
-                        parts[1]
+                        infoFile.readLines().forEach { line ->
 
-                    val itemLimit =
-                        parts[2]
+                            if (line.isBlank() || line.startsWith("field"))
+                                return@forEach
 
-                    val special =
-                        parts[3].toBoolean()
+                            val parts = line.split(",", limit = 2)
 
-                    val addOnSlots =
-                        parts[4]
+                            if (parts.size < 2)
+                                return@forEach
 
-                    val title =
+                            val key = parts[0].trim()
+                            val value = parts[1].trim()
 
-                        if (special)
+                            when (key) {
+                                "slotLimit" -> slots = value
+                                "itemLimit" -> itemLimit = value
+                                "special" -> special = value.toBoolean()
+                                "addonSlots" -> addOnSlots = value
+                            }
 
-                            "Special Machine $id"
+                        }
 
-                        else
+                    }
 
-                            "Machine $id"
+                    val title = if (special) "Special Machine $id" else "Machine $id"
 
                     val subtitle =
-
                         "$slots Slots\n" +
                         "Limit: $itemLimit\n" +
                         "Add-ons: $addOnSlots"
 
-                    machineEntries.add(
-                        title to subtitle
-                    )
+                    machineEntries.add(title to subtitle)
 
                 }
 
@@ -499,4 +496,62 @@ class MainController {
         return card
 
     }
+
+    private fun openCreateMachinePage() {
+
+        val root: Parent =
+            FXMLLoader.load(
+                javaClass.getResource("/fxml/create-machine.fxml")
+            )
+
+        val stage =
+            machineContainer.scene.window as Stage
+
+        stage.scene = Scene(root)
+
+    }
+
+    private fun openCreateItemPage() {
+
+        val root: Parent =
+            FXMLLoader.load(
+                javaClass.getResource("/fxml/create-item.fxml")
+            )
+
+        val stage =
+            machineContainer.scene.window as Stage
+
+        stage.scene = Scene(root)
+
+    }
+
+    private fun openTestPage() {
+
+        val root: Parent =
+            FXMLLoader.load(
+                javaClass.getResource("/fxml/test.fxml")
+            )
+
+        val stage =
+            machineContainer.scene.window as Stage
+
+        stage.scene = Scene(root)
+
+    }
+
+    private fun openMaintenancePage() {
+
+        val root: Parent =
+            FXMLLoader.load(
+                javaClass.getResource("/fxml/maintenance.fxml")
+            )
+
+        val stage =
+            machineContainer.scene.window as Stage
+
+        stage.scene = Scene(root)
+
+    }
+
+}
 
