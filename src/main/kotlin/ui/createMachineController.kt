@@ -33,89 +33,98 @@ class CreateMachineController {
     private lateinit var addonSection: VBox
 
     @FXML
-    private fun initialize() {
+    fun initialize() {
 
         configureSlotSpinner()
         configureItemLimitSpinner()
         configureAddonSpinner()
 
-        updateAddonSectionVisibility(specialCheckBox.isSelected)
+        updateAddonSectionVisibility(
+            specialCheckBox.isSelected
+        )
 
-        specialCheckBox.selectedProperty().addListener { _, _, isSelected ->
-            updateAddonSectionVisibility(isSelected)
+        specialCheckBox.selectedProperty().addListener {
+
+            _, _, selected ->
+
+            updateAddonSectionVisibility(
+                selected
+            )
+
         }
     }
 
+    /*
+     * ==========================================================
+     * Spinner Configuration
+     * ==========================================================
+     */
+
     private fun configureSlotSpinner() {
 
-        val min = 8
-        val factory = SpinnerValueFactory.IntegerSpinnerValueFactory(min, Int.MAX_VALUE, min)
+        val minimum = 8
+
+        val factory =
+
+            SpinnerValueFactory
+                .IntegerSpinnerValueFactory(
+                    minimum,
+                    Int.MAX_VALUE,
+                    minimum
+                )
+
         slotSpinner.valueFactory = factory
-
-        // Allow free typing (including temporary values < min) — only commit valid integers on focus lost
-        slotSpinner.editor.focusedProperty().addListener { _, _, focused ->
-            if (!focused) {
-                val parsed = slotSpinner.editor.text.toIntOrNull()
-
-                if (parsed != null && parsed >= min) {
-                    factory.value = parsed
-                }
-                // otherwise leave editor text as-is so submit can validate and show errors
-            }
-        }
     }
 
     private fun configureItemLimitSpinner() {
 
-        val min = 10
-        val factory = SpinnerValueFactory.IntegerSpinnerValueFactory(min, Int.MAX_VALUE, min)
-        itemLimitSpinner.valueFactory = factory
+        val minimum = 10
 
-        // Allow free typing (including temporary values < min) — only commit valid integers on focus lost
-        itemLimitSpinner.editor.focusedProperty().addListener { _, _, focused ->
-            if (!focused) {
-                val parsed = itemLimitSpinner.editor.text.toIntOrNull()
+        val factory =
 
-                if (parsed != null && parsed >= min) {
-                    factory.value = parsed
-                }
-                // otherwise leave editor text as-is so submit can validate and show errors
-            }
-        }
+            SpinnerValueFactory
+                .IntegerSpinnerValueFactory(
+                    minimum,
+                    Int.MAX_VALUE,
+                    minimum
+                )
+
+        itemLimitSpinner.valueFactory =
+            factory
     }
 
     private fun configureAddonSpinner() {
 
-        val min = 1
-        val factory = SpinnerValueFactory.IntegerSpinnerValueFactory(min, Int.MAX_VALUE, min)
-        addonSpinner.valueFactory = factory
+        val minimum = 1
 
-        // Allow free typing — commit only valid integers when editor loses focus
-        addonSpinner.editor.focusedProperty().addListener { _, _, focused ->
-            if (!focused) {
-                val parsedValue = addonSpinner.editor.text.toIntOrNull()
+        val factory =
 
-                if (parsedValue != null && parsedValue >= min) {
-                    factory.value = parsedValue
-                }
-                // otherwise leave editor text as-is so submit can validate and show errors
-            }
-        }
+            SpinnerValueFactory
+                .IntegerSpinnerValueFactory(
+                    minimum,
+                    Int.MAX_VALUE,
+                    minimum
+                )
+
+        addonSpinner.valueFactory =
+            factory
     }
 
-    private fun updateAddonSectionVisibility(isSelected: Boolean) {
+    private fun updateAddonSectionVisibility(
+        visible: Boolean
+    ) {
 
-        addonSection.isVisible = isSelected
-        addonSection.isManaged = isSelected
+        addonSection.isVisible = visible
+        addonSection.isManaged = visible
 
-        // keep the spinner value at the minimum when hidden or shown
-        try {
-            addonSpinner.valueFactory?.value = 1
-        } catch (e: Exception) {
-            // if valueFactory isn't ready yet, ensure editor shows a sensible default
-            addonSpinner.editor.text = "1"
-        }
+        addonSpinner.valueFactory?.value = 1
     }
+
+    /*
+     * ==========================================================
+     * Buttons
+     * ==========================================================
+     */
 
     @FXML
     fun back(event: ActionEvent) {
@@ -127,103 +136,237 @@ class CreateMachineController {
     @FXML
     fun submitMachine(event: ActionEvent) {
 
-        // Validate editor contents explicitly so in-progress typing is checked on submit
-        val slotsParsed = slotSpinner.editor.text.toIntOrNull()
-        if (slotsParsed == null || slotsParsed <= 7) {
-            showError("Number of slots must be an integer of at least 8.")
+        val slots =
+            slotSpinner.editor.text.toIntOrNull()
+
+        if (slots == null || slots < 8) {
+
+            showError(
+                "A machine must have at least 8 slots."
+            )
+
             return
         }
 
-        val itemLimitParsed = itemLimitSpinner.editor.text.toIntOrNull()
-        if (itemLimitParsed == null || itemLimitParsed <= 9) {
-            showError("Maximum items per slot must be an integer of at least 10.")
+        val itemLimit =
+            itemLimitSpinner.editor.text.toIntOrNull()
+
+        if (itemLimit == null || itemLimit < 10) {
+
+            showError(
+                "Each slot must hold at least 10 items."
+            )
+
             return
         }
-
-        val slots = slotsParsed
-        val itemLimit = itemLimitParsed
-
-        val addOnItems = addonSpinner.editor.text.toIntOrNull() ?: (addonSpinner.value ?: 1)
-
 
         val special =
             specialCheckBox.isSelected
 
-        if (special && addOnItems < 1) {
-            showError("A special machine must have at least one add-on slot.")
+        val addOnSlots =
+
+            if (special)
+
+                addonSpinner
+                    .editor
+                    .text
+                    .toIntOrNull()
+
+            else
+
+                0
+
+        if (
+
+            special &&
+            (addOnSlots == null || addOnSlots < 1)
+
+        ) {
+
+            showError(
+                "A special machine requires at least one add-on slot."
+            )
+
             return
         }
 
         val machine: VendingMachine =
+
             if (special) {
 
                 SpecialMachine(
+
                     slots,
                     itemLimit,
-                    addOnItems
+                    addOnSlots!!
+
                 )
 
-            } else {
+            }
+
+            else {
 
                 VendingMachine(
+
                     slots,
                     itemLimit
+
                 )
 
             }
 
         saveMachine(machine)
 
-        println("Machine created.")
-        println(machine)
+        println("Machine successfully created.")
 
         openMainPage(event)
     }
 
-    private fun saveMachine(machine: VendingMachine) {
+        /*
+     * ==========================================================
+     * Save Machine
+     * ==========================================================
+     */
 
-        val file = File("machines.csv")
+    private fun saveMachine(
+        machine: VendingMachine
+    ) {
 
-        val special =
-            machine is SpecialMachine
+        val machineRoot =
+            File("data/machines")
 
-        val addOnLimit =
-            if (special)
-                (machine as SpecialMachine).getAddOnSlots().size
-            else
-                0
+        machineRoot.mkdirs()
 
-        file.appendText(
-            "${machine.slotLimit}," +
-            "${machine.itemLimit}," +
-            "$special," +
-            "$addOnLimit\n"
+        val nextId =
+            getNextMachineId(machineRoot)
+
+        val machineFolder =
+
+            File(
+
+                machineRoot,
+
+                "machine_%04d".format(
+                    nextId
+                )
+
+            )
+
+        machineFolder.mkdirs()
+
+        createInfoFile(
+
+            machineFolder,
+            machine
+
+        )
+
+        createInventoryFile(
+
+            machineFolder,
+            machine
+
+        )
+
+        createTransactionHistoryFile(
+
+            machineFolder
+
+        )
+
+        println(
+            "Created ${machineFolder.name}"
         )
     }
 
-    private fun openMainPage(event: ActionEvent) {
+    /*
+     * ==========================================================
+     * Machine Numbering
+     * ==========================================================
+     */
 
-        val root: Parent =
-            FXMLLoader.load(
-                javaClass.getResource("/fxml/main.fxml")
+    private fun getNextMachineId(
+
+        machineRoot: File
+
+    ): Int {
+
+        val ids =
+
+            machineRoot
+                .listFiles()
+                ?.filter {
+
+                    it.isDirectory &&
+                    it.name.startsWith(
+                        "machine_"
+                    )
+
+                }
+                ?.mapNotNull {
+
+                    it.name
+                        .removePrefix(
+                            "machine_"
+                        )
+                        .toIntOrNull()
+
+                }
+
+                ?: emptyList()
+
+        return
+
+            (ids.maxOrNull() ?: 0) + 1
+    }
+
+    /*
+     * ==========================================================
+     * Create info.csv
+     * ==========================================================
+     */
+
+    private fun createInfoFile(
+
+        folder: File,
+        machine: VendingMachine
+
+    ) {
+
+        val file =
+
+            File(
+                folder,
+                "info.csv"
             )
 
-        val stage =
-            (event.source as javafx.scene.Node)
-                .scene
-                .window as Stage
+        if (
 
-        stage.scene = Scene(root)
+            machine is SpecialMachine
+
+        ) {
+
+            file.writeText(
+
+                "${machine.slotLimit}," +
+                "${machine.itemLimit}," +
+                machine
+                    .getAddOnSlots()
+                    .size
+
+            )
+
+        }
+
+        else {
+
+            file.writeText(
+
+                "${machine.slotLimit}," +
+                machine.itemLimit
+
+            )
+
+        }
+
     }
-
-    private fun showError(message: String) {
-
-        Alert(Alert.AlertType.ERROR).apply {
-
-            title = "Invalid Input"
-            headerText = null
-            contentText = message
-
-        }.showAndWait()
-    }
-}
