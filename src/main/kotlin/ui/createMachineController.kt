@@ -13,7 +13,6 @@ import javafx.scene.layout.VBox
 import javafx.stage.Stage
 import model.SpecialMachine
 import model.VendingMachine
-import model.CashRegister
 import java.io.File
 
 class CreateMachineController {
@@ -63,12 +62,15 @@ class CreateMachineController {
 
     private fun configureSlotSpinner() {
 
+        val minimum = 8
+
         val factory =
+
             SpinnerValueFactory
                 .IntegerSpinnerValueFactory(
-                    8,
+                    minimum,
                     Int.MAX_VALUE,
-                    8
+                    minimum
                 )
 
         slotSpinner.valueFactory = factory
@@ -76,12 +78,15 @@ class CreateMachineController {
 
     private fun configureItemLimitSpinner() {
 
+        val minimum = 10
+
         val factory =
+
             SpinnerValueFactory
                 .IntegerSpinnerValueFactory(
-                    10,
+                    minimum,
                     Int.MAX_VALUE,
-                    10
+                    minimum
                 )
 
         itemLimitSpinner.valueFactory =
@@ -90,12 +95,15 @@ class CreateMachineController {
 
     private fun configureAddonSpinner() {
 
+        val minimum = 1
+
         val factory =
+
             SpinnerValueFactory
                 .IntegerSpinnerValueFactory(
-                    1,
+                    minimum,
                     Int.MAX_VALUE,
-                    1
+                    minimum
                 )
 
         addonSpinner.valueFactory =
@@ -108,6 +116,8 @@ class CreateMachineController {
 
         addonSection.isVisible = visible
         addonSection.isManaged = visible
+
+        addonSpinner.valueFactory?.value = 1
     }
 
     /*
@@ -153,19 +163,28 @@ class CreateMachineController {
         val special =
             specialCheckBox.isSelected
 
-        val addonSlots =
+        val addOnSlots =
+
             if (special)
-                addonSpinner.editor.text.toIntOrNull()
+
+                addonSpinner
+                    .editor
+                    .text
+                    .toIntOrNull()
+
             else
+
                 0
 
         if (
+
             special &&
-            (addonSlots == null || addonSlots < 1)
+            (addOnSlots == null || addOnSlots < 1)
+
         ) {
 
             showError(
-                "Special machines need at least one add-on slot."
+                "A special machine requires at least one add-on slot."
             )
 
             return
@@ -176,9 +195,11 @@ class CreateMachineController {
             if (special) {
 
                 SpecialMachine(
+
                     slots,
                     itemLimit,
-                    addonSlots!!
+                    addOnSlots!!
+
                 )
 
             }
@@ -186,8 +207,10 @@ class CreateMachineController {
             else {
 
                 VendingMachine(
+
                     slots,
                     itemLimit
+
                 )
 
             }
@@ -199,7 +222,7 @@ class CreateMachineController {
         openMainPage(event)
     }
 
-    /*
+        /*
      * ==========================================================
      * Save Machine
      * ==========================================================
@@ -209,138 +232,150 @@ class CreateMachineController {
         machine: VendingMachine
     ) {
 
-        val dataFolder =
-            File("data")
-
-        dataFolder.mkdirs()
-
         val machineRoot =
-            File(dataFolder, "machines")
+            File("data/machines")
 
         machineRoot.mkdirs()
 
-        val machineList =
-            File(dataFolder, "machines.csv")
-
-        if (!machineList.exists()) {
-
-            machineList.writeText(
-                "id,slots,itemLimit,special,addonSlots\n"
-            )
-
-        }
-
         val nextId =
-            getNextMachineId(machineList)
+            getNextMachineId(machineRoot)
 
-        val special =
-            machine is SpecialMachine
-
-        val addonSlots =
-            if (special)
-                (machine as SpecialMachine)
-                    .getAddOnSlots()
-                    .size
-            else
-                0
-
-        machineList.appendText(
-
-            "$nextId," +
-            "${machine.slotLimit}," +
-            "${machine.itemLimit}," +
-            "$special," +
-            "$addonSlots\n"
-
-        )
-
-        val folder =
+        val machineFolder =
 
             File(
+
                 machineRoot,
-                "machine_%04d".format(nextId)
+
+                "machine_%04d".format(
+                    nextId
+                )
+
             )
 
-        folder.mkdirs()
+        machineFolder.mkdirs()
 
         createInfoFile(
-            folder,
-            machine,
-            nextId,
-            special,
-            addonSlots
+
+            machineFolder,
+            machine
+
         )
 
         createInventoryFile(
-            folder,
+
+            machineFolder,
             machine
+
         )
 
-        createRegisterFile(
-            folder
-        )
+        createTransactionHistoryFile(
 
-        createTransactionFile(
-            folder
+            machineFolder
+
         )
 
         println(
-            "Created machine_${
-                "%04d".format(nextId)
-            }"
+            "Created ${machineFolder.name}"
         )
     }
 
+    /*
+     * ==========================================================
+     * Machine Numbering
+     * ==========================================================
+     */
+
     private fun getNextMachineId(
-        csv: File
+
+        machineRoot: File
+
     ): Int {
 
-        if (!csv.exists())
-            return 1
-
         val ids =
-            csv.readLines()
-                .drop(1)
-                .mapNotNull {
 
-                    it.split(",")
-                        .firstOrNull()
-                        ?.toIntOrNull()
+            machineRoot
+                .listFiles()
+                ?.filter {
+
+                    it.isDirectory &&
+                    it.name.startsWith(
+                        "machine_"
+                    )
+
+                }
+                ?.mapNotNull {
+
+                    it.name
+                        .removePrefix(
+                            "machine_"
+                        )
+                        .toIntOrNull()
 
                 }
 
-        return (ids.maxOrNull() ?: 0) + 1
+                ?: emptyList()
+
+        return
+
+            (ids.maxOrNull() ?: 0) + 1
     }
+
+    /*
+     * ==========================================================
+     * Create info.csv
+     * ==========================================================
+     */
 
     private fun createInfoFile(
 
         folder: File,
-        machine: VendingMachine,
-        id: Int,
-        special: Boolean,
-        addonSlots: Int
+        machine: VendingMachine
 
     ) {
 
-        File(
-            folder,
-            "info.csv"
-        ).writeText(
+        val file =
 
-            buildString {
+            File(
+                folder,
+                "info.csv"
+            )
 
-                appendLine("field,value")
-                appendLine("id,$id")
-                appendLine("slotLimit,${machine.slotLimit}")
-                appendLine("itemLimit,${machine.itemLimit}")
-                appendLine("special,$special")
-                appendLine("addonSlots,$addonSlots")
-                appendLine("totalSales,0")
+        if (
 
-            }
+            machine is SpecialMachine
 
-        )
+        ) {
+
+            file.writeText(
+
+                "${machine.slotLimit}," +
+                "${machine.itemLimit}," +
+                machine
+                    .getAddOnSlots()
+                    .size
+
+            )
+
+        }
+
+        else {
+
+            file.writeText(
+
+                "${machine.slotLimit}," +
+                machine.itemLimit
+
+            )
+
+        }
+
     }
+
+    /*
+     * ==========================================================
+     * Create inventory.csv
+     * ==========================================================
+     */
 
     private fun createInventoryFile(
 
@@ -350,6 +385,7 @@ class CreateMachineController {
     ) {
 
         val file =
+
             File(
                 folder,
                 "inventory.csv"
@@ -370,94 +406,102 @@ class CreateMachineController {
             ) {
 
                 out.println(
+
                     "${i + 1},,0,0,0"
+
                 )
 
             }
 
         }
-    }
-
-private fun createRegisterFile(
-    folder: File
-) {
-
-    val file =
-        File(
-            folder,
-            "register.csv"
-        )
-
-    val register =
-        CashRegister()
-
-    file.printWriter().use { out ->
-
-        out.println(
-            "denomination,quantity"
-        )
-
-        register
-            .getContents()
-            .toSortedMap()
-            .forEach {
-
-                (denomination, quantity) ->
-
-                out.println(
-                    "$denomination,$quantity"
-                )
-
-            }
 
     }
 
-}
+    /*
+     * ==========================================================
+     * Create transactionhistory.csv
+     * ==========================================================
+     */
 
-private fun createTransactionFile(
-    folder: File
-) {
+    private fun createTransactionHistoryFile(
+
+        folder: File
+
+    ) {
 
         val file =
+
             File(
                 folder,
-                "transactions.csv"
+                "transactionhistory.csv"
             )
 
-        file.printWriter().use { out ->
+        file.printWriter().use {
+
+            out ->
 
             out.println(
-                "id,timestamp,slot,quantity,amount"
+
+                "timestamp,item,quantity,total"
+
             )
 
         }
+
     }
 
-    private fun openMainPage(event: ActionEvent) {
+    /*
+     * ==========================================================
+     * Navigation
+     * ==========================================================
+     */
+
+    private fun openMainPage(
+        event: ActionEvent
+    ) {
 
         val root: Parent =
+
             FXMLLoader.load(
-                javaClass.getResource("/fxml/main.fxml")
+
+                javaClass.getResource(
+                    "/fxml/main.fxml"
+                )
+
             )
 
         val stage =
+
             (event.source as javafx.scene.Node)
                 .scene
                 .window as Stage
 
         stage.scene = Scene(root)
+
     }
 
-    private fun showError(message: String) {
+    /*
+     * ==========================================================
+     * Error Dialog
+     * ==========================================================
+     */
 
-        Alert(Alert.AlertType.ERROR).apply {
+    private fun showError(
+        message: String
+    ) {
+
+        Alert(
+            Alert.AlertType.ERROR
+        ).apply {
 
             title = "Invalid Input"
+
             headerText = null
+
             contentText = message
 
         }.showAndWait()
+
     }
+
 }
-
-

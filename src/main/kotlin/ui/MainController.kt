@@ -61,7 +61,7 @@ class MainController {
         items.clear()
 
         val file =
-            File("data/items.csv")
+            File("items.csv")
 
         if (!file.exists())
             return
@@ -97,13 +97,8 @@ class MainController {
 
     private fun saveItems() {
 
-        val dataFolder =
-            File("data")
-
-        dataFolder.mkdirs()
-
         val file =
-            File(dataFolder, "items.csv")
+            File("items.csv")
 
         file.printWriter().use { out ->
 
