@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox
+
+        xmlns="http://javafx.com/javafx/17"
+        xmlns:fx="http://javafx.com/fxml"
+
+        fx:controller="ui.CreateMachineController"
+
+        alignment="TOP_CENTER"
+        spacing="20"
+
+        style="
+            -fx-background-color: #F0F0F0;
+            -fx-padding: 30;
+        ">
+
+    <Label
+
+            text="Create Machine"
+
+            style="
+                -fx-font-size: 32px;
+                -fx-font-weight: bold;
+            "
+    />
+
+    <VBox
+
+            spacing="15"
+            prefWidth="450"
+
+            style="
+                -fx-background-color: white;
+                -fx-padding: 25;
+                -fx-background-radius: 15;
+                -fx-border-color: lightgray;
+                -fx-border-radius: 15;
+            ">
+
+        <Label text="Number of Slots"/>
+
+        <Spinner
+                fx:id="slotSpinner"
+                editable="true"/>
+
+        <Label text="Maximum Items Per Slot"/>
+
+        <Spinner
+                fx:id="itemLimitSpinner"
+                editable="true"/>
+
+        <CheckBox
+
+                fx:id="specialCheckBox"
+
+                text="Special Machine"/>
+
+        <VBox
+                fx:id="addonSection"
+                spacing="8"
+                visible="false"
+                managed="false">
+
+            <Label text="Number of Add-on Items"/>
+
+            <Spinner
+                    fx:id="addonSpinner"
+                    editable="true"/>
+
+        </VBox>
+
+        <HBox spacing="10" alignment="CENTER_RIGHT">
+            <Button text="Back" onAction="#back" focusTraversable="false"/>
+            <Button text="Submit" onAction="#submitMachine" focusTraversable="false"/>
+        </HBox>
+
+    </VBox>
+
+</VBox>
