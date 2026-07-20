@@ -370,3 +370,138 @@ class CreateMachineController {
         }
 
     }
+
+    /*
+     * ==========================================================
+     * Create inventory.csv
+     * ==========================================================
+     */
+
+    private fun createInventoryFile(
+
+        folder: File,
+        machine: VendingMachine
+
+    ) {
+
+        val file =
+
+            File(
+                folder,
+                "inventory.csv"
+            )
+
+        file.printWriter().use {
+
+            out ->
+
+            out.println(
+                "slot,item,price,quantity,sold"
+            )
+
+            for (
+
+                i in 0 until machine.slotLimit
+
+            ) {
+
+                out.println(
+
+                    "${i + 1},,0,0,0"
+
+                )
+
+            }
+
+        }
+
+    }
+
+    /*
+     * ==========================================================
+     * Create transactionhistory.csv
+     * ==========================================================
+     */
+
+    private fun createTransactionHistoryFile(
+
+        folder: File
+
+    ) {
+
+        val file =
+
+            File(
+                folder,
+                "transactionhistory.csv"
+            )
+
+        file.printWriter().use {
+
+            out ->
+
+            out.println(
+
+                "timestamp,item,quantity,total"
+
+            )
+
+        }
+
+    }
+
+    /*
+     * ==========================================================
+     * Navigation
+     * ==========================================================
+     */
+
+    private fun openMainPage(
+        event: ActionEvent
+    ) {
+
+        val root: Parent =
+
+            FXMLLoader.load(
+
+                javaClass.getResource(
+                    "/fxml/main.fxml"
+                )
+
+            )
+
+        val stage =
+
+            (event.source as javafx.scene.Node)
+                .scene
+                .window as Stage
+
+        stage.scene = Scene(root)
+
+    }
+
+    /*
+     * ==========================================================
+     * Error Dialog
+     * ==========================================================
+     */
+
+    private fun showError(
+        message: String
+    ) {
+
+        Alert(
+            Alert.AlertType.ERROR
+        ).apply {
+
+            title = "Invalid Input"
+
+            headerText = null
+
+            contentText = message
+
+        }.showAndWait()
+
+    }
+
+}
