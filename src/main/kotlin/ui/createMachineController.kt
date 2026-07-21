@@ -33,7 +33,7 @@ class CreateMachineController {
     private lateinit var addonSection: VBox
 
     @FXML
-    private fun initialize() {
+    fun initialize() {
 
         configureSlotSpinner()
         configureItemLimitSpinner()
@@ -182,23 +182,22 @@ class CreateMachineController {
 
     private fun saveMachine(machine: VendingMachine) {
 
-        val file = File("machines.csv")
+        val root = File("data/machines")
+        root.mkdirs()
 
-        val special =
-            machine is SpecialMachine
+        val nextNumber = getNextMachineNumber(root)
 
-        val addOnLimit =
-            if (special)
-                (machine as SpecialMachine).getAddOnSlots().size
-            else
-                0
-
-        file.appendText(
-            "${machine.slotLimit}," +
-            "${machine.itemLimit}," +
-            "$special," +
-            "$addOnLimit\n"
+        val folder = File(
+            root,
+            "machine_%04d".format(nextNumber)
         )
+
+        folder.mkdirs()
+
+        createInfoFile(folder, machine)
+        createInventoryFile(folder, machine)
+        createTransactionHistoryFile(folder)
+
     }
 
     private fun openMainPage(event: ActionEvent) {
@@ -216,6 +215,123 @@ class CreateMachineController {
         stage.scene = Scene(root)
     }
 
+        private fun getNextMachineNumber(
+        root: File
+    ): Int {
+
+        var largest = 0
+
+        root.listFiles()?.forEach { file ->
+
+            if (
+                file.isDirectory &&
+                file.name.startsWith("machine_")
+            ) {
+
+                val number =
+                    file.name
+                        .removePrefix("machine_")
+                        .toIntOrNull()
+
+                if (
+                    number != null &&
+                    number > largest
+                ) {
+                    largest = number
+                }
+            }
+        }
+
+        return largest + 1
+    }
+
+
+        private fun createInfoFile(
+
+        folder: File,
+        machine: VendingMachine
+
+    ) {
+
+        val file =
+            File(folder, "info.csv")
+
+        if (machine is SpecialMachine) {
+
+            file.writeText(
+
+                "${machine.slotLimit}\n" +
+                "${machine.itemLimit}\n" +
+                "${machine.getAddOnSlots().size}"
+
+            )
+
+        }
+
+        else {
+
+            file.writeText(
+
+                "${machine.slotLimit}\n" +
+                machine.itemLimit
+
+            )
+
+        }
+
+    }
+
+    private fun createInventoryFile(
+
+        folder: File,
+        machine: VendingMachine
+
+    ) {
+
+        val file =
+            File(folder, "inventory.csv")
+
+        file.printWriter().use {
+
+            out ->
+
+            out.println(
+                "slot,item,price,quantity,sold"
+            )
+
+            for (
+
+                i in 0 until machine.slotLimit
+
+            ) {
+
+                out.println(
+                    "${i + 1},,0,0,0"
+                )
+
+            }
+
+        }
+
+    }
+
+    private fun createTransactionHistoryFile(
+
+        folder: File
+
+    ) {
+
+        File(
+            folder,
+            "transactionhistory.csv"
+        ).writeText(
+
+            "timestamp,item,quantity,total\n"
+
+        )
+
+    }
+
     private fun showError(message: String) {
 
         Alert(Alert.AlertType.ERROR).apply {
@@ -226,4 +342,6 @@ class CreateMachineController {
 
         }.showAndWait()
     }
+
+
 }
