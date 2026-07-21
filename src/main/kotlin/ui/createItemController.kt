@@ -89,7 +89,7 @@ class CreateItemController {
         }
 
         val csv =
-            File("items.csv")
+            File("data/items.csv")
 
         if (csv.exists()) {
 
@@ -124,7 +124,7 @@ class CreateItemController {
         }
 
         val assetsFolder =
-            File("assets")
+            File("data/icons")
 
         assetsFolder.mkdirs()
 
@@ -142,11 +142,11 @@ class CreateItemController {
         saveItem(
             name,
             calories,
-            "assets/${source.name}"
+            "data/icons/${source.name}"
         )
 
         println("Item saved:")
-        println("$name, $calories, assets/${source.name}")
+        println("$name, $calories, data/icons/${source.name}")
 
         openMainPage(event)
     }
@@ -160,7 +160,7 @@ class CreateItemController {
     ) {
 
         val file =
-            File("items.csv")
+            File("data/items.csv")
 
         file.appendText(
 
