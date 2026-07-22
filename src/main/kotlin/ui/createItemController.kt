@@ -88,8 +88,16 @@ class CreateItemController {
 
         }
 
+        val dataFolder =
+            File("data")
+
+        dataFolder.mkdirs()
+
         val csv =
-            File("data/items.csv")
+            File(
+                dataFolder,
+                "items.csv"
+            )
 
         if (csv.exists()) {
 
@@ -151,40 +159,54 @@ class CreateItemController {
         openMainPage(event)
     }
 
-    private fun saveItem(
+   private fun saveItem(
 
-        name: String,
-        calories: Int,
-        imagePath: String
+    name: String,
+    calories: Int,
+    imagePath: String
 
-    ) {
+) {
 
-        val file =
-            File("data/items.csv")
+    val dataFolder =
+        File("data")
 
-        file.appendText(
+    dataFolder.mkdirs()
 
-            "$name," +
-            "$calories," +
-            "$imagePath\n"
-
+    val file =
+        File(
+            dataFolder,
+            "items.csv"
         )
-    }
 
-    private fun openMainPage(event: ActionEvent) {
+    file.appendText(
 
-        val root: Parent =
-            FXMLLoader.load(
-                javaClass.getResource("/fxml/main.fxml")
+        "$name," +
+        "$calories," +
+        "$imagePath\n"
+
+    )
+
+}
+
+private fun openMainPage(
+    event: ActionEvent
+) {
+
+    val root: Parent =
+        FXMLLoader.load(
+            javaClass.getResource(
+                "/fxml/main.fxml"
             )
+        )
 
-        val stage =
-            (event.source as javafx.scene.Node)
-                .scene
-                .window as Stage
+    val stage =
+        (event.source as javafx.scene.Node)
+            .scene
+            .window as Stage
 
-        stage.scene = Scene(root)
-    }
+    stage.scene = Scene(root)
+
+}
 
     private fun showError(message: String) {
 
