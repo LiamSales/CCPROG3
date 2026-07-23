@@ -26,28 +26,108 @@ class MainController {
 
     private val items = mutableListOf<Item>()
 
+    /*
+     * ==========================================================
+     * Machine Entry
+     * ==========================================================
+     */
+
+    private data class MachineEntry(
+
+        val id: String,
+
+        val folder: File,
+
+        val special: Boolean
+
+    )
+
     @FXML
     fun initialize() {
 
-        val machines = listOf(
-            "Machine 1",
-            "Machine 2",
-            "Machine 3"
-        )
-
-        machines.forEach {
-            machineContainer.children.add(
-                createMachineCard(it)
-            )
-        }
-
-        machineContainer.children.add(
-            createAddCard("Create Machine")
-        )
+        loadMachines()
 
         loadItems()
 
         renderItems()
+
+    }
+
+    /*
+     * ==========================================================
+     * Machine Loading
+     * ==========================================================
+     */
+
+    private fun loadMachines() {
+
+        machineContainer.children.clear()
+
+        val machineRoot =
+            File("data/machines")
+
+        machineRoot.mkdirs()
+
+        machineRoot
+            .listFiles()
+            ?.filter {
+
+                it.isDirectory &&
+                it.name.startsWith("machine_")
+
+            }
+            ?.sortedBy {
+
+                it.name
+
+            }
+            ?.forEach { folder ->
+
+                val info =
+                    File(
+                        folder,
+                        "info.csv"
+                    )
+
+                if (!info.exists())
+                    return@forEach
+
+                val values =
+                    info.readText()
+                        .trim()
+                        .split(",")
+
+                val special =
+                    values.size == 3
+
+                val machine =
+
+                    MachineEntry(
+
+                        id = folder.name,
+
+                        folder = folder,
+
+                        special = special
+
+                    )
+
+                machineContainer.children.add(
+
+                    createMachineCard(machine)
+
+                )
+
+            }
+
+        machineContainer.children.add(
+
+            createAddCard(
+                "Create Machine"
+            )
+
+        )
+
     }
 
     /*
@@ -98,7 +178,7 @@ class MainController {
     private fun saveItems() {
 
         val dataFolder =
-        File("data")
+            File("data")
 
         dataFolder.mkdirs()
 
@@ -148,44 +228,88 @@ class MainController {
 
         itemContainer.children.add(
 
-            createAddCard("Create Item")
+            createAddCard(
+                "Create Item"
+            )
 
         )
+
     }
 
-        private fun createMachineCard(name: String): VBox {
+    /*
+     * ==========================================================
+     * Machine Card
+     * ==========================================================
+     */
 
-        val title = Label(name)
+    private fun createMachineCard(
+        machine: MachineEntry
+    ): VBox {
+
+        val title =
+            Label(machine.id)
 
         title.style =
             "-fx-text-fill:white;" +
             "-fx-font-size:20;" +
             "-fx-font-weight:bold;"
 
-        val testButton = Button("Test")
+        val type =
+            Label(
+
+                if (machine.special)
+                    "Special Machine"
+                else
+                    "Regular Machine"
+
+            )
+
+        type.style =
+            "-fx-text-fill:#CFCFCF;"
+
+        val testButton =
+            Button("Test")
 
         testButton.setOnAction {
+
+            SelectedMachine.folder =
+                machine.folder
+
             openTestPage()
+
         }
 
-        val maintenanceButton = Button("Maintenance")
+        val maintenanceButton =
+            Button("Maintenance")
 
         maintenanceButton.setOnAction {
+
+            SelectedMachine.folder =
+                machine.folder
+
             openMaintenancePage()
+
         }
 
-        val buttons = VBox(8.0)
+        val buttons =
+            VBox(8.0)
 
         buttons.children.addAll(
+
             testButton,
             maintenanceButton
+
         )
 
-        val card = VBox(10.0)
+        val card =
+            VBox(10.0)
 
         card.children.addAll(
+
             title,
+            type,
             buttons
+
         )
 
         card.prefWidth = 220.0
@@ -196,21 +320,37 @@ class MainController {
             "-fx-padding:20;"
 
         return card
+
     }
 
-    private fun createItemCard(item: Item): VBox {
+    /*
+     * ==========================================================
+     * Item Card
+     * ==========================================================
+     */
 
-        val image = ImageView()
+    private fun createItemCard(
+        item: Item
+    ): VBox {
+
+        val image =
+            ImageView()
 
         try {
 
-            image.image = Image(
-                File(item.iconPath)
-                    .toURI()
-                    .toString()
-            )
+            image.image =
 
-        } catch (_: Exception) {
+                Image(
+
+                    File(item.iconPath)
+                        .toURI()
+                        .toString()
+
+                )
+
+        }
+
+        catch (_: Exception) {
 
         }
 
@@ -218,7 +358,8 @@ class MainController {
         image.fitHeight = 120.0
         image.isPreserveRatio = true
 
-        val title = Label(item.name)
+        val title =
+            Label(item.name)
 
         title.style =
             "-fx-text-fill:white;" +
@@ -226,7 +367,9 @@ class MainController {
             "-fx-font-weight:bold;"
 
         val calories =
-            Label("${item.calories} kcal")
+            Label(
+                "${item.calories} kcal"
+            )
 
         calories.style =
             "-fx-text-fill:white;"
@@ -240,7 +383,8 @@ class MainController {
 
         }
 
-        val card = VBox(10.0)
+        val card =
+            VBox(10.0)
 
         card.children.addAll(
 
@@ -259,14 +403,24 @@ class MainController {
             "-fx-padding:20;"
 
         return card
+
     }
 
-    private fun confirmRemoveItem(item: Item) {
+    /*
+     * ==========================================================
+     * Remove Item
+     * ==========================================================
+     */
+
+    private fun confirmRemoveItem(
+        item: Item
+    ) {
 
         val alert =
             Alert(Alert.AlertType.CONFIRMATION)
 
-        alert.title = "Remove Item"
+        alert.title =
+            "Remove Item"
 
         alert.headerText =
             "Delete ${item.name}?"
@@ -289,11 +443,21 @@ class MainController {
             renderItems()
 
         }
+
     }
 
-    private fun createAddCard(labelText: String): VBox {
+    /*
+     * ==========================================================
+     * Add Card
+     * ==========================================================
+     */
 
-        val plusButton = Button("+")
+    private fun createAddCard(
+        labelText: String
+    ): VBox {
+
+        val plusButton =
+            Button("+")
 
         plusButton.prefWidth = 80.0
         plusButton.prefHeight = 80.0
@@ -318,16 +482,20 @@ class MainController {
 
         }
 
-        val label = Label(labelText)
+        val label =
+            Label(labelText)
 
         label.style =
             "-fx-text-fill:white;"
 
-        val card = VBox(15.0)
+        val card =
+            VBox(15.0)
 
         card.children.addAll(
+
             plusButton,
             label
+
         )
 
         card.prefWidth = 220.0
@@ -338,9 +506,10 @@ class MainController {
             "-fx-padding:20;"
 
         return card
+
     }
 
-        /*
+    /*
      * ==========================================================
      * Navigation
      * ==========================================================
