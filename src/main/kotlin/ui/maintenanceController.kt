@@ -14,14 +14,21 @@ import javafx.scene.layout.GridPane
 import javafx.scene.layout.HBox
 import javafx.scene.layout.VBox
 import javafx.stage.Stage
+import java.io.File
 
 class MaintenanceController {
 
     @FXML
     private lateinit var slotGrid: GridPane
 
+    private lateinit var machineFolder: File
+
     @FXML
     fun initialize() {
+
+        machineFolder =
+        SelectedMachine.folder
+            ?: error("No machine selected.")
 
         for (i in 1..8) {
 
@@ -118,19 +125,62 @@ class MaintenanceController {
         popup("Summary", "Summary page coming soon.")
     }
 
-    @FXML
-    fun removeMachine(event: ActionEvent) {
+@FXML
+fun removeMachine(event: ActionEvent) {
 
-        val alert = Alert(Alert.AlertType.CONFIRMATION)
+    val alert =
+        Alert(Alert.AlertType.CONFIRMATION)
 
-        alert.title = "Remove Machine"
-        alert.headerText = "Remove Machine?"
-        alert.contentText = "This action cannot be undone."
+    alert.title =
+        "Remove Machine"
 
-        if (alert.showAndWait().get() == ButtonType.OK) {
-            backToMainPage(event)
-        }
+    alert.headerText =
+        "Remove Machine?"
+
+    alert.contentText =
+        "This action cannot be undone."
+
+    val result =
+        alert.showAndWait()
+
+    if (
+
+        result.isPresent &&
+        result.get() == ButtonType.OK
+
+    ) {
+
+        deleteFolder(machineFolder)
+
+        backToMainPage(event)
+
     }
+
+}
+
+private fun deleteFolder(
+    folder: File
+) {
+
+    folder.listFiles()?.forEach {
+
+        if (it.isDirectory) {
+
+            deleteFolder(it)
+
+        }
+
+        else {
+
+            it.delete()
+
+        }
+
+    }
+
+    folder.delete()
+
+}
 
     @FXML
     fun backToMainPage(event: ActionEvent) {
