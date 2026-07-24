@@ -15,6 +15,7 @@ import javafx.scene.layout.HBox
 import javafx.scene.layout.VBox
 import javafx.stage.Stage
 import java.io.File
+import model.VendingMachine
 
 class MaintenanceController {
 
@@ -109,6 +110,22 @@ class MaintenanceController {
             )
         }
     }
+
+        private fun loadMachine(): VendingMachine {
+
+        val infoFile = File(machineFolder, "info.csv")
+
+        val lines = infoFile.readLines()
+
+        val slotCount = lines[0].trim().toInt()
+        val slotCapacity = lines[1].trim().toInt()
+
+        return VendingMachine(
+            slotCount,
+            slotCapacity
+        )
+    }
+
 
     @FXML
     fun replenishCash() {
