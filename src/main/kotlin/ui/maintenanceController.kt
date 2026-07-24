@@ -24,12 +24,16 @@ class MaintenanceController {
 
     private lateinit var machineFolder: File
 
+    private lateinit var machine: VendingMachine
+
     @FXML
     fun initialize() {
 
         machineFolder =
         SelectedMachine.folder
             ?: error("No machine selected.")
+
+            machine = loadMachine()
 
         for (i in 1..8) {
 

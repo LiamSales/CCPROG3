@@ -197,6 +197,7 @@ class CreateMachineController {
         createInfoFile(folder, machine)
         createInventoryFile(folder, machine)
         createTransactionHistoryFile(folder)
+        createRegisterFile(folder)
 
     }
 
@@ -295,10 +296,6 @@ class CreateMachineController {
 
             out ->
 
-            out.println(
-                "slot,item,price,quantity,sold"
-            )
-
             for (
 
                 i in 0 until machine.slotLimit
@@ -324,9 +321,23 @@ class CreateMachineController {
         File(
             folder,
             "transactionhistory.csv"
+        ).writeText(""
+        )
+
+    }
+
+        private fun createRegisterFile(
+
+        folder: File
+
+    ) {
+
+        File(
+            folder,
+            "register.csv"
         ).writeText(
 
-            "timestamp,item,quantity,total\n"
+            "0\n0\n0\n0\n0\n0\n0\n0\n0"
 
         )
 
