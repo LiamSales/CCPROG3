@@ -29,11 +29,12 @@ class MaintenanceController {
     @FXML
     fun initialize() {
 
+        //it should just be passed the vending machine 
+
+
         machineFolder =
         SelectedMachine.folder
             ?: error("No machine selected.")
-
-            machine = loadMachine()
 
         for (i in 1..8) {
 
@@ -114,22 +115,6 @@ class MaintenanceController {
             )
         }
     }
-
-        private fun loadMachine(): VendingMachine {
-
-        val infoFile = File(machineFolder, "info.csv")
-
-        val lines = infoFile.readLines()
-
-        val slotCount = lines[0].trim().toInt()
-        val slotCapacity = lines[1].trim().toInt()
-
-        return VendingMachine(
-            slotCount,
-            slotCapacity
-        )
-    }
-
 
     @FXML
     fun replenishCash() {

@@ -26,26 +26,12 @@ class MainController {
 
     private val items = mutableListOf<Item>()
 
-    /*
-     * ==========================================================
-     * Machine Entry
-     * ==========================================================
-     */
-
-    private data class MachineEntry(
-
-        val id: String,
-
-        val folder: File,
-
-        val special: Boolean
-
-    )
-
     @FXML
     fun initialize() {
 
-        loadMachines()
+        MachineManager.loadMachines()
+
+        renderMachines()
 
         loadItems()
 
@@ -59,76 +45,29 @@ class MainController {
      * ==========================================================
      */
 
-    private fun loadMachines() {
+   private fun renderMachines() {
 
-        machineContainer.children.clear()
+    machineContainer.children.clear()
 
-        val machineRoot =
-            File("data/machines")
-
-        machineRoot.mkdirs()
-
-        machineRoot
-            .listFiles()
-            ?.filter {
-
-                it.isDirectory &&
-                it.name.startsWith("machine_")
-
-            }
-            ?.sortedBy {
-
-                it.name
-
-            }
-            ?.forEach { folder ->
-
-                val info =
-                    File(
-                        folder,
-                        "info.csv"
-                    )
-
-                if (!info.exists())
-                    return@forEach
-
-                val values =
-                    info.readText()
-                        .trim()
-                        .split(",")
-
-                val special =
-                    values.size == 3
-
-                val machine =
-
-                    MachineEntry(
-
-                        id = folder.name,
-
-                        folder = folder,
-
-                        special = special
-
-                    )
-
-                machineContainer.children.add(
-
-                    createMachineCard(machine)
-
-                )
-
-            }
+    MachineManager.machines.forEach {
 
         machineContainer.children.add(
 
-            createAddCard(
-                "Create Machine"
-            )
+            createMachineCard(it)
 
         )
 
     }
+
+    machineContainer.children.add(
+
+        createAddCard(
+            "Create Machine"
+        )
+
+    )
+
+}
 
     /*
      * ==========================================================
@@ -242,8 +181,9 @@ class MainController {
      * ==========================================================
      */
 
+
     private fun createMachineCard(
-        machine: MachineEntry
+    entry: MachineManager.MachineEntry
     ): VBox {
 
         val title =
