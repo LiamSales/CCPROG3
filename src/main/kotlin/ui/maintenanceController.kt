@@ -29,14 +29,18 @@ class MaintenanceController {
     @FXML
     fun initialize() {
 
-        //it should just be passed the vending machine 
-
-
-        machineFolder =
+    machineFolder =
         SelectedMachine.folder
             ?: error("No machine selected.")
 
-        for (i in 1..8) {
+    machine =
+        SelectedMachine.machine
+            ?: error("No machine loaded.")
+
+    val slotCount =
+        machine.slotLimit
+
+    for (i in 1..slotCount) {
 
             val card = VBox(10.0)
 

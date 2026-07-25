@@ -15,6 +15,7 @@ import javafx.scene.layout.VBox
 import javafx.stage.Stage
 import model.Item
 import java.io.File
+import model.SpecialMachine
 
 class MainController {
 
@@ -181,88 +182,98 @@ class MainController {
      * ==========================================================
      */
 
+/*
+ * ==========================================================
+ * Machine Card
+ * ==========================================================
+ */
 
-    private fun createMachineCard(
+private fun createMachineCard(
     entry: MachineManager.MachineEntry
-    ): VBox {
+): VBox {
 
-        val title =
-            Label(machine.id)
+    val title =
+        Label(entry.folder.name)
 
-        title.style =
-            "-fx-text-fill:white;" +
-            "-fx-font-size:20;" +
-            "-fx-font-weight:bold;"
+    title.style =
+        "-fx-text-fill:white;" +
+        "-fx-font-size:20;" +
+        "-fx-font-weight:bold;"
 
-        val type =
-            Label(
+    val type =
+        Label(
 
-                if (machine.special)
-                    "Special Machine"
-                else
-                    "Regular Machine"
-
-            )
-
-        type.style =
-            "-fx-text-fill:#CFCFCF;"
-
-        val testButton =
-            Button("Test")
-
-        testButton.setOnAction {
-
-            SelectedMachine.folder =
-                machine.folder
-
-            openTestPage()
-
-        }
-
-        val maintenanceButton =
-            Button("Maintenance")
-
-        maintenanceButton.setOnAction {
-
-            SelectedMachine.folder =
-                machine.folder
-
-            openMaintenancePage()
-
-        }
-
-        val buttons =
-            VBox(8.0)
-
-        buttons.children.addAll(
-
-            testButton,
-            maintenanceButton
+            if (entry.machine is SpecialMachine)
+                "Special Machine"
+            else
+                "Regular Machine"
 
         )
 
-        val card =
-            VBox(10.0)
+    type.style =
+        "-fx-text-fill:#CFCFCF;"
 
-        card.children.addAll(
+    val testButton =
+        Button("Test")
 
-            title,
-            type,
-            buttons
+    testButton.setOnAction {
 
-        )
+        SelectedMachine.folder =
+            entry.folder
 
-        card.prefWidth = 220.0
+        SelectedMachine.machine =
+            entry.machine
 
-        card.style =
-            "-fx-background-color:#1A1A1A;" +
-            "-fx-background-radius:15;" +
-            "-fx-padding:20;"
-
-        return card
+        openTestPage()
 
     }
 
+    val maintenanceButton =
+        Button("Maintenance")
+
+    maintenanceButton.setOnAction {
+
+        SelectedMachine.folder =
+            entry.folder
+
+        SelectedMachine.machine =
+            entry.machine
+
+        openMaintenancePage()
+
+    }
+
+    val buttons =
+        VBox(8.0)
+
+    buttons.children.addAll(
+
+        testButton,
+        maintenanceButton
+
+    )
+
+    val card =
+        VBox(10.0)
+
+    card.children.addAll(
+
+        title,
+        type,
+        buttons
+
+    )
+
+    card.prefWidth = 220.0
+
+    card.style =
+        "-fx-background-color:#1A1A1A;" +
+        "-fx-background-radius:15;" +
+        "-fx-padding:20;"
+
+    return card
+
+}
     /*
      * ==========================================================
      * Item Card
