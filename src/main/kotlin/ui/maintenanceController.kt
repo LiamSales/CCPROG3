@@ -16,6 +16,8 @@ import javafx.scene.layout.VBox
 import javafx.stage.Stage
 import java.io.File
 import model.VendingMachine
+import javafx.scene.control.ScrollPane
+import model.SpecialMachine
 
 class MaintenanceController {
 
@@ -27,6 +29,15 @@ class MaintenanceController {
     private lateinit var machine: VendingMachine
 
     @FXML
+    private lateinit var addOnGrid: GridPane
+
+    @FXML
+    private lateinit var addOnScroll: ScrollPane
+
+    @FXML
+    private lateinit var addOnLabel: Label
+
+    @FXML
     fun initialize() {
 
     machineFolder =
@@ -36,6 +47,54 @@ class MaintenanceController {
     machine =
         SelectedMachine.machine
             ?: error("No machine loaded.")
+
+    val special =
+    machine as? SpecialMachine
+
+if (special == null) {
+
+    addOnGrid.isVisible = false
+    addOnGrid.isManaged = false
+
+    addOnScroll.isVisible = false
+    addOnScroll.isManaged = false
+
+    addOnLabel.isVisible = false
+    addOnLabel.isManaged = false
+
+} else {
+
+    for (i in 1..special.getAddOnSlotCount()) {
+
+        val card = VBox(10.0)
+
+        card.alignment = Pos.CENTER
+        card.prefWidth = 180.0
+        card.prefHeight = 180.0
+
+        card.style =
+            "-fx-background-color: white;" +
+            "-fx-background-radius: 12;" +
+            "-fx-border-color: lightgray;" +
+            "-fx-border-radius: 12;" +
+            "-fx-padding: 15;"
+
+        val title =
+            Label("Add-On $i")
+
+        title.style =
+            "-fx-font-size:18px;" +
+            "-fx-font-weight:bold;"
+
+        card.children.add(title)
+
+        addOnGrid.add(
+            card,
+            (i - 1) % 4,
+            (i - 1) / 4
+        )
+    }
+}
 
     val slotCount =
         machine.slotLimit
