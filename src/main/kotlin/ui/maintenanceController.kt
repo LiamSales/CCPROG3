@@ -66,34 +66,83 @@ if (special == null) {
 
     for (i in 1..special.getAddOnSlotCount()) {
 
-        val card = VBox(10.0)
+    val card = VBox(10.0)
 
-        card.alignment = Pos.CENTER
-        card.prefWidth = 180.0
-        card.prefHeight = 180.0
+    card.alignment = Pos.CENTER
+    card.prefWidth = 220.0
+    card.prefHeight = 220.0
 
-        card.style =
-            "-fx-background-color: white;" +
-            "-fx-background-radius: 12;" +
-            "-fx-border-color: lightgray;" +
-            "-fx-border-radius: 12;" +
-            "-fx-padding: 15;"
+    card.style =
+        "-fx-background-color: white;" +
+        "-fx-background-radius: 12;" +
+        "-fx-border-color: lightgray;" +
+        "-fx-border-radius: 12;" +
+        "-fx-padding: 15;"
 
-        val title =
-            Label("Add-On $i")
+    val slotLabel = Label("Add-On $i")
 
-        title.style =
-            "-fx-font-size:18px;" +
-            "-fx-font-weight:bold;"
+    slotLabel.style =
+        "-fx-font-size:18px;" +
+        "-fx-font-weight:bold;"
 
-        card.children.add(title)
+    val itemLabel = Label("Item: Empty")
+    val qtyLabel = Label("Quantity: 0")
+    val priceLabel = Label("Price: ₱0")
 
-        addOnGrid.add(
-            card,
-            (i - 1) % 4,
-            (i - 1) / 4
-        )
+    val setButton = Button("Set")
+    val clearButton = Button("Clear")
+    val restockButton = Button("Restock")
+    val priceButton = Button("Price")
+
+    setButton.setOnAction {
+        popup("Set Add-On", "Set Add-On $i")
     }
+
+    clearButton.setOnAction {
+        popup("Clear Add-On", "Clear Add-On $i")
+    }
+
+    restockButton.setOnAction {
+
+        val root: Parent =
+            FXMLLoader.load(
+                javaClass.getResource("/fxml/restock.fxml")
+            )
+
+        val stage =
+            addOnGrid.scene.window as Stage
+
+        stage.scene = Scene(root)
+    }
+
+    priceButton.setOnAction {
+        popup("Change Price", "Change price for Add-On $i")
+    }
+
+    val row1 = HBox(10.0)
+    row1.alignment = Pos.CENTER
+    row1.children.addAll(setButton, clearButton)
+
+    val row2 = HBox(10.0)
+    row2.alignment = Pos.CENTER
+    row2.children.addAll(restockButton, priceButton)
+
+    card.children.addAll(
+        slotLabel,
+        itemLabel,
+        qtyLabel,
+        priceLabel,
+        row1,
+        row2
+    )
+
+    addOnGrid.add(
+        card,
+        (i - 1) % 4,
+        (i - 1) / 4
+    )
+}
+   
 }
 
     val slotCount =
