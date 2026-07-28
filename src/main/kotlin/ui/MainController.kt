@@ -510,8 +510,10 @@ private fun createMachineCard(
                         "Cannot find FXML: $fxmlPath"
                     )
 
-            val root: Parent =
-                FXMLLoader.load(resource)
+            val loader = FXMLLoader(resource)
+
+        val root: Parent =
+            loader.load()
 
             val stage =
                 machineContainer
