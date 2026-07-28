@@ -9,6 +9,13 @@ import javafx.scene.control.Button
 import javafx.scene.control.Label
 import javafx.stage.Stage
 import model.Cash
+import javafx.geometry.Pos
+import javafx.scene.layout.GridPane
+import javafx.scene.layout.HBox
+import javafx.scene.layout.VBox
+import javafx.scene.control.ScrollPane
+import model.SpecialMachine
+import model.VendingMachine
 
 class TestController {
 
@@ -19,64 +26,138 @@ class TestController {
     private lateinit var displayLabel: Label
 
     @FXML
-    private lateinit var slotButton0: Button
+    private lateinit var slotGrid: GridPane
 
     @FXML
-    private lateinit var slotButton1: Button
+    private lateinit var addOnContainer: HBox
 
     @FXML
-    private lateinit var slotButton2: Button
+    private lateinit var addOnScroll: ScrollPane
 
     @FXML
-    private lateinit var slotButton3: Button
-
-    @FXML
-    private lateinit var slotButton4: Button
-
-    @FXML
-    private lateinit var slotButton5: Button
-
-    @FXML
-    private lateinit var slotButton6: Button
-
-    @FXML
-    private lateinit var slotButton7: Button
-
-    @FXML
-    private lateinit var addOnButton0: Button
-
-    @FXML
-    private lateinit var addOnButton1: Button
-
-    @FXML
-    private lateinit var addOnButton2: Button
+    private lateinit var addOnTitle: Label
 
     private val deposit: Cash = mutableMapOf()
     private val denominations = listOf(1000f, 500f, 200f, 100f, 50f, 20f, 10f, 5f, 1f)
     private var balance = 0f
     private val itemButtons = mutableListOf<Button>()
 
-    @FXML
-    fun initialize() {
-        itemButtons.addAll(
-            listOf(
-                slotButton0,
-                slotButton1,
-                slotButton2,
-                slotButton3,
-                slotButton4,
-                slotButton5,
-                slotButton6,
-                slotButton7,
-                addOnButton0,
-                addOnButton1,
-                addOnButton2
-            )
-        )
-        updateBalance()
-        updateItemButtonsEnabledState()
-        log("TestController initialized. Starting balance: ₱%.2f".format(balance))
+@FXML
+fun initialize() {
+
+    val machine =
+        SelectedMachine.machine
+            ?: error("No machine selected.")
+
+    createSlotCards(machine)
+
+    if (machine is SpecialMachine) {
+
+        createAddOnCards(machine)
+
+    } else {
+
+        addOnTitle.isVisible = false
+        addOnTitle.isManaged = false
+
+        addOnScroll.isVisible = false
+        addOnScroll.isManaged = false
     }
+
+    updateBalance()
+    updateItemButtonsEnabledState()
+}
+
+private fun createSlotCards(
+    machine: VendingMachine
+) {
+
+    slotGrid.children.clear()
+
+    itemButtons.clear()
+
+    for (i in 0 until machine.slotLimit) {
+
+        val button =
+            Button("₱50")
+
+        button.prefWidth = 120.0
+        button.prefHeight = 40.0
+
+        button.setOnAction {
+
+            selectItem(button)
+
+        }
+
+        val label =
+            Label("Slot ${i + 1}")
+
+        val card =
+            VBox(10.0)
+
+        card.alignment = Pos.CENTER
+
+        card.children.addAll(
+            label,
+            button
+        )
+
+        slotGrid.add(
+
+            card,
+
+            i % 4,
+
+            i / 4
+
+        )
+
+        itemButtons.add(button)
+
+    }
+
+}
+
+private fun createAddOnCards(
+    machine: SpecialMachine
+) {
+
+    addOnContainer.children.clear()
+
+    for (i in 0 until machine.getAddOnSlotCount()) {
+
+        val button =
+            Button("₱20")
+
+        button.prefWidth = 120.0
+
+        button.setOnAction {
+
+            selectItem(button)
+
+        }
+
+        val card =
+            VBox(10.0)
+
+        card.alignment = Pos.CENTER
+
+        card.children.addAll(
+
+            Label("Add-on ${i + 1}"),
+
+            button
+
+        )
+
+        addOnContainer.children.add(card)
+
+        itemButtons.add(button)
+
+    }
+
+}
 
     @FXML
     fun addCash(event: ActionEvent) {
@@ -95,8 +176,7 @@ class TestController {
     }
 
     @FXML
-    fun selectItem(event: ActionEvent) {
-        val button = event.source as Button
+    fun selectItem( button: Button) {
         val price = button.text.replace("₱", "").toFloat()
 
         if (balance < price) {
