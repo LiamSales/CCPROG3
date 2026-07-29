@@ -68,82 +68,6 @@ class MainController {
 
     /*
      * ==========================================================
-     * ITEM CSV
-     * ==========================================================
-     */
-
-    private fun loadItems() {
-
-        items.clear()
-
-        val file =
-            File("data/items.csv")
-
-        if (!file.exists())
-            return
-
-        file.readLines().forEach { line ->
-
-            if (line.isBlank())
-                return@forEach
-
-            val parts =
-                line.split(",")
-
-            if (parts.size < 3)
-                return@forEach
-
-            items.add(
-
-                Item(
-
-                    name = parts[0],
-
-                    calories = parts[1].toInt(),
-
-                    iconPath = parts[2]
-
-                )
-
-            )
-
-        }
-
-    }
-
-    private fun saveItems() {
-
-        val dataFolder =
-            File("data")
-
-        dataFolder.mkdirs()
-
-        val file =
-            File(
-                dataFolder,
-                "items.csv"
-            )
-
-        file.printWriter().use { out ->
-
-            items.forEach {
-
-                out.println(
-
-                    "${it.name}," +
-                    "${it.calories}," +
-                    it.iconPath
-
-                )
-
-            }
-
-        }
-
-    }
-
-    /*
-     * ==========================================================
      * UI Rendering
      * ==========================================================
      */
@@ -152,7 +76,7 @@ class MainController {
 
         itemContainer.children.clear()
 
-        items.forEach {
+        ItemManager.items.forEach {
 
             itemContainer.children.add(
 
@@ -383,9 +307,9 @@ private fun createMachineCard(
             result.get() == ButtonType.OK
         ) {
 
-            items.remove(item)
+            ItemManager.items.remove(item)
 
-            saveItems()
+            ItemManager.saveItems()
 
             renderItems()
 
