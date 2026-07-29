@@ -25,18 +25,14 @@ class MainController {
     @FXML
     private lateinit var itemContainer: HBox
 
-    private val items = mutableListOf<Item>()
-
     @FXML
     fun initialize() {
 
-        MachineManager.loadMachines()
+    MachineManager.loadMachines()
+    ItemManager.loadItems()
 
-        renderMachines()
-
-        loadItems()
-
-        renderItems()
+    renderMachines()
+    renderItems()
 
     }
 
