@@ -133,9 +133,25 @@ showItemPicker { item ->
 
 }
 
-    clearButton.setOnAction {
-        popup("Clear Add-On", "Clear Add-On $i")
-    }
+clearButton.setOnAction {
+
+    slotLabel.text =
+        "Slot $i"
+
+    itemLabel.text =
+        "Item: Empty"
+
+    qtyLabel.text =
+        "Quantity: 0"
+
+    priceLabel.text =
+        "Price: ₱0"
+
+    image.image = null
+
+        popup("Clear Add-on", "Clear Add-on $i")
+
+}
 
     restockButton.setOnAction {
 
@@ -249,9 +265,25 @@ showItemPicker { item ->
 
 }
 
-            clearButton.setOnAction {
-                popup("Clear Slot", "Clear Slot $i")
-            }
+clearButton.setOnAction {
+
+    slotLabel.text =
+        "Slot $i"
+
+    itemLabel.text =
+        "Item: Empty"
+
+    qtyLabel.text =
+        "Quantity: 0"
+
+    priceLabel.text =
+        "Price: ₱0"
+
+    image.image = null
+
+    popup("Clear Slot", "Clear Slot $i")
+
+} 
 
             restockButton.setOnAction {
 
