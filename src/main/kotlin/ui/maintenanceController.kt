@@ -626,5 +626,117 @@ private fun showPriceDialog(
 
 }
 
+private fun showRestockDialog(
+    itemLabel: Label,
+    qtyLabel: Label
+) {
+
+    if (itemLabel.text == "Item: Empty") {
+
+        Alert(Alert.AlertType.WARNING).apply {
+
+            title = "No Item"
+            headerText = null
+            contentText =
+                "Please assign an item before restocking."
+
+        }.showAndWait()
+
+        return
+
+    }
+
+    val stage = Stage()
+
+    stage.title = "Restock"
+
+    val textField =
+        javafx.scene.control.TextField()
+
+    textField.promptText =
+        "Quantity"
+
+    val setButton =
+        Button("Set")
+
+    val cancelButton =
+        Button("Cancel")
+
+    val row =
+        HBox(10.0)
+
+    row.alignment = Pos.CENTER
+    row.children.addAll(
+        setButton,
+        cancelButton
+    )
+
+    val root =
+        VBox(15.0)
+
+    root.alignment = Pos.CENTER
+
+    root.style =
+        "-fx-padding:20;" +
+        "-fx-background-color:white;"
+
+    root.children.addAll(
+
+        Label(
+            "Enter quantity (0-${machine.stockLimit})"
+        ),
+
+        textField,
+
+        row
+
+    )
+
+    setButton.setOnAction {
+
+        val quantity =
+            textField.text.toIntOrNull()
+
+        if (
+
+            quantity == null ||
+            quantity < 0 ||
+            quantity > machine.stockLimit
+
+        ) {
+
+            Alert(Alert.AlertType.ERROR).apply {
+
+                title = "Invalid Quantity"
+                headerText = null
+                contentText =
+                    "Quantity must be between 0 and ${machine.stockLimit}."
+
+            }.showAndWait()
+
+            return@setOnAction
+
+        }
+
+        qtyLabel.text =
+            "Quantity: $quantity"
+
+        stage.close()
+
+    }
+
+    cancelButton.setOnAction {
+
+        stage.close()
+
+    }
+
+    stage.scene =
+        Scene(root, 320.0, 180.0)
+
+    stage.showAndWait()
+
+}
+
 
 }
