@@ -18,6 +18,11 @@ import java.io.File
 import model.VendingMachine
 import javafx.scene.control.ScrollPane
 import model.SpecialMachine
+import javafx.geometry.Insets
+import javafx.scene.image.Image
+import javafx.scene.image.ImageView
+import javafx.stage.Modality
+import model.Item
 
 class MaintenanceController {
 
@@ -51,18 +56,18 @@ class MaintenanceController {
     val special =
     machine as? SpecialMachine
 
-if (special == null) {
+    if (special == null) {
 
-    addOnGrid.isVisible = false
-    addOnGrid.isManaged = false
+        addOnGrid.isVisible = false
+        addOnGrid.isManaged = false
 
-    addOnScroll.isVisible = false
-    addOnScroll.isManaged = false
+        addOnScroll.isVisible = false
+        addOnScroll.isManaged = false
 
-    addOnLabel.isVisible = false
-    addOnLabel.isManaged = false
+        addOnLabel.isVisible = false
+        addOnLabel.isManaged = false
 
-} else {
+    } else {
 
     for (i in 1..special.getAddOnSlotCount()) {
 
@@ -94,9 +99,22 @@ if (special == null) {
     val restockButton = Button("Restock")
     val priceButton = Button("Price")
 
-    setButton.setOnAction {
-        popup("Set Add-On", "Set Add-On $i")
+setButton.setOnAction {
+
+    showItemPicker { item ->
+
+        itemLabel.text =
+            "Item: ${item.name}"
+
+        qtyLabel.text =
+            "Quantity: 0"
+
+        priceLabel.text =
+            "Price: ₱0"
+
     }
+
+}
 
     clearButton.setOnAction {
         popup("Clear Add-On", "Clear Add-On $i")
@@ -178,9 +196,22 @@ if (special == null) {
             val restockButton = Button("Restock")
             val priceButton = Button("Price")
 
-            setButton.setOnAction {
-                popup("Set Slot", "Set Slot $i")
-            }
+setButton.setOnAction {
+
+    showItemPicker { item ->
+
+        itemLabel.text =
+            "Item: ${item.name}"
+
+        qtyLabel.text =
+            "Quantity: 0"
+
+        priceLabel.text =
+            "Price: ₱0"
+
+    }
+
+}
 
             clearButton.setOnAction {
                 popup("Clear Slot", "Clear Slot $i")
@@ -326,4 +357,115 @@ private fun deleteFolder(
 
         alert.showAndWait()
     }
+
+    private fun showItemPicker(
+    onSelected: (Item) -> Unit
+) {
+
+    val stage = Stage()
+
+    stage.title = "Select Item"
+
+    stage.initOwner(
+        slotGrid.scene.window
+    )
+
+    stage.initModality(
+        Modality.APPLICATION_MODAL
+    )
+
+    val list =
+        VBox(10.0)
+
+    list.padding =
+        Insets(15.0)
+
+    ItemManager.items.forEach { item ->
+
+        val row =
+            HBox(15.0)
+
+        row.alignment =
+            Pos.CENTER_LEFT
+
+        val image =
+            ImageView()
+
+        try {
+
+            image.image =
+                Image(
+                    File(item.iconPath)
+                        .toURI()
+                        .toString()
+                )
+
+        } catch (_: Exception) {
+        }
+
+        image.fitWidth = 50.0
+        image.fitHeight = 50.0
+        image.isPreserveRatio = true
+
+        val info =
+            VBox(5.0)
+
+        val name =
+            Label(item.name)
+
+        name.style =
+            "-fx-font-size:16;" +
+            "-fx-font-weight:bold;"
+
+        val calories =
+            Label(
+                "${item.calories} kcal"
+            )
+
+        info.children.addAll(
+            name,
+            calories
+        )
+
+        val selectButton =
+            Button("Select")
+
+        selectButton.setOnAction {
+
+            onSelected(item)
+
+            stage.close()
+
+        }
+
+        row.children.addAll(
+
+            image,
+            info,
+            selectButton
+
+        )
+
+        list.children.add(row)
+
+    }
+
+    val scroll =
+        ScrollPane(list)
+
+    scroll.isFitToWidth = true
+
+    val root =
+        VBox(scroll)
+
+    val scene =
+        Scene(root, 450.0, 500.0)
+
+    stage.scene = scene
+
+    stage.showAndWait()
+
+}
+
+
 }
