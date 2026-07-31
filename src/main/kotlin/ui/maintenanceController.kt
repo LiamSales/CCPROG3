@@ -86,6 +86,13 @@ class MaintenanceController {
 
     val slotLabel = Label("Add-On $i")
 
+    val image =
+    ImageView()
+
+    image.fitWidth = 90.0
+    image.fitHeight = 90.0
+    image.isPreserveRatio = true
+
     slotLabel.style =
         "-fx-font-size:18px;" +
         "-fx-font-weight:bold;"
@@ -101,18 +108,28 @@ class MaintenanceController {
 
 setButton.setOnAction {
 
-    showItemPicker { item ->
+showItemPicker { item ->
 
-        itemLabel.text =
-            "Item: ${item.name}"
+    slotLabel.text =
+        item.name
 
-        qtyLabel.text =
-            "Quantity: 0"
+    itemLabel.text =
+        "Calories: ${item.calories}"
 
-        priceLabel.text =
-            "Price: ₱0"
+    qtyLabel.text =
+        "Quantity: 0"
 
-    }
+    priceLabel.text =
+        "Price: ₱0"
+
+    image.image =
+        Image(
+            File(item.iconPath)
+                .toURI()
+                .toString()
+        )
+
+}
 
 }
 
@@ -145,14 +162,17 @@ setButton.setOnAction {
     row2.alignment = Pos.CENTER
     row2.children.addAll(restockButton, priceButton)
 
-    card.children.addAll(
-        slotLabel,
-        itemLabel,
-        qtyLabel,
-        priceLabel,
-        row1,
-        row2
-    )
+card.children.addAll(
+
+    slotLabel,
+    image,
+    itemLabel,
+    qtyLabel,
+    priceLabel,
+    row1,
+    row2
+
+)
 
     addOnGrid.add(
         card,
@@ -183,6 +203,12 @@ setButton.setOnAction {
 
             val slotLabel = Label("Slot $i")
 
+            val image = ImageView()
+
+image.fitWidth = 90.0
+image.fitHeight = 90.0
+image.isPreserveRatio = true
+
             slotLabel.style =
                 "-fx-font-size:18px;" +
                 "-fx-font-weight:bold;"
@@ -198,18 +224,28 @@ setButton.setOnAction {
 
 setButton.setOnAction {
 
-    showItemPicker { item ->
+showItemPicker { item ->
 
-        itemLabel.text =
-            "Item: ${item.name}"
+    slotLabel.text =
+        item.name
 
-        qtyLabel.text =
-            "Quantity: 0"
+    itemLabel.text =
+        "Calories: ${item.calories}"
 
-        priceLabel.text =
-            "Price: ₱0"
+    qtyLabel.text =
+        "Quantity: 0"
 
-    }
+    priceLabel.text =
+        "Price: ₱0"
+
+    image.image =
+        Image(
+            File(item.iconPath)
+                .toURI()
+                .toString()
+        )
+
+}
 
 }
 
@@ -242,14 +278,17 @@ setButton.setOnAction {
             row2.alignment = Pos.CENTER
             row2.children.addAll(restockButton, priceButton)
 
-            card.children.addAll(
-                slotLabel,
-                itemLabel,
-                qtyLabel,
-                priceLabel,
-                row1,
-                row2
-            )
+card.children.addAll(
+
+    slotLabel,
+    image,
+    itemLabel,
+    qtyLabel,
+    priceLabel,
+    row1,
+    row2
+
+)
 
             slotGrid.add(
                 card,
