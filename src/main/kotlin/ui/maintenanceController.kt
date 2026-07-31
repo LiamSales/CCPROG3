@@ -166,10 +166,11 @@ clearButton.setOnAction {
         stage.scene = Scene(root)
     }
 
-    priceButton.setOnAction {
-        popup("Change Price", "Change price for Add-On $i")
-    }
+priceButton.setOnAction {
 
+    showPriceDialog(priceLabel)
+
+}
     val row1 = HBox(10.0)
     row1.alignment = Pos.CENTER
     row1.children.addAll(setButton, clearButton)
@@ -298,9 +299,11 @@ clearButton.setOnAction {
                 stage.scene = Scene(root)
             }
 
-            priceButton.setOnAction {
-                popup("Change Price", "Change price for Slot $i")
-            }
+priceButton.setOnAction {
+
+    showPriceDialog(priceLabel)
+
+}
 
             val row1 = HBox(10.0)
             row1.alignment = Pos.CENTER
@@ -533,6 +536,91 @@ private fun deleteFolder(
         Scene(root, 450.0, 500.0)
 
     stage.scene = scene
+
+    stage.showAndWait()
+
+}
+
+private fun showPriceDialog(
+    priceLabel: Label
+) {
+
+    val stage = Stage()
+
+    stage.title = "Set Price"
+
+    val textField =
+        javafx.scene.control.TextField()
+
+    textField.promptText = "Enter price"
+
+    val setButton =
+        Button("Set")
+
+    val cancelButton =
+        Button("Cancel")
+
+    val buttonRow =
+        HBox(10.0)
+
+    buttonRow.alignment = Pos.CENTER
+    buttonRow.children.addAll(
+        setButton,
+        cancelButton
+    )
+
+    val root =
+        VBox(15.0)
+
+    root.alignment = Pos.CENTER
+    root.style =
+        "-fx-padding:20;" +
+        "-fx-background-color:white;"
+
+    root.children.addAll(
+
+        Label("Enter Item Price"),
+
+        textField,
+
+        buttonRow
+
+    )
+
+    setButton.setOnAction {
+
+        val value =
+            textField.text.toFloatOrNull()
+
+        if (value == null || value < 0f) {
+
+            Alert(Alert.AlertType.ERROR).apply {
+
+                title = "Invalid Price"
+                headerText = null
+                contentText = "Please enter a valid price."
+
+            }.showAndWait()
+
+            return@setOnAction
+
+        }
+
+        priceLabel.text =
+            "Price: ₱%.2f".format(value)
+
+        stage.close()
+
+    }
+
+    cancelButton.setOnAction {
+
+        stage.close()
+
+    }
+
+    stage.scene =
+        Scene(root, 300.0, 170.0)
 
     stage.showAndWait()
 
