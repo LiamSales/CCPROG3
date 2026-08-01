@@ -153,18 +153,14 @@ clearButton.setOnAction {
 
 }
 
-    restockButton.setOnAction {
+restockButton.setOnAction {
 
-        val root: Parent =
-            FXMLLoader.load(
-                javaClass.getResource("/fxml/restock.fxml")
-            )
+    showRestockDialog(
+        itemLabel,
+        qtyLabel
+    )
 
-        val stage =
-            addOnGrid.scene.window as Stage
-
-        stage.scene = Scene(root)
-    }
+}
 
 priceButton.setOnAction {
 
@@ -286,18 +282,14 @@ clearButton.setOnAction {
 
 } 
 
-            restockButton.setOnAction {
+restockButton.setOnAction {
 
-                val root: Parent =
-                    FXMLLoader.load(
-                        javaClass.getResource("/fxml/restock.fxml")
-                    )
+    showRestockDialog(
+        itemLabel,
+        qtyLabel
+    )
 
-                val stage =
-                    slotGrid.scene.window as Stage
-
-                stage.scene = Scene(root)
-            }
+}
 
 priceButton.setOnAction {
 
@@ -683,7 +675,7 @@ private fun showRestockDialog(
     root.children.addAll(
 
         Label(
-            "Enter quantity (0-${machine.stockLimit})"
+            "Enter quantity (0-${machine.itemLimit})"
         ),
 
         textField,
@@ -701,7 +693,7 @@ private fun showRestockDialog(
 
             quantity == null ||
             quantity < 0 ||
-            quantity > machine.stockLimit
+            quantity > machine.itemLimit
 
         ) {
 
@@ -710,7 +702,7 @@ private fun showRestockDialog(
                 title = "Invalid Quantity"
                 headerText = null
                 contentText =
-                    "Quantity must be between 0 and ${machine.stockLimit}."
+                    "Quantity must be between 0 and ${machine.itemLimit}."
 
             }.showAndWait()
 
