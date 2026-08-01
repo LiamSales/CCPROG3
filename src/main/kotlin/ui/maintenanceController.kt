@@ -23,6 +23,8 @@ import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 import javafx.stage.Modality
 import model.Item
+import javafx.scene.control.Spinner
+import javafx.scene.control.SpinnerValueFactory
 
 class MaintenanceController {
 
@@ -642,11 +644,17 @@ private fun showRestockDialog(
 
     stage.title = "Restock"
 
-    val textField =
-        javafx.scene.control.TextField()
+    val spinner = Spinner<Int>()
 
-    textField.promptText =
-        "Quantity"
+    spinner.valueFactory =
+        SpinnerValueFactory.IntegerSpinnerValueFactory(
+            0,
+            machine.itemLimit,
+            0
+        )
+
+    spinner.isEditable = true
+    spinner.prefWidth = 120.0
 
     val setButton =
         Button("Set")
@@ -654,11 +662,11 @@ private fun showRestockDialog(
     val cancelButton =
         Button("Cancel")
 
-    val row =
+    val buttonRow =
         HBox(10.0)
 
-    row.alignment = Pos.CENTER
-    row.children.addAll(
+    buttonRow.alignment = Pos.CENTER
+    buttonRow.children.addAll(
         setButton,
         cancelButton
     )
@@ -675,43 +683,19 @@ private fun showRestockDialog(
     root.children.addAll(
 
         Label(
-            "Enter quantity (0-${machine.itemLimit})"
+            "Select Quantity"
         ),
 
-        textField,
+        spinner,
 
-        row
+        buttonRow
 
     )
 
     setButton.setOnAction {
 
-        val quantity =
-            textField.text.toIntOrNull()
-
-        if (
-
-            quantity == null ||
-            quantity < 0 ||
-            quantity > machine.itemLimit
-
-        ) {
-
-            Alert(Alert.AlertType.ERROR).apply {
-
-                title = "Invalid Quantity"
-                headerText = null
-                contentText =
-                    "Quantity must be between 0 and ${machine.itemLimit}."
-
-            }.showAndWait()
-
-            return@setOnAction
-
-        }
-
         qtyLabel.text =
-            "Quantity: $quantity"
+            "Quantity: ${spinner.value}"
 
         stage.close()
 
@@ -724,11 +708,10 @@ private fun showRestockDialog(
     }
 
     stage.scene =
-        Scene(root, 320.0, 180.0)
+        Scene(root, 300.0, 180.0)
 
     stage.showAndWait()
 
 }
-
 
 }
