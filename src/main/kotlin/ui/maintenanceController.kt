@@ -26,6 +26,7 @@ import model.Item
 import javafx.scene.control.Spinner
 import javafx.scene.control.SpinnerValueFactory
 
+
 class MaintenanceController {
 
     @FXML
@@ -45,6 +46,9 @@ class MaintenanceController {
     private lateinit var addOnLabel: Label
 
     @FXML
+    private lateinit var cashLabel: Label
+
+    @FXML
     fun initialize() {
 
     machineFolder =
@@ -57,6 +61,8 @@ class MaintenanceController {
 
     val special =
     machine as? SpecialMachine
+
+    updateCashLabel()
 
     if (special == null) {
 
@@ -327,10 +333,12 @@ card.children.addAll(
         }
     }
 
-    @FXML
-    fun replenishCash() {
-        popup("Replenish Cash", "Cash replenished.")
-    }
+@FXML
+fun replenishCash() {
+
+    showReplenishCashDialog()
+
+}
 
     @FXML
     fun collectBalance() {
@@ -713,5 +721,133 @@ private fun showRestockDialog(
     stage.showAndWait()
 
 }
+
+private fun updateCashLabel() {
+
+    val total =
+        machine.cashRegister.entries.sumOf {
+
+            it.key.toDouble() * it.value
+
+        }
+
+    cashLabel.text =
+        "Cash Register: ₱%.2f".format(total)
+
+}
+
+private fun showReplenishCashDialog() {
+
+    val stage = Stage()
+
+    stage.title = "Replenish Cash"
+
+    val denominations =
+        listOf(
+            1000f,
+            500f,
+            200f,
+            100f,
+            50f,
+            20f,
+            10f,
+            5f,
+            1f
+        )
+
+    val grid = GridPane()
+
+    grid.hgap = 10.0
+    grid.vgap = 10.0
+
+    val spinners =
+        mutableMapOf<Float, Spinner<Int>>()
+
+    denominations.forEachIndexed { row, value ->
+
+        val label =
+            Label("₱${value.toInt()}")
+
+        val spinner =
+            Spinner<Int>()
+
+        spinner.valueFactory =
+            SpinnerValueFactory.IntegerSpinnerValueFactory(
+                0,
+                Int.MAX_VALUE,
+                machine.cashRegister.getOrDefault(value, 0)
+            )
+
+        spinner.isEditable = true
+        spinner.prefWidth = 120.0
+
+        spinners[value] = spinner
+
+        grid.add(label, 0, row)
+        grid.add(spinner, 1, row)
+
+    }
+
+    val save =
+        Button("Save")
+
+    val cancel =
+        Button("Cancel")
+
+    val buttons =
+        HBox(10.0)
+
+    buttons.alignment = Pos.CENTER
+    buttons.children.addAll(save, cancel)
+
+    val root =
+        VBox(15.0)
+
+    root.alignment = Pos.CENTER
+    root.style =
+        "-fx-padding:20;" +
+        "-fx-background-color:white;"
+
+    root.children.addAll(
+        grid,
+        buttons
+    )
+
+    save.setOnAction {
+
+        machine.cashRegister.clear()
+
+        spinners.forEach { (denomination, spinner) ->
+
+            val qty = spinner.value
+
+            if (qty > 0) {
+
+                machine.cashRegister[denomination] =
+                    qty
+
+            }
+
+        }
+
+        updateCashLabel()
+
+        stage.close()
+
+    }
+
+    cancel.setOnAction {
+
+        stage.close()
+
+    }
+
+    stage.scene =
+        Scene(root)
+
+    stage.showAndWait()
+
+}
+
 
 }
