@@ -724,15 +724,10 @@ private fun showRestockDialog(
 
 private fun updateCashLabel() {
 
-    val total =
-        machine.register.entries.sumOf {
-
-            it.key.toDouble() * it.value
-
-        }
-
     cashLabel.text =
-        "Cash Register: ₱%.2f".format(total)
+        "Cash Register: ₱%.2f".format(
+            machine.register.getTotalCash()
+        )
 
 }
 
@@ -838,6 +833,5 @@ machine.register.getQuantity(value)
     stage.close()
 
 }
-
-
+}
 }
