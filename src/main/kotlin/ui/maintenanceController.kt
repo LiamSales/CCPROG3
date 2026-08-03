@@ -775,7 +775,7 @@ private fun showReplenishCashDialog() {
             SpinnerValueFactory.IntegerSpinnerValueFactory(
                 0,
                 Int.MAX_VALUE,
-                machine.register.getOrDefault(value, 0)
+machine.register.getQuantity(value)
             )
 
         spinner.isEditable = true
@@ -813,40 +813,29 @@ private fun showReplenishCashDialog() {
         buttons
     )
 
-    save.setOnAction {
+   save.setOnAction {
 
-        machine.register.clear()
+    machine.register.clear()
 
-        spinners.forEach { (denomination, spinner) ->
+    spinners.forEach { (denomination, spinner) ->
 
-            val qty = spinner.value
+        if (spinner.value > 0) {
 
-            if (qty > 0) {
+            machine.register.addCash(
 
-                machine.register[denomination] =
-                    qty
+                denomination,
 
-            }
+                spinner.value
 
-            
+            )
+
         }
 
-        updateCashLabel()
-
-        stage.close()
-
     }
 
-    cancel.setOnAction {
+    updateCashLabel()
 
-        stage.close()
-
-    }
-
-    stage.scene =
-        Scene(root)
-
-    stage.showAndWait()
+    stage.close()
 
 }
 
