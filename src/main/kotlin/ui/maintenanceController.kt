@@ -725,7 +725,7 @@ private fun showRestockDialog(
 private fun updateCashLabel() {
 
     val total =
-        machine.cashRegister.entries.sumOf {
+        machine.register.entries.sumOf {
 
             it.key.toDouble() * it.value
 
@@ -775,7 +775,7 @@ private fun showReplenishCashDialog() {
             SpinnerValueFactory.IntegerSpinnerValueFactory(
                 0,
                 Int.MAX_VALUE,
-                machine.cashRegister.getOrDefault(value, 0)
+                machine.register.getOrDefault(value, 0)
             )
 
         spinner.isEditable = true
@@ -815,7 +815,7 @@ private fun showReplenishCashDialog() {
 
     save.setOnAction {
 
-        machine.cashRegister.clear()
+        machine.register.clear()
 
         spinners.forEach { (denomination, spinner) ->
 
@@ -823,11 +823,12 @@ private fun showReplenishCashDialog() {
 
             if (qty > 0) {
 
-                machine.cashRegister[denomination] =
+                machine.register[denomination] =
                     qty
 
             }
 
+            
         }
 
         updateCashLabel()
