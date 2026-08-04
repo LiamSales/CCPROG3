@@ -9,7 +9,6 @@ object MachineManager {
     data class MachineEntry(
 
         val folder: File,
-
         val machine: VendingMachine
 
     )
@@ -70,7 +69,9 @@ object MachineManager {
 
                         )
 
-                    } else {
+                    }
+
+                    else {
 
                         VendingMachine(
 
@@ -91,6 +92,93 @@ object MachineManager {
                 )
 
             }
+
+    }
+
+    fun saveMachine(
+
+        folder: File,
+        machine: VendingMachine
+
+    ) {
+
+        saveInventory(
+            folder,
+            machine
+        )
+
+        saveRegister(
+            folder,
+            machine
+        )
+
+    }
+
+    private fun saveInventory(
+
+        folder: File,
+        machine: VendingMachine
+
+    ) {
+
+        val file =
+            File(
+                folder,
+                "inventory.csv"
+            )
+
+        file.printWriter().use { out ->
+
+            machine.slots.forEach { slot ->
+
+                out.println(
+
+                    listOf(
+
+                        slot.item?.name ?: "",
+                        slot.quantity,
+                        slot.price,
+                        slot.sold
+
+                    ).joinToString(",")
+
+                )
+
+            }
+
+        }
+
+    }
+
+    private fun saveRegister(
+
+        folder: File,
+        machine: VendingMachine
+
+    ) {
+
+        val file =
+            File(
+                folder,
+                "register.csv"
+            )
+
+        file.printWriter().use { out ->
+
+            machine.register
+                .getContents()
+                .toSortedMap(compareByDescending { it })
+                .forEach { (denomination, quantity) ->
+
+                    out.println(
+
+                        "$denomination,$quantity"
+
+                    )
+
+                }
+
+        }
 
     }
 

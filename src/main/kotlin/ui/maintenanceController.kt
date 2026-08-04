@@ -441,21 +441,30 @@ private fun deleteFolder(
 
 }
 
-    @FXML
-    fun backToMainPage(event: ActionEvent) {
+@FXML
+fun backToMainPage(event: ActionEvent) {
 
-        val root: Parent =
-            FXMLLoader.load(
-                javaClass.getResource("/fxml/main.fxml")
-            )
+    MachineManager.saveMachine(
 
-        val stage =
-            (event.source as javafx.scene.Node)
-                .scene
-                .window as Stage
+        machineFolder,
+        machine
 
-        stage.scene = Scene(root)
-    }
+    )
+
+    val root: Parent =
+        FXMLLoader.load(
+            javaClass.getResource("/fxml/main.fxml")
+        )
+
+    val stage =
+        (event.source as javafx.scene.Node)
+            .scene
+            .window as Stage
+
+    stage.scene =
+        Scene(root)
+
+}
 
     private fun popup(title: String, message: String) {
 
