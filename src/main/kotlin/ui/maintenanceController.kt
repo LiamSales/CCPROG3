@@ -340,10 +340,44 @@ fun replenishCash() {
 
 }
 
-    @FXML
-    fun collectBalance() {
-        popup("Collect Balance", "Balance collected.")
+@FXML
+fun collectBalance() {
+
+    val amount =
+        machine.register.getTotalCash()
+
+    val alert =
+        Alert(Alert.AlertType.CONFIRMATION)
+
+    alert.title =
+        "Collect Balance"
+
+    alert.headerText =
+        "Collect ₱%.2f?".format(amount)
+
+    alert.contentText =
+        "This will empty the machine's cash register."
+
+    val result =
+        alert.showAndWait()
+
+    if (
+        result.isPresent &&
+        result.get() == ButtonType.OK
+    ) {
+
+        machine.register.clear()
+
+        updateCashLabel()
+
+        popup(
+            "Balance Collected",
+            "Collected ₱%.2f".format(amount)
+        )
+
     }
+
+}
 
     @FXML
     fun displaySummary() {
