@@ -808,7 +808,7 @@ machine.register.getQuantity(value)
         buttons
     )
 
-   save.setOnAction {
+save.setOnAction {
 
     machine.register.clear()
 
@@ -817,11 +817,8 @@ machine.register.getQuantity(value)
         if (spinner.value > 0) {
 
             machine.register.addCash(
-
                 denomination,
-
                 spinner.value
-
             )
 
         }
@@ -833,5 +830,18 @@ machine.register.getQuantity(value)
     stage.close()
 
 }
+
+cancel.setOnAction {
+
+    stage.close()
+
+}
+
+stage.scene =
+    Scene(root)
+
+stage.showAndWait()
+
+
 }
 }
