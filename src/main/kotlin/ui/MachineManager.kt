@@ -1,5 +1,6 @@
 package ui
 
+import model.Item
 import model.SpecialMachine
 import model.VendingMachine
 import java.io.File
@@ -9,12 +10,20 @@ object MachineManager {
     data class MachineEntry(
 
         val folder: File,
+
         val machine: VendingMachine
 
     )
 
     val machines =
         mutableListOf<MachineEntry>()
+
+
+    /*
+     * ==========================================================
+     * Load All Machines
+     * ==========================================================
+     */
 
     fun loadMachines() {
 
@@ -64,7 +73,9 @@ object MachineManager {
                         SpecialMachine(
 
                             slotLimit,
+
                             itemLimit,
+
                             lines[2].trim().toInt()
 
                         )
@@ -76,17 +87,37 @@ object MachineManager {
                         VendingMachine(
 
                             slotLimit,
+
                             itemLimit
 
                         )
 
                     }
 
+                loadInventory(
+
+                    folder,
+
+                    machine
+
+                )
+
+                loadRegister(
+
+                    folder,
+
+                    machine
+
+                )
+
                 machines.add(
 
                     MachineEntry(
+
                         folder,
+
                         machine
+
                     )
 
                 )
@@ -95,52 +126,54 @@ object MachineManager {
 
     }
 
-    fun saveMachine(
 
-        folder: File,
-        machine: VendingMachine
+    /*
+     * ==========================================================
+     * Save All Machines
+     * ==========================================================
+     */
 
-    ) {
+    fun saveMachines() {
 
-        saveInventory(
-            folder,
-            machine
-        )
+        machines.forEach {
 
-        saveRegister(
-            folder,
-            machine
-        )
+            saveMachine(it)
+
+        }
 
     }
 
-    private fun saveInventory(
+    private fun saveMachine(
 
-        folder: File,
-        machine: VendingMachine
+        entry: MachineEntry
 
     ) {
 
-        val file =
-            File(
-                folder,
-                "inventory.csv"
-            )
+        val folder =
+            entry.folder
 
-        file.printWriter().use { out ->
+        val machine =
+            entry.machine
 
-            machine.slots.forEach { slot ->
+
+        /*
+         * info.csv
+         */
+
+        val info =
+            File(folder, "info.csv")
+
+        info.printWriter().use { out ->
+
+            out.println(machine.slotLimit)
+
+            out.println(machine.itemLimit)
+
+            if (machine is SpecialMachine) {
 
                 out.println(
 
-                    listOf(
-
-                        slot.item?.name ?: "",
-                        slot.quantity,
-                        slot.price,
-                        slot.sold
-
-                    ).joinToString(",")
+                    machine.getAddOnSlotCount()
 
                 )
 
@@ -148,27 +181,55 @@ object MachineManager {
 
         }
 
-    }
 
-    private fun saveRegister(
+        /*
+         * inventory.csv
+         */
 
-        folder: File,
-        machine: VendingMachine
+        val inventory =
+            File(folder, "inventory.csv")
 
-    ) {
+        inventory.printWriter().use { out ->
 
-        val file =
-            File(
-                folder,
-                "register.csv"
-            )
+            machine.slots.forEachIndexed {
 
-        file.printWriter().use { out ->
+                index,
+                slot ->
+
+                val itemName =
+                    slot.item?.name ?: ""
+
+                out.println(
+
+                    "$index," +
+                    "$itemName," +
+                    "${slot.quantity}," +
+                    "${slot.price}," +
+                    "${slot.sold}"
+
+                )
+
+            }
+
+        }
+
+
+        /*
+         * register.csv
+         */
+
+        val register =
+            File(folder, "register.csv")
+
+        register.printWriter().use { out ->
 
             machine.register
+
                 .getContents()
-                .toSortedMap(compareByDescending { it })
-                .forEach { (denomination, quantity) ->
+
+                .forEach {
+
+                    (denomination, quantity) ->
 
                     out.println(
 
@@ -177,6 +238,123 @@ object MachineManager {
                     )
 
                 }
+
+        }
+
+    }
+
+
+    /*
+     * ==========================================================
+     * Load Inventory
+     * ==========================================================
+     */
+
+    private fun loadInventory(
+
+        folder: File,
+
+        machine: VendingMachine
+
+    ) {
+
+        val file =
+            File(folder, "inventory.csv")
+
+        if (!file.exists())
+            return
+
+        file.readLines().forEach { line ->
+
+            if (line.isBlank())
+                return@forEach
+
+            val parts =
+                line.split(",")
+
+            if (parts.size < 5)
+                return@forEach
+
+            val slot =
+                parts[0].toInt()
+
+            val itemName =
+                parts[1]
+
+            val quantity =
+                parts[2].toInt()
+
+            val price =
+                parts[3].toFloat()
+
+            val sold =
+                parts[4].toInt()
+
+            val item: Item? =
+
+                ItemManager.items.find {
+
+                    it.name == itemName
+
+                }
+
+            machine.slots[slot].item =
+                item
+
+            machine.slots[slot].quantity =
+                quantity
+
+            machine.slots[slot].price =
+                price
+
+            machine.slots[slot].sold =
+                sold
+
+        }
+
+    }
+
+
+    /*
+     * ==========================================================
+     * Load Register
+     * ==========================================================
+     */
+
+    private fun loadRegister(
+
+        folder: File,
+
+        machine: VendingMachine
+
+    ) {
+
+        val file =
+            File(folder, "register.csv")
+
+        if (!file.exists())
+            return
+
+        machine.register.clear()
+
+        file.readLines().forEach { line ->
+
+            if (line.isBlank())
+                return@forEach
+
+            val parts =
+                line.split(",")
+
+            if (parts.size < 2)
+                return@forEach
+
+            machine.register.addCash(
+
+                parts[0].toFloat(),
+
+                parts[1].toInt()
+
+            )
 
         }
 
