@@ -444,12 +444,7 @@ private fun deleteFolder(
 @FXML
 fun backToMainPage(event: ActionEvent) {
 
-    MachineManager.saveMachine(
-
-        machineFolder,
-        machine
-
-    )
+    MachineManager.saveMachines()
 
     val root: Parent =
         FXMLLoader.load(
@@ -461,9 +456,7 @@ fun backToMainPage(event: ActionEvent) {
             .scene
             .window as Stage
 
-    stage.scene =
-        Scene(root)
-
+    stage.scene = Scene(root)
 }
 
     private fun popup(title: String, message: String) {
