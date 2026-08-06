@@ -250,70 +250,75 @@ object MachineManager {
      * ==========================================================
      */
 
-    private fun loadInventory(
+private fun loadInventory(
 
-        folder: File,
+    folder: File,
 
-        machine: VendingMachine
+    machine: VendingMachine
 
-    ) {
+) {
 
-        val file =
-            File(folder, "inventory.csv")
+    val file =
+        File(folder, "inventory.csv")
 
-        if (!file.exists())
-            return
+    if (!file.exists())
+        return
 
-        file.readLines().forEach { line ->
+    file.readLines().forEach { line ->
 
-            if (line.isBlank())
-                return@forEach
+        if (line.isBlank())
+            return@forEach
 
-            val parts =
-                line.split(",")
+        val parts =
+            line.split(",")
 
-            if (parts.size < 5)
-                return@forEach
+        if (parts.size < 5)
+            return@forEach
 
-            val slot =
-                parts[0].toInt()
+        val slot =
+            parts[0].toInt()
 
-            val itemName =
-                parts[1]
+        // Ignore invalid slot numbers
+        if (slot !in machine.slots.indices)
+            return@forEach
 
-            val quantity =
-                parts[2].toInt()
+        val itemName =
+            parts[1]
 
-            val price =
-                parts[3].toFloat()
+        val quantity =
+            parts[2].toInt()
 
-            val sold =
-                parts[4].toInt()
+        val price =
+            parts[3].toFloat()
 
-            val item: Item? =
+        val sold =
+            parts[4].toInt()
 
-                ItemManager.items.find {
+        val item =
+            ItemManager.items.find {
 
-                    it.name == itemName
+                it.name == itemName
 
-                }
+            }
 
-            machine.slots[slot].item =
-                item
+        val currentSlot =
+            machine.slots[slot]
 
-            machine.slots[slot].quantity =
-                quantity
+        currentSlot.item =
+            item
 
-            machine.slots[slot].price =
-                price
+        currentSlot.quantity =
+            quantity
 
-            machine.slots[slot].sold =
-                sold
+        currentSlot.price =
+            price
 
-        }
+        currentSlot.sold =
+            sold
 
     }
 
+}
 
     /*
      * ==========================================================
