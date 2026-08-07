@@ -118,9 +118,7 @@
 
 </ScrollPane>
 
-<Button
-    text="Save Inventory"
-    onAction="#saveInventory"/>
+
 
 
     <Label
@@ -158,15 +156,28 @@
 
     </HBox>
 
+     <HBox>
+        
     <Button
-
-            text="Remove Machine"
-
-            style="
-                -fx-background-color:#D9534F;
-                -fx-text-fill:white;
-            "
-
-            onAction="#removeMachine"/>
-
+    text="Save"
+    
+    
+    style="
+    -fx-background-color:#53D94F;
+    -fx-text-fill:white;
+    "
+    onAction="#saveInventory"/>
+    
+    <Button
+    
+    text="Remove Machine"
+    
+    style="
+    -fx-background-color:#D9534F;
+    -fx-text-fill:white;
+    "
+    
+    onAction="#removeMachine"/>
+    
+   </HBox>
 </VBox>

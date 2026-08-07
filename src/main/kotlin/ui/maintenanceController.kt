@@ -878,7 +878,9 @@ stage.scene =
 
 stage.showAndWait()
 
-}@FXML
+}
+
+@FXML
 fun saveInventory() {
 
     val folder =
@@ -889,33 +891,50 @@ fun saveInventory() {
         SelectedMachine.machine
             ?: return
 
-    val file =
-        File(folder, "inventory.csv")
+    // Inventory
+    File(folder, "inventory.csv")
+        .printWriter()
+        .use { out ->
 
-    file.printWriter().use { out ->
+            machine.slots.forEachIndexed { index, slot ->
 
-        machine.slots.forEachIndexed { index, slot ->
+                val item =
+                    slot.item ?: return@forEachIndexed
 
-            val item =
-                slot.item ?: return@forEachIndexed
+                out.println(
 
-            out.println(
+                    "$index," +
+                    "${item.name}," +
+                    "${slot.quantity}," +
+                    "${slot.price}," +
+                    "${slot.sold}"
 
-                "$index," +
-                "${item.name}," +
-                "${slot.quantity}," +
-                "${slot.price}," +
-                "${slot.sold}"
+                )
 
-            )
+            }
 
         }
 
-    }
+    // Register
+    File(folder, "register.csv")
+        .printWriter()
+        .use { out ->
+
+            machine.register
+                .getContents()
+                .forEach { (denomination, quantity) ->
+
+                    out.println(
+                        "$denomination,$quantity"
+                    )
+
+                }
+
+        }
 
     popup(
-        "Inventory Saved",
-        "Inventory successfully written to inventory.csv."
+        "Saved",
+        "Inventory and register saved successfully."
     )
 
 }
