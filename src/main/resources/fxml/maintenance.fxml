@@ -118,6 +118,10 @@
 
 </ScrollPane>
 
+<Button
+    text="Save Inventory"
+    onAction="#saveInventory"/>
+
 
     <Label
             text="Machine Maintenance"

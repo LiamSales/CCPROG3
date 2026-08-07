@@ -878,6 +878,46 @@ stage.scene =
 
 stage.showAndWait()
 
+}@FXML
+fun saveInventory() {
+
+    val folder =
+        SelectedMachine.folder
+            ?: return
+
+    val machine =
+        SelectedMachine.machine
+            ?: return
+
+    val file =
+        File(folder, "inventory.csv")
+
+    file.printWriter().use { out ->
+
+        machine.slots.forEachIndexed { index, slot ->
+
+            val item =
+                slot.item ?: return@forEachIndexed
+
+            out.println(
+
+                "$index," +
+                "${item.name}," +
+                "${slot.quantity}," +
+                "${slot.price}," +
+                "${slot.sold}"
+
+            )
+
+        }
+
+    }
+
+    popup(
+        "Inventory Saved",
+        "Inventory successfully written to inventory.csv."
+    )
 
 }
+
 }
