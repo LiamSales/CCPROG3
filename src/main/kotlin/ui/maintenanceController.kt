@@ -32,6 +32,7 @@ import javafx.stage.Modality
 import model.Item
 import javafx.scene.control.Spinner
 import javafx.scene.control.SpinnerValueFactory
+import javafx.scene.image.Image
 
 
 class MaintenanceController {
