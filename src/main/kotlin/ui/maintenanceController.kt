@@ -254,55 +254,60 @@ image.isPreserveRatio = true
 
 setButton.setOnAction {
 
-showItemPicker { item ->
+    showItemPicker { item ->
 
-    slotLabel.text =
-        item.name
+        machine.slots[i - 1].item =
+            item
 
-    itemLabel.text =
-        "Calories: ${item.calories}"
+        machine.slots[i - 1].quantity =
+            0
 
-    qtyLabel.text =
-        "Quantity: 0"
+        machine.slots[i - 1].price =
+            0f
 
-    priceLabel.text =
-        "Price: ₱0"
+        machine.slots[i - 1].sold =
+            0
 
-    image.image =
-        Image(
-            File(item.iconPath)
-                .toURI()
-                .toString()
+        refreshSlotCard(
+            i - 1,
+            slotLabel,
+            itemLabel,
+            qtyLabel,
+            priceLabel,
+            image
         )
 
-}
+    }
 
 }
-
 clearButton.setOnAction {
 
-    slotLabel.text =
-        "Slot $i"
+    machine.clearSlot(i - 1)
 
-    itemLabel.text =
-        "Item: Empty"
+    refreshSlotCard(
+        i - 1,
+        slotLabel,
+        itemLabel,
+        qtyLabel,
+        priceLabel,
+        image
+    )
 
-    qtyLabel.text =
-        "Quantity: 0"
-
-    priceLabel.text =
-        "Price: ₱0"
-
-    image.image = null
-
-    popup("Clear Slot", "Clear Slot $i")
-
-} 
-
+}
 restockButton.setOnAction {
 
+    if (machine.slots[i - 1].item == null) {
+
+        popup(
+            "Restock",
+            "Set an item in Slot $i before restocking."
+        )
+
+        return@setOnAction
+    }
+
     showRestockDialog(
-        itemLabel,
+        i - 1,
         qtyLabel
     )
 
@@ -990,6 +995,67 @@ private fun refreshSlotCard(
                 .toString()
 
         )
+
+    } catch (_: Exception) {
+
+        image.image = null
+
+    }
+}
+
+private fun refreshSlotCard(
+    index: Int,
+    slotLabel: Label,
+    itemLabel: Label,
+    qtyLabel: Label,
+    priceLabel: Label,
+    image: ImageView
+) {
+
+    val slot = machine.slots[index]
+
+    if (slot.item == null) {
+
+        slotLabel.text =
+            "Slot ${index + 1}"
+
+        itemLabel.text =
+            "Item: Empty"
+
+        qtyLabel.text =
+            "Quantity: 0"
+
+        priceLabel.text =
+            "Price: ₱0"
+
+        image.image = null
+
+        return
+    }
+
+    val item =
+        slot.item!!
+
+    slotLabel.text =
+        item.name
+
+    itemLabel.text =
+        "Calories: ${item.calories}"
+
+    qtyLabel.text =
+        "Quantity: ${slot.quantity}"
+
+    priceLabel.text =
+        "Price: ₱%.2f".format(slot.price)
+
+    try {
+
+        image.image =
+            Image(
+                File(item.iconPath)
+                    .toURI()
+                    .toString()
+            )
 
     } catch (_: Exception) {
 
