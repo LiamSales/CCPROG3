@@ -156,18 +156,6 @@
 
     </HBox>
 
-     <HBox>
-        
-    <Button
-    text="Save"
-    
-    
-    style="
-    -fx-background-color:#53D94F;
-    -fx-text-fill:white;
-    "
-    onAction="#saveInventory"/>
-    
     <Button
     
     text="Remove Machine"
@@ -179,5 +167,4 @@
     
     onAction="#removeMachine"/>
     
-   </HBox>
 </VBox>
