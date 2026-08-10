@@ -24,17 +24,27 @@ class MainController {
 
     @FXML
     private lateinit var itemContainer: HBox
+@FXML
+fun initialize() {
 
-    @FXML
-    fun initialize() {
+    /*
+     * Items MUST be loaded first because
+     * inventory.csv stores item names.
+     */
+
+    ItemManager.loadItems()
+
+    /*
+     * Machines can now resolve those item names
+     * when loading inventory.csv.
+     */
 
     MachineManager.loadMachines()
-    ItemManager.loadItems()
 
     renderMachines()
     renderItems()
 
-    }
+}
 
     /*
      * ==========================================================

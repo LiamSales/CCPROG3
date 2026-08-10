@@ -8,20 +8,16 @@ import java.io.File
 object MachineManager {
 
     data class MachineEntry(
-
         val folder: File,
-
         val machine: VendingMachine
-
     )
 
     val machines =
         mutableListOf<MachineEntry>()
 
-
     /*
      * ==========================================================
-     * Load All Machines
+     * LOAD ALL MACHINES
      * ==========================================================
      */
 
@@ -36,15 +32,11 @@ object MachineManager {
 
         root.listFiles()
             ?.filter {
-
                 it.isDirectory &&
                 it.name.startsWith("machine_")
-
             }
             ?.sortedBy {
-
                 it.name
-
             }
             ?.forEach { folder ->
 
@@ -61,277 +53,251 @@ object MachineManager {
                     return@forEach
 
                 val slotLimit =
-                    lines[0].trim().toInt()
+                    lines[0].trim().toIntOrNull()
+                        ?: return@forEach
 
                 val itemLimit =
-                    lines[1].trim().toInt()
+                    lines[1].trim().toIntOrNull()
+                        ?: return@forEach
 
                 val machine: VendingMachine =
 
                     if (lines.size >= 3) {
 
+                        val addOnLimit =
+                            lines[2].trim().toIntOrNull()
+                                ?: 0
+
                         SpecialMachine(
-
                             slotLimit,
-
                             itemLimit,
-
-                            lines[2].trim().toInt()
-
+                            addOnLimit
                         )
 
-                    }
-
-                    else {
+                    } else {
 
                         VendingMachine(
-
                             slotLimit,
-
                             itemLimit
-
                         )
 
                     }
 
+                /*
+                 * IMPORTANT:
+                 *
+                 * ItemManager.items must already be loaded
+                 * before this function is called.
+                 */
+
                 loadInventory(
-
                     folder,
-
                     machine
-
                 )
 
                 loadRegister(
-
                     folder,
-
                     machine
-
                 )
 
                 machines.add(
-
                     MachineEntry(
-
                         folder,
-
                         machine
-
                     )
-
                 )
-
             }
-
     }
-
 
     /*
      * ==========================================================
-     * Save All Machines
+     * SAVE ONE MACHINE IMMEDIATELY
+     * ==========================================================
+     */
+
+    fun saveMachine(
+        entry: MachineEntry
+    ) {
+
+        saveInventory(
+            entry.folder,
+            entry.machine
+        )
+
+        saveRegister(
+            entry.folder,
+            entry.machine
+        )
+    }
+
+    /*
+     * ==========================================================
+     * SAVE ALL MACHINES
      * ==========================================================
      */
 
     fun saveMachines() {
 
-        machines.forEach {
+        machines.forEach { entry ->
 
-            saveMachine(it)
+            saveMachine(entry)
 
         }
-
     }
 
-    private fun saveMachine(
+    /*
+     * ==========================================================
+     * INVENTORY
+     * ==========================================================
+     */
 
-        entry: MachineEntry
-
+    private fun saveInventory(
+        folder: File,
+        machine: VendingMachine
     ) {
 
-        val folder =
-            entry.folder
-
-        val machine =
-            entry.machine
-
-
-        /*
-         * info.csv
-         */
-
-        val info =
-            File(folder, "info.csv")
-
-        info.printWriter().use { out ->
-
-            out.println(machine.slotLimit)
-
-            out.println(machine.itemLimit)
-
-            if (machine is SpecialMachine) {
-
-                out.println(
-
-                    machine.getAddOnSlotCount()
-
-                )
-
-            }
-
-        }
-
-
-        /*
-         * inventory.csv
-         */
-
-        val inventory =
+        val file =
             File(folder, "inventory.csv")
 
-        inventory.printWriter().use { out ->
+        file.parentFile?.mkdirs()
 
-            machine.slots.forEachIndexed {
+        file.printWriter().use { out ->
 
-                index,
-                slot ->
+            machine.slots.forEachIndexed { index, slot ->
 
                 val itemName =
                     slot.item?.name ?: ""
 
                 out.println(
-
                     "$index," +
                     "$itemName," +
                     "${slot.quantity}," +
                     "${slot.price}," +
                     "${slot.sold}"
+                )
+            }
+        }
+    }
 
+    private fun loadInventory(
+        folder: File,
+        machine: VendingMachine
+    ) {
+
+        val file =
+            File(folder, "inventory.csv")
+
+        if (!file.exists())
+            return
+
+        file.readLines().forEach { line ->
+
+            if (line.isBlank())
+                return@forEach
+
+            val parts =
+                line.split(",")
+
+            if (parts.size < 5)
+                return@forEach
+
+            val slotIndex =
+                parts[0].toIntOrNull()
+                    ?: return@forEach
+
+            if (slotIndex !in machine.slots.indices)
+                return@forEach
+
+            val itemName =
+                parts[1]
+
+            val quantity =
+                parts[2].toIntOrNull()
+                    ?: return@forEach
+
+            val price =
+                parts[3].toFloatOrNull()
+                    ?: return@forEach
+
+            val sold =
+                parts[4].toIntOrNull()
+                    ?: return@forEach
+
+            /*
+             * Empty slot.
+             */
+
+            if (itemName.isBlank()) {
+
+                machine.clearSlot(
+                    slotIndex
                 )
 
+                return@forEach
             }
 
-        }
-
-
-        /*
-         * register.csv
-         */
-
-        val register =
-            File(folder, "register.csv")
-
-        register.printWriter().use { out ->
-
-            machine.register
-
-                .getContents()
-
-                .forEach {
-
-                    (denomination, quantity) ->
-
-                    out.println(
-
-                        "$denomination,$quantity"
-
-                    )
-
+            val item =
+                ItemManager.items.find {
+                    it.name == itemName
                 }
 
+            /*
+             * If the item no longer exists,
+             * leave the slot empty instead of crashing.
+             */
+
+            if (item == null)
+                return@forEach
+
+            val slot =
+                machine.slots[slotIndex]
+
+            slot.item =
+                item
+
+            slot.quantity =
+                quantity
+
+            slot.price =
+                price
+
+            slot.sold =
+                sold
         }
-
     }
-
 
     /*
      * ==========================================================
-     * Load Inventory
+     * REGISTER
      * ==========================================================
      */
 
-private fun loadInventory(
+    private fun saveRegister(
+        folder: File,
+        machine: VendingMachine
+    ) {
 
-    folder: File,
+        val file =
+            File(folder, "register.csv")
 
-    machine: VendingMachine
+        file.parentFile?.mkdirs()
 
-) {
+        file.printWriter().use { out ->
 
-    val file =
-        File(folder, "inventory.csv")
+            machine.register
+                .getContents()
+                .forEach { (denomination, quantity) ->
 
-    if (!file.exists())
-        return
-
-    file.readLines().forEach { line ->
-
-        if (line.isBlank())
-            return@forEach
-
-        val parts =
-            line.split(",")
-
-        if (parts.size < 5)
-            return@forEach
-
-        val slot =
-            parts[0].toInt()
-
-        // Ignore invalid slot numbers
-        if (slot !in machine.slots.indices)
-            return@forEach
-
-        val itemName =
-            parts[1]
-
-        val quantity =
-            parts[2].toInt()
-
-        val price =
-            parts[3].toFloat()
-
-        val sold =
-            parts[4].toInt()
-
-        val item =
-            ItemManager.items.find {
-
-                it.name == itemName
-
-            }
-
-        val currentSlot =
-            machine.slots[slot]
-
-        currentSlot.item =
-            item
-
-        currentSlot.quantity =
-            quantity
-
-        currentSlot.price =
-            price
-
-        currentSlot.sold =
-            sold
-
+                    out.println(
+                        "$denomination,$quantity"
+                    )
+                }
+        }
     }
-
-}
-
-    /*
-     * ==========================================================
-     * Load Register
-     * ==========================================================
-     */
 
     private fun loadRegister(
-
         folder: File,
-
         machine: VendingMachine
-
     ) {
 
         val file =
@@ -339,6 +305,10 @@ private fun loadInventory(
 
         if (!file.exists())
             return
+
+        /*
+         * Start from an empty register.
+         */
 
         machine.register.clear()
 
@@ -353,16 +323,21 @@ private fun loadInventory(
             if (parts.size < 2)
                 return@forEach
 
+            val denomination =
+                parts[0].toFloatOrNull()
+                    ?: return@forEach
+
+            val quantity =
+                parts[1].toIntOrNull()
+                    ?: return@forEach
+
+            if (quantity < 0)
+                return@forEach
+
             machine.register.addCash(
-
-                parts[0].toFloat(),
-
-                parts[1].toInt()
-
+                denomination,
+                quantity
             )
-
         }
-
     }
-
 }

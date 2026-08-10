@@ -59,6 +59,63 @@ class MaintenanceController {
         renderMachine()
     }
 
+    private fun saveCurrentMachine() {
+        val entry =
+            MachineManager.machines.find {
+                it.folder == machineFolder
+            }
+                ?: return
+
+        MachineManager.machines[
+            MachineManager.machines.indexOf(entry)
+        ] = entry.copy(machine = machine)
+
+        entry.folder.listFiles()?.forEach {
+            if (it.isDirectory) {
+                // Folders exist, proceed with save
+            }
+        }
+
+        /*
+         * Save inventory.csv
+         */
+
+        val inventory =
+            File(machineFolder, "inventory.csv")
+
+        inventory.printWriter().use { out ->
+            machine.slots.forEachIndexed { index, slot ->
+                val itemName =
+                    slot.item?.name ?: ""
+                val quantity =
+                    slot.quantity
+                val price =
+                    slot.price
+
+                out.println(
+                    "$itemName,$quantity,$price"
+                )
+            }
+        }
+
+        /*
+         * Save register.csv
+         */
+
+        val register =
+            File(machineFolder, "register.csv")
+
+        register.printWriter().use { out ->
+            machine.register.getContents().forEach { (denomination, quantity) ->
+                if (quantity > 0) {
+                    out.println(
+                        "$denomination,$quantity"
+                    )
+                }
+            }
+        }
+    }
+
     private fun renderMachine() {
         slotGrid.children.clear()
         addOnGrid.children.clear()
@@ -123,7 +180,21 @@ class MaintenanceController {
 
         setButton.setOnAction {
             showItemPicker { item ->
-                machine.setSlot(index, item, 0f)
+                val slot =
+                    machine.slots[index]
+
+                slot.item =
+                    item
+
+                slot.quantity =
+                    0
+
+                slot.price =
+                    0f
+
+                slot.sold =
+                    0
+
                 refreshSlotCard(
                     index,
                     slotLabel,
@@ -132,6 +203,8 @@ class MaintenanceController {
                     priceLabel,
                     image
                 )
+
+                saveCurrentMachine()
             }
         }
 
@@ -146,19 +219,29 @@ class MaintenanceController {
                 priceLabel,
                 image
             )
+
+            saveCurrentMachine()
         }
 
         restockButton.setOnAction {
             showRestockDialog(
                 index,
-                qtyLabel
+                slotLabel,
+                itemLabel,
+                qtyLabel,
+                priceLabel,
+                image
             )
         }
 
         priceButton.setOnAction {
             showPriceDialog(
                 index,
-                priceLabel
+                slotLabel,
+                itemLabel,
+                qtyLabel,
+                priceLabel,
+                image
             )
         }
 
@@ -434,167 +517,273 @@ class MaintenanceController {
     }
 
     private fun showPriceDialog(
-        index: Int,
-        priceLabel: Label
+        slotIndex: Int,
+        slotLabel: Label,
+        itemLabel: Label,
+        qtyLabel: Label,
+        priceLabel: Label,
+        image: ImageView
     ) {
-        val stage = Stage()
-        stage.title = "Set Price"
-        stage.initOwner(slotGrid.scene.window)
-        stage.initModality(Modality.APPLICATION_MODAL)
 
-        val textField = TextField()
-        textField.promptText = "Enter price"
+        val stage =
+            Stage()
+
+        stage.title =
+            "Set Price"
+
+        val textField =
+            javafx.scene.control.TextField()
+
+        textField.promptText =
+            "Enter price"
+
         textField.text =
-            if (machine.slots[index].item != null)
-                machine.slots[index].price.toString()
+            if (machine.slots[slotIndex].price > 0f)
+                machine.slots[slotIndex].price.toString()
             else
                 ""
 
-        val setButton = Button("Set")
-        val cancelButton = Button("Cancel")
+        val setButton =
+            Button("Set")
 
-        val buttons = HBox(10.0)
-        buttons.alignment = Pos.CENTER
-        buttons.children.addAll(
+        val cancelButton =
+            Button("Cancel")
+
+        val buttonRow =
+            HBox(10.0)
+
+        buttonRow.alignment =
+            Pos.CENTER
+
+        buttonRow.children.addAll(
             setButton,
             cancelButton
         )
 
-        val root = VBox(15.0)
-        root.alignment = Pos.CENTER
-        root.padding = Insets(20.0)
-        root.style = "-fx-background-color:white;"
+        val root =
+            VBox(15.0)
+
+        root.alignment =
+            Pos.CENTER
+
+        root.style =
+            "-fx-padding:20;" +
+            "-fx-background-color:white;"
 
         root.children.addAll(
+
             Label("Enter Item Price"),
+
             textField,
-            buttons
+
+            buttonRow
+
         )
 
         setButton.setOnAction {
-            if (machine.slots[index].item == null) {
-                showWarning(
-                    "No Item",
-                    "Please assign an item before setting its price."
-                )
-                return@setOnAction
-            }
 
             val value =
                 textField.text.toFloatOrNull()
 
-            if (value == null || value < 0f) {
-                showWarning(
-                    "Invalid Price",
-                    "Please enter a valid price."
-                )
+            if (
+                value == null ||
+                value < 0f
+            ) {
+
+                Alert(Alert.AlertType.ERROR).apply {
+
+                    title =
+                        "Invalid Price"
+
+                    headerText =
+                        null
+
+                    contentText =
+                        "Please enter a valid price."
+
+                }.showAndWait()
+
                 return@setOnAction
             }
 
-            machine.changePrice(index, value)
+            /*
+             * Actually modify the machine.
+             */
 
-            priceLabel.text =
-                "Price: ₱%.2f".format(value)
+            machine.slots[slotIndex].price =
+                value
+
+            refreshSlotCard(
+                slotIndex,
+                slotLabel,
+                itemLabel,
+                qtyLabel,
+                priceLabel,
+                image
+            )
+
+            /*
+             * Immediately save.
+             */
+
+            saveCurrentMachine()
 
             stage.close()
         }
 
         cancelButton.setOnAction {
+
             stage.close()
+
         }
 
         stage.scene =
-            Scene(root, 300.0, 170.0)
+            Scene(
+                root,
+                300.0,
+                170.0
+            )
 
         stage.showAndWait()
     }
 
     private fun showRestockDialog(
-        index: Int,
-        qtyLabel: Label
+        slotIndex: Int,
+        slotLabel: Label,
+        itemLabel: Label,
+        qtyLabel: Label,
+        priceLabel: Label,
+        image: ImageView
     ) {
-        if (machine.slots[index].item == null) {
-            showWarning(
-                "No Item",
-                "Please assign an item before restocking."
-            )
+
+        val slot =
+            machine.slots[slotIndex]
+
+        if (slot.item == null) {
+
+            Alert(Alert.AlertType.WARNING).apply {
+
+                title = "No Item"
+
+                headerText = null
+
+                contentText =
+                    "Please assign an item before restocking."
+
+            }.showAndWait()
+
             return
         }
 
-        val current =
-            machine.slots[index].quantity
+        val stage =
+            Stage()
 
-        val stage = Stage()
+        stage.title =
+            "Restock"
 
-        stage.title = "Restock"
-        stage.initOwner(slotGrid.scene.window)
-        stage.initModality(Modality.APPLICATION_MODAL)
-
-        val spinner = Spinner<Int>()
+        val spinner =
+            Spinner<Int>()
 
         spinner.valueFactory =
             SpinnerValueFactory.IntegerSpinnerValueFactory(
+
                 0,
+
                 machine.itemLimit,
-                current
+
+                slot.quantity
+
             )
 
-        spinner.isEditable = true
-        spinner.prefWidth = 120.0
+        spinner.isEditable =
+            true
 
-        val setButton = Button("Set")
-        val cancelButton = Button("Cancel")
+        spinner.prefWidth =
+            120.0
 
-        val buttons = HBox(10.0)
-        buttons.alignment = Pos.CENTER
-        buttons.children.addAll(
+        val setButton =
+            Button("Set")
+
+        val cancelButton =
+            Button("Cancel")
+
+        val buttonRow =
+            HBox(10.0)
+
+        buttonRow.alignment =
+            Pos.CENTER
+
+        buttonRow.children.addAll(
             setButton,
             cancelButton
         )
 
-        val root = VBox(15.0)
-        root.alignment = Pos.CENTER
-        root.padding = Insets(20.0)
-        root.style = "-fx-background-color:white;"
+        val root =
+            VBox(15.0)
+
+        root.alignment =
+            Pos.CENTER
+
+        root.style =
+            "-fx-padding:20;" +
+            "-fx-background-color:white;"
 
         root.children.addAll(
-            Label(
-                "Select Quantity (Max ${machine.itemLimit})"
-            ),
+
+            Label("Select Quantity"),
+
             spinner,
-            buttons
+
+            Label(
+                "Maximum: ${machine.itemLimit}"
+            ),
+
+            buttonRow
+
         )
 
         setButton.setOnAction {
-            val quantity = spinner.value
 
-            if (quantity < 0 ||
-                quantity > machine.itemLimit
-            ) {
-                showWarning(
-                    "Invalid Quantity",
-                    "Quantity must be between 0 and ${machine.itemLimit}."
-                )
-                return@setOnAction
-            }
+            val quantity =
+                spinner.value
 
-            machine.restockSlot(
-                index,
+            /*
+             * Actually modify the machine.
+             */
+
+            slot.quantity =
                 quantity
+
+            refreshSlotCard(
+                slotIndex,
+                slotLabel,
+                itemLabel,
+                qtyLabel,
+                priceLabel,
+                image
             )
 
-            qtyLabel.text =
-                "Quantity: $quantity"
+            /*
+             * Immediately save to inventory.csv.
+             */
+
+            saveCurrentMachine()
 
             stage.close()
         }
 
         cancelButton.setOnAction {
+
             stage.close()
+
         }
 
         stage.scene =
-            Scene(root, 330.0, 190.0)
+            Scene(
+                root,
+                300.0,
+                220.0
+            )
 
         stage.showAndWait()
     }
@@ -800,6 +989,13 @@ class MaintenanceController {
             }
 
             updateCashLabel()
+
+            /*
+             * Immediately save register.csv
+             */
+
+            saveCurrentMachine()
+
             stage.close()
         }
 
@@ -834,7 +1030,10 @@ class MaintenanceController {
             result.get() == ButtonType.OK
         ) {
             machine.register.clear()
+
             updateCashLabel()
+
+            saveCurrentMachine()
 
             popup(
                 "Balance Collected",
@@ -881,7 +1080,7 @@ class MaintenanceController {
             MachineManager.machines.removeIf {
                 it.folder == machineFolder
             }
-            backToMainPage(event, false)
+            backToMainPage(event)
         }
     }
 
@@ -899,18 +1098,6 @@ class MaintenanceController {
 
     @FXML
     fun backToMainPage(event: ActionEvent) {
-        MachineManager.saveMachines()
-
-        backToMainPage(event, false)
-    }
-
-    private fun backToMainPage(
-        event: ActionEvent,
-        save: Boolean
-    ) {
-        if (save) {
-            MachineManager.saveMachines()
-        }
 
         val root: Parent =
             FXMLLoader.load(
@@ -922,7 +1109,8 @@ class MaintenanceController {
                 .scene
                 .window as Stage
 
-        stage.scene = Scene(root)
+        stage.scene =
+            Scene(root)
     }
 
     private fun updateCashLabel() {
