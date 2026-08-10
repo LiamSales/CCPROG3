@@ -845,10 +845,7 @@ class MaintenanceController {
 
     @FXML
     fun saveInventory() {
-        MachineManager.saveMachine(
-            machineFolder,
-            machine
-        )
+        MachineManager.saveMachines()
 
         popup(
             "Saved",
@@ -902,10 +899,7 @@ class MaintenanceController {
 
     @FXML
     fun backToMainPage(event: ActionEvent) {
-        MachineManager.saveMachine(
-            machineFolder,
-            machine
-        )
+        MachineManager.saveMachines()
 
         backToMainPage(event, false)
     }
@@ -915,10 +909,7 @@ class MaintenanceController {
         save: Boolean
     ) {
         if (save) {
-            MachineManager.saveMachine(
-                machineFolder,
-                machine
-            )
+            MachineManager.saveMachines()
         }
 
         val root: Parent =
