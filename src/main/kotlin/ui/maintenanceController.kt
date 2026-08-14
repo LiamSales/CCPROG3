@@ -1144,3 +1144,124 @@ class MaintenanceController {
         }.showAndWait()
     }
 }
+
+
+
+
+
+
+
+////
+
+Yes. With the MachineManager and MaintenanceController you just provided, the next step is to make all maintenance changes immediately persistent, with no Save Inventory button.
+
+The main issue is that your current controller has a few different save paths and one important mismatch:
+
+saveCurrentMachine() writes its own inventory format, which is incompatible with your MachineManager.loadInventory().
+
+The controller's saveCurrentMachine() writes only: itemName,quantity,price
+
+MachineManager.loadInventory() expects: slotIndex,itemName,quantity,price,sold
+
+Therefore the slot data gets corrupted/misread on the next load.
+
+saveInventory() should be removed from the controller entirely.
+
+Every actual machine modification should call MachineManager.saveMachine(...).
+
+
+Do this next
+
+Replace your controller's entire saveCurrentMachine() with:
+
+private fun saveCurrentMachine() {
+
+    val entry =
+        MachineManager.machines.find {
+            it.folder == machineFolder
+        } ?: return
+
+    MachineManager.saveMachine(entry)
+
+}
+
+Then delete this entire function from the controller:
+
+@FXML
+fun saveInventory() {
+    MachineManager.saveMachines()
+
+    popup(
+        "Saved",
+        "Machine inventory and register saved successfully."
+    )
+}
+
+You can also remove the Save Inventory button from your FXML.
+
+Your existing calls to:
+
+saveCurrentMachine()
+
+after:
+
+Set
+
+Clear
+
+Restock
+
+Set Price
+
+Replenish Cash
+
+Collect Balance
+
+
+will then immediately write the correct data through MachineManager.
+
+One more important correction
+
+Your MachineManager.saveInventory() is already correct:
+
+out.println(
+    "$index," +
+    "$itemName," +
+    "${slot.quantity}," +
+    "${slot.price}," +
+    "${slot.sold}"
+)
+
+So do not have the controller manually write inventory.csv anymore.
+
+That is the key fix.
+
+After this, the flow becomes:
+
+Maintenance UI
+      ↓
+modify machine object
+      ↓
+saveCurrentMachine()
+      ↓
+MachineManager.saveMachine()
+      ↓
+ ┌─────────────────┐
+ │ inventory.csv   │
+ │ register.csv    │
+ └─────────────────┘
+      ↓
+immediately persisted
+
+And when you return to Main and reload:
+
+ItemManager.loadItems()
+        ↓
+MachineManager.loadMachines()
+        ↓
+inventory.csv → machine.slots
+register.csv  → machine.register
+
+So the same machine object/data should survive navigation and application restarts.
+
+///
