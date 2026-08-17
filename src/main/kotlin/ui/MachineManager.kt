@@ -61,7 +61,6 @@ object MachineManager {
                         ?: return@forEach
 
                 val machine: VendingMachine =
-
                     if (lines.size >= 3) {
 
                         val addOnLimit =
@@ -80,22 +79,22 @@ object MachineManager {
                             slotLimit,
                             itemLimit
                         )
-
                     }
 
                 /*
-                 * IMPORTANT:
-                 *
-                 * ItemManager.items must already be loaded
-                 * before this function is called.
+                 * ItemManager must already be loaded.
                  */
-
                 loadInventory(
                     folder,
                     machine
                 )
 
                 loadRegister(
+                    folder,
+                    machine
+                )
+
+                loadAddOns(
                     folder,
                     machine
                 )
@@ -111,8 +110,11 @@ object MachineManager {
 
     /*
      * ==========================================================
-     * SAVE ONE MACHINE IMMEDIATELY
+     * SAVE ONE MACHINE
      * ==========================================================
+     *
+     * This is the ONLY function controllers should call
+     * when they want to persist a machine.
      */
 
     fun saveMachine(
@@ -128,6 +130,11 @@ object MachineManager {
             entry.folder,
             entry.machine
         )
+
+        saveAddOns(
+            entry.folder,
+            entry.machine
+        )
     }
 
     /*
@@ -139,16 +146,51 @@ object MachineManager {
     fun saveMachines() {
 
         machines.forEach { entry ->
-
             saveMachine(entry)
-
         }
     }
 
     /*
      * ==========================================================
-     * INVENTORY
+     * SAVE CURRENT MACHINE
      * ==========================================================
+     *
+     * Useful from MaintenanceController/TestController.
+     */
+
+    fun saveMachine(
+        folder: File,
+        machine: VendingMachine
+    ) {
+
+        saveInventory(
+            folder,
+            machine
+        )
+
+        saveRegister(
+            folder,
+            machine
+        )
+
+        saveAddOns(
+            folder,
+            machine
+        )
+    }
+
+    /*
+     * ==========================================================
+     * INVENTORY SAVE
+     * ==========================================================
+     *
+     * Format:
+     *
+     * slot,itemName,quantity,price,sold
+     *
+     * Example:
+     *
+     * 0,Coke,5,25.0,2
      */
 
     private fun saveInventory(
@@ -179,6 +221,12 @@ object MachineManager {
         }
     }
 
+    /*
+     * ==========================================================
+     * INVENTORY LOAD
+     * ==========================================================
+     */
+
     private fun loadInventory(
         folder: File,
         machine: VendingMachine
@@ -202,25 +250,25 @@ object MachineManager {
                 return@forEach
 
             val slotIndex =
-                parts[0].toIntOrNull()
+                parts[0].trim().toIntOrNull()
                     ?: return@forEach
 
             if (slotIndex !in machine.slots.indices)
                 return@forEach
 
             val itemName =
-                parts[1]
+                parts[1].trim()
 
             val quantity =
-                parts[2].toIntOrNull()
+                parts[2].trim().toIntOrNull()
                     ?: return@forEach
 
             val price =
-                parts[3].toFloatOrNull()
+                parts[3].trim().toFloatOrNull()
                     ?: return@forEach
 
             val sold =
-                parts[4].toIntOrNull()
+                parts[4].trim().toIntOrNull()
                     ?: return@forEach
 
             /*
@@ -236,14 +284,14 @@ object MachineManager {
                 return@forEach
             }
 
-            val item =
+            val item: Item? =
                 ItemManager.items.find {
                     it.name == itemName
                 }
 
             /*
-             * If the item no longer exists,
-             * leave the slot empty instead of crashing.
+             * Item no longer exists.
+             * Leave slot empty.
              */
 
             if (item == null)
@@ -268,8 +316,12 @@ object MachineManager {
 
     /*
      * ==========================================================
-     * REGISTER
+     * REGISTER SAVE
      * ==========================================================
+     *
+     * Format:
+     *
+     * denomination,quantity
      */
 
     private fun saveRegister(
@@ -288,12 +340,21 @@ object MachineManager {
                 .getContents()
                 .forEach { (denomination, quantity) ->
 
-                    out.println(
-                        "$denomination,$quantity"
-                    )
+                    if (quantity > 0) {
+
+                        out.println(
+                            "$denomination,$quantity"
+                        )
+                    }
                 }
         }
     }
+
+    /*
+     * ==========================================================
+     * REGISTER LOAD
+     * ==========================================================
+     */
 
     private fun loadRegister(
         folder: File,
@@ -305,10 +366,6 @@ object MachineManager {
 
         if (!file.exists())
             return
-
-        /*
-         * Start from an empty register.
-         */
 
         machine.register.clear()
 
@@ -324,11 +381,11 @@ object MachineManager {
                 return@forEach
 
             val denomination =
-                parts[0].toFloatOrNull()
+                parts[0].trim().toFloatOrNull()
                     ?: return@forEach
 
             val quantity =
-                parts[1].toIntOrNull()
+                parts[1].trim().toIntOrNull()
                     ?: return@forEach
 
             if (quantity < 0)
@@ -338,6 +395,145 @@ object MachineManager {
                 denomination,
                 quantity
             )
+        }
+    }
+
+    /*
+     * ==========================================================
+     * ADD-ON SAVE
+     * ==========================================================
+     *
+     * Format:
+     *
+     * slot,itemName,quantity,price,sold
+     *
+     * Only SpecialMachine has add-ons.
+     */
+
+    private fun saveAddOns(
+        folder: File,
+        machine: VendingMachine
+    ) {
+
+        val special =
+            machine as? SpecialMachine
+                ?: return
+
+        val file =
+            File(folder, "addons.csv")
+
+        file.parentFile?.mkdirs()
+
+        file.printWriter().use { out ->
+
+            special.getAddOnSlots()
+                .forEachIndexed { index, slot ->
+
+                    val itemName =
+                        slot.item?.name ?: ""
+
+                    out.println(
+                        "$index," +
+                        "$itemName," +
+                        "${slot.quantity}," +
+                        "${slot.price}," +
+                        "${slot.sold}"
+                    )
+                }
+        }
+    }
+
+    /*
+     * ==========================================================
+     * ADD-ON LOAD
+     * ==========================================================
+     */
+
+    private fun loadAddOns(
+        folder: File,
+        machine: VendingMachine
+    ) {
+
+        val special =
+            machine as? SpecialMachine
+                ?: return
+
+        val file =
+            File(folder, "addons.csv")
+
+        if (!file.exists())
+            return
+
+        file.readLines().forEach { line ->
+
+            if (line.isBlank())
+                return@forEach
+
+            val parts =
+                line.split(",")
+
+            if (parts.size < 5)
+                return@forEach
+
+            val index =
+                parts[0].trim().toIntOrNull()
+                    ?: return@forEach
+
+            if (
+                index !in
+                special.getAddOnSlots().indices
+            )
+                return@forEach
+
+            val itemName =
+                parts[1].trim()
+
+            val quantity =
+                parts[2].trim().toIntOrNull()
+                    ?: return@forEach
+
+            val price =
+                parts[3].trim().toFloatOrNull()
+                    ?: return@forEach
+
+            val sold =
+                parts[4].trim().toIntOrNull()
+                    ?: return@forEach
+
+            /*
+             * Empty add-on slot.
+             */
+
+            if (itemName.isBlank()) {
+
+                special.clearAddOnSlot(
+                    index
+                )
+
+                return@forEach
+            }
+
+            val item =
+                ItemManager.items.find {
+                    it.name == itemName
+                }
+                    ?: return@forEach
+
+            val slot =
+                special.getAddOnSlot(index)
+                    ?: return@forEach
+
+            slot.item =
+                item
+
+            slot.quantity =
+                quantity
+
+            slot.price =
+                price
+
+            slot.sold =
+                sold
         }
     }
 }
