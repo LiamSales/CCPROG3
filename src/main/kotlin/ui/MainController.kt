@@ -14,8 +14,8 @@ import javafx.scene.layout.HBox
 import javafx.scene.layout.VBox
 import javafx.stage.Stage
 import model.Item
-import java.io.File
 import model.SpecialMachine
+import java.io.File
 
 class MainController {
 
@@ -24,61 +24,60 @@ class MainController {
 
     @FXML
     private lateinit var itemContainer: HBox
-@FXML
-fun initialize() {
 
-    /*
-     * Items MUST be loaded first because
-     * inventory.csv stores item names.
-     */
-
-    ItemManager.loadItems()
-
-    /*
-     * Machines can now resolve those item names
-     * when loading inventory.csv.
-     */
-
-    MachineManager.loadMachines()
-
-    renderMachines()
-    renderItems()
-
-}
 
     /*
      * ==========================================================
-     * Machine Loading
+     * INITIALIZE
      * ==========================================================
+     *
+     * Items are loaded first because inventory.csv stores
+     * item names.
+     *
+     * Machines are then loaded once into MachineManager.
+     *
+     * From this point onward, the machine objects inside
+     * MachineManager.machines are the objects used by the UI.
      */
 
-   private fun renderMachines() {
+    @FXML
+    fun initialize() {
 
-    machineContainer.children.clear()
+        ItemManager.loadItems()
 
-    MachineManager.machines.forEach {
+        MachineManager.loadMachines()
 
-        machineContainer.children.add(
-
-            createMachineCard(it)
-
-        )
-
+        renderMachines()
+        renderItems()
     }
 
-    machineContainer.children.add(
-
-        createAddCard(
-            "Create Machine"
-        )
-
-    )
-
-}
 
     /*
      * ==========================================================
-     * UI Rendering
+     * RENDER MACHINES
+     * ==========================================================
+     */
+
+    private fun renderMachines() {
+
+        machineContainer.children.clear()
+
+        MachineManager.machines.forEach { entry ->
+
+            machineContainer.children.add(
+                createMachineCard(entry)
+            )
+        }
+
+        machineContainer.children.add(
+            createAddCard("Create Machine")
+        )
+    }
+
+
+    /*
+     * ==========================================================
+     * RENDER ITEMS
      * ==========================================================
      */
 
@@ -86,127 +85,156 @@ fun initialize() {
 
         itemContainer.children.clear()
 
-        ItemManager.items.forEach {
+        ItemManager.items.forEach { item ->
 
             itemContainer.children.add(
-
-                createItemCard(it)
-
+                createItemCard(item)
             )
-
         }
 
         itemContainer.children.add(
-
-            createAddCard(
-                "Create Item"
-            )
-
+            createAddCard("Create Item")
         )
-
     }
+
 
     /*
      * ==========================================================
-     * Machine Card
+     * MACHINE CARD
      * ==========================================================
      */
 
-/*
- * ==========================================================
- * Machine Card
- * ==========================================================
- */
+    private fun createMachineCard(
+        entry: MachineManager.MachineEntry
+    ): VBox {
 
-private fun createMachineCard(
-    entry: MachineManager.MachineEntry
-): VBox {
+        val title =
+            Label(entry.folder.name)
 
-    val title =
-        Label(entry.folder.name)
+        title.style =
+            "-fx-text-fill:white;" +
+            "-fx-font-size:20;" +
+            "-fx-font-weight:bold;"
 
-    title.style =
-        "-fx-text-fill:white;" +
-        "-fx-font-size:20;" +
-        "-fx-font-weight:bold;"
 
-    val type =
-        Label(
+        val type =
+            Label(
+                if (entry.machine is SpecialMachine)
+                    "Special Machine"
+                else
+                    "Regular Machine"
+            )
 
-            if (entry.machine is SpecialMachine)
-                "Special Machine"
-            else
-                "Regular Machine"
+        type.style =
+            "-fx-text-fill:#CFCFCF;"
 
+
+        /*
+         * ======================================================
+         * TEST
+         * ======================================================
+         *
+         * IMPORTANT:
+         *
+         * We use entry.machine directly.
+         *
+         * We DO NOT create another VendingMachine.
+         *
+         * We DO NOT reload the machine from CSV.
+         *
+         * Therefore TestController receives the exact same
+         * machine object currently stored in MachineManager.
+         */
+
+        val testButton =
+            Button("Test")
+
+        testButton.setOnAction {
+
+            selectMachine(entry)
+
+            openTestPage()
+        }
+
+
+        /*
+         * ======================================================
+         * MAINTENANCE
+         * ======================================================
+         *
+         * Same object is passed to MaintenanceController.
+         */
+
+        val maintenanceButton =
+            Button("Maintenance")
+
+        maintenanceButton.setOnAction {
+
+            selectMachine(entry)
+
+            openMaintenancePage()
+        }
+
+
+        val buttons =
+            VBox(8.0)
+
+        buttons.children.addAll(
+            testButton,
+            maintenanceButton
         )
 
-    type.style =
-        "-fx-text-fill:#CFCFCF;"
 
-    val testButton =
-        Button("Test")
+        val card =
+            VBox(10.0)
 
-    testButton.setOnAction {
+        card.children.addAll(
+            title,
+            type,
+            buttons
+        )
 
-        SelectedMachine.folder =
-            entry.folder
+        card.prefWidth = 220.0
 
-        SelectedMachine.machine =
-            entry.machine
+        card.style =
+            "-fx-background-color:#1A1A1A;" +
+            "-fx-background-radius:15;" +
+            "-fx-padding:20;"
 
-        openTestPage()
 
+        return card
     }
 
-    val maintenanceButton =
-        Button("Maintenance")
 
-    maintenanceButton.setOnAction {
-
-        SelectedMachine.folder =
-            entry.folder
-
-        SelectedMachine.machine =
-            entry.machine
-
-        openMaintenancePage()
-
-    }
-
-    val buttons =
-        VBox(8.0)
-
-    buttons.children.addAll(
-
-        testButton,
-        maintenanceButton
-
-    )
-
-    val card =
-        VBox(10.0)
-
-    card.children.addAll(
-
-        title,
-        type,
-        buttons
-
-    )
-
-    card.prefWidth = 220.0
-
-    card.style =
-        "-fx-background-color:#1A1A1A;" +
-        "-fx-background-radius:15;" +
-        "-fx-padding:20;"
-
-    return card
-
-}
     /*
      * ==========================================================
-     * Item Card
+     * SELECT MACHINE
+     * ==========================================================
+     *
+     * This is the important part.
+     *
+     * SelectedMachine.machine points to the SAME object as:
+     *
+     * MachineManager.machines[index].machine
+     *
+     * No copy is made.
+     */
+
+    private fun selectMachine(
+        entry: MachineManager.MachineEntry
+    ) {
+
+        SelectedMachine.folder =
+            entry.folder
+
+        SelectedMachine.machine =
+            entry.machine
+    }
+
+
+    /*
+     * ==========================================================
+     * ITEM CARD
      * ==========================================================
      */
 
@@ -220,24 +248,21 @@ private fun createMachineCard(
         try {
 
             image.image =
-
                 Image(
-
                     File(item.iconPath)
                         .toURI()
                         .toString()
-
                 )
 
-        }
+        } catch (_: Exception) {
 
-        catch (_: Exception) {
-
+            image.image = null
         }
 
         image.fitWidth = 120.0
         image.fitHeight = 120.0
         image.isPreserveRatio = true
+
 
         val title =
             Label(item.name)
@@ -247,6 +272,7 @@ private fun createMachineCard(
             "-fx-font-size:20;" +
             "-fx-font-weight:bold;"
 
+
         val calories =
             Label(
                 "${item.calories} kcal"
@@ -255,25 +281,24 @@ private fun createMachineCard(
         calories.style =
             "-fx-text-fill:white;"
 
+
         val removeButton =
             Button("Remove")
 
         removeButton.setOnAction {
 
             confirmRemoveItem(item)
-
         }
+
 
         val card =
             VBox(10.0)
 
         card.children.addAll(
-
             image,
             title,
             calories,
             removeButton
-
         )
 
         card.prefWidth = 220.0
@@ -283,13 +308,14 @@ private fun createMachineCard(
             "-fx-background-radius:15;" +
             "-fx-padding:20;"
 
-        return card
 
+        return card
     }
+
 
     /*
      * ==========================================================
-     * Remove Item
+     * REMOVE ITEM
      * ==========================================================
      */
 
@@ -309,8 +335,10 @@ private fun createMachineCard(
         alert.contentText =
             "This action cannot be undone."
 
+
         val result =
             alert.showAndWait()
+
 
         if (
             result.isPresent &&
@@ -321,15 +349,40 @@ private fun createMachineCard(
 
             ItemManager.saveItems()
 
+            /*
+             * If an item was removed from the item database,
+             * remove references to that item from machine slots.
+             *
+             * This prevents inventory.csv from pointing to an
+             * item that no longer exists.
+             */
+
+            MachineManager.machines.forEach { entry ->
+
+                entry.machine.slots.forEach { slot ->
+
+                    if (slot.item == item) {
+
+                        slot.item = null
+                        slot.quantity = 0
+                        slot.price = 0f
+                        slot.sold = 0
+                    }
+                }
+
+                MachineManager.saveMachine(entry)
+            }
+
+
             renderItems()
-
+            renderMachines()
         }
-
     }
+
 
     /*
      * ==========================================================
-     * Add Card
+     * ADD CARD
      * ==========================================================
      */
 
@@ -343,25 +396,27 @@ private fun createMachineCard(
         plusButton.prefWidth = 80.0
         plusButton.prefHeight = 80.0
 
+
         when (labelText) {
 
-            "Create Machine" ->
+            "Create Machine" -> {
 
                 plusButton.setOnAction {
 
                     openCreateMachinePage()
-
                 }
+            }
 
-            "Create Item" ->
+
+            "Create Item" -> {
 
                 plusButton.setOnAction {
 
                     openCreateItemPage()
-
                 }
-
+            }
         }
+
 
         val label =
             Label(labelText)
@@ -369,14 +424,13 @@ private fun createMachineCard(
         label.style =
             "-fx-text-fill:white;"
 
+
         val card =
             VBox(15.0)
 
         card.children.addAll(
-
             plusButton,
             label
-
         )
 
         card.prefWidth = 220.0
@@ -386,13 +440,14 @@ private fun createMachineCard(
             "-fx-background-radius:15;" +
             "-fx-padding:20;"
 
-        return card
 
+        return card
     }
+
 
     /*
      * ==========================================================
-     * Navigation
+     * OPEN CREATE MACHINE
      * ==========================================================
      */
 
@@ -401,32 +456,56 @@ private fun createMachineCard(
         changeScene(
             "/fxml/create-machine.fxml"
         )
-
     }
+
+
+    /*
+     * ==========================================================
+     * OPEN CREATE ITEM
+     * ==========================================================
+     */
 
     private fun openCreateItemPage() {
 
         changeScene(
             "/fxml/create-item.fxml"
         )
-
     }
+
+
+    /*
+     * ==========================================================
+     * OPEN TEST
+     * ==========================================================
+     */
 
     private fun openTestPage() {
 
         changeScene(
             "/fxml/test.fxml"
         )
-
     }
+
+
+    /*
+     * ==========================================================
+     * OPEN MAINTENANCE
+     * ==========================================================
+     */
 
     private fun openMaintenancePage() {
 
         changeScene(
             "/fxml/maintenance.fxml"
         )
-
     }
+
+
+    /*
+     * ==========================================================
+     * CHANGE SCENE
+     * ==========================================================
+     */
 
     private fun changeScene(
         fxmlPath: String
@@ -440,24 +519,29 @@ private fun createMachineCard(
                         "Cannot find FXML: $fxmlPath"
                     )
 
-            val loader = FXMLLoader(resource)
 
-        val root: Parent =
-            loader.load()
+            val loader =
+                FXMLLoader(resource)
+
+
+            val root: Parent =
+                loader.load()
+
 
             val stage =
                 machineContainer
                     .scene
                     .window as Stage
 
+
             stage.scene =
                 Scene(root)
 
-        }
 
-        catch (e: Exception) {
+        } catch (e: Exception) {
 
             e.printStackTrace()
+
 
             val alert =
                 Alert(Alert.AlertType.ERROR)
@@ -472,9 +556,6 @@ private fun createMachineCard(
                 "${e::class.simpleName}: ${e.message}"
 
             alert.showAndWait()
-
         }
-
     }
-
 }
