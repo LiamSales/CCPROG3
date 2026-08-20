@@ -41,13 +41,6 @@ class TestController {
      * ==========================================================
      * MACHINE
      * ==========================================================
-     *
-     * IMPORTANT:
-     *
-     * This is the SAME machine object that was selected
-     * in MainController.
-     *
-     * We do NOT call MachineManager.loadMachines() here.
      */
 
     private lateinit var machine: VendingMachine
@@ -55,10 +48,17 @@ class TestController {
     /*
      * ==========================================================
      * CUSTOMER DEPOSIT
+     *
+     * This is cash currently inserted by the customer.
+     *
+     * It is NOT part of the machine register yet.
+     * It only becomes part of the register after a
+     * successful purchase.
      * ==========================================================
      */
 
-    private val deposit: Cash = mutableMapOf()
+    private val deposit: Cash =
+        mutableMapOf()
 
     private val denominations =
         listOf(
@@ -70,11 +70,18 @@ class TestController {
             20f,
             10f,
             5f,
-            1f
+            1f,
+            0.25f,
+            0.10f,
+            0.05f
         )
 
-    private var balance = 0f
+    private var balance =
+        0f
 
+    /*
+     * Buttons for normal machine slots.
+     */
     private val itemButtons =
         mutableListOf<Button>()
 
@@ -89,116 +96,84 @@ class TestController {
 
         machine =
             SelectedMachine.machine
-                ?: error("No machine selected.")
+                ?: error(
+                    "No machine selected."
+                )
 
         /*
-         * Build the UI directly from the machine currently
-         * stored in memory.
+         * This is the SAME machine object already stored
+         * inside MachineManager and SelectedMachine.
+         *
+         * We do NOT create or load another machine here.
          */
 
-        createSlotCards(machine)
+        createSlotCards()
 
         if (machine is SpecialMachine) {
 
-            createAddOnCards(
-                machine as SpecialMachine
-            )
+            createAddOnCards()
 
         } else {
 
-            addOnTitle.isVisible = false
-            addOnTitle.isManaged = false
+            addOnTitle.isVisible =
+                false
 
-            addOnScroll.isVisible = false
-            addOnScroll.isManaged = false
+            addOnTitle.isManaged =
+                false
+
+            addOnScroll.isVisible =
+                false
+
+            addOnScroll.isManaged =
+                false
         }
 
         updateBalance()
+
         updateItemButtonsEnabledState()
     }
 
     /*
      * ==========================================================
-     * SAVE CURRENT MACHINE
-     * ==========================================================
-     *
-     * Saves the SAME machine object currently being used.
-     */
-
-    private fun saveCurrentMachine() {
-
-        val entry =
-            MachineManager.machines.find {
-                it.folder == SelectedMachine.folder
-            }
-
-        if (entry != null) {
-
-            MachineManager.saveMachine(
-                entry.copy(
-                    machine = machine
-                )
-            )
-
-        }
-    }
-
-    /*
-     * ==========================================================
-     * SLOT CARDS
+     * NORMAL SLOTS
      * ==========================================================
      */
 
-    private fun createSlotCards(
-        machine: VendingMachine
-    ) {
+    private fun createSlotCards() {
 
         slotGrid.children.clear()
+
         itemButtons.clear()
 
-        for (i in machine.slots.indices) {
+        for (index in machine.slots.indices) {
 
             val slot =
-                machine.slots[i]
+                machine.slots[index]
 
             val button =
                 Button()
 
-            button.prefWidth = 160.0
-            button.prefHeight = 45.0
+            button.prefWidth =
+                140.0
 
-            /*
-             * Button displays the actual item and price.
-             */
+            button.prefHeight =
+                40.0
 
             updateSlotButton(
                 button,
-                slot
+                index
             )
 
             button.setOnAction {
 
-                selectItem(
-                    i,
-                    button
-                )
+                purchaseSlot(index)
 
             }
 
             val label =
-                Label("Slot ${i + 1}")
-
-            label.style =
-                "-fx-font-size:16;" +
-                "-fx-font-weight:bold;"
-
-            val quantityLabel =
-                Label()
-
-            updateQuantityLabel(
-                quantityLabel,
-                slot
-            )
+                Label(
+                    "Slot ${index + 1}"
+                )
 
             val card =
                 VBox(10.0)
@@ -208,14 +183,13 @@ class TestController {
 
             card.children.addAll(
                 label,
-                button,
-                quantityLabel
+                button
             )
 
             slotGrid.add(
                 card,
-                i % 4,
-                i / 4
+                index % 4,
+                index / 4
             )
 
             itemButtons.add(
@@ -226,14 +200,17 @@ class TestController {
 
     /*
      * ==========================================================
-     * UPDATE SLOT BUTTON
+     * UPDATE NORMAL SLOT BUTTON
      * ==========================================================
      */
 
     private fun updateSlotButton(
         button: Button,
-        slot: model.Slot
+        index: Int
     ) {
+
+        val slot =
+            machine.slots[index]
 
         val item =
             slot.item
@@ -250,228 +227,55 @@ class TestController {
         }
 
         button.text =
-            "${item.name} - ₱%.2f".format(
+            "${item.name} ₱%.2f".format(
                 slot.price
             )
 
         button.isDisable =
-            slot.quantity <= 0 ||
-            balance < slot.price
+            !canPurchase(slot)
     }
 
     /*
      * ==========================================================
-     * UPDATE QUANTITY LABEL
+     * SPECIAL MACHINE ADD-ONS
      * ==========================================================
      */
 
-    private fun updateQuantityLabel(
-        label: Label,
-        slot: model.Slot
-    ) {
+    private fun createAddOnCards() {
 
-        if (slot.item == null) {
-
-            label.text =
-                "Quantity: 0"
-
-        } else {
-
-            label.text =
-                "Quantity: ${slot.quantity}"
-        }
-    }
-
-    /*
-     * ==========================================================
-     * PURCHASE ITEM
-     * ==========================================================
-     */
-
-    private fun selectItem(
-        slotIndex: Int,
-        button: Button
-    ) {
-
-        val slot =
-            machine.slots[slotIndex]
-
-        val item =
-            slot.item
-
-        /*
-         * Empty slot.
-         */
-
-        if (item == null) {
-
-            displayLabel.text =
-                "Item unavailable"
-
-            return
-        }
-
-        /*
-         * Empty inventory.
-         */
-
-        if (slot.quantity <= 0) {
-
-            displayLabel.text =
-                "Out of Stock"
-
-            return
-        }
-
-        val price =
-            slot.price
-
-        /*
-         * Not enough money.
-         */
-
-        if (balance < price) {
-
-            displayLabel.text =
-                "Insufficient Funds"
-
-            log(
-                "Purchase failed: insufficient funds for ₱$price"
-            )
-
-            return
-        }
-
-        /*
-         * ======================================================
-         * COMPLETE PURCHASE
-         * ======================================================
-         */
-
-        /*
-         * Remove the item from inventory.
-         */
-
-        slot.quantity--
-
-        /*
-         * Record the sale.
-         */
-
-        slot.sold++
-
-        /*
-         * Reduce customer balance.
-         */
-
-        balance -= price
-
-        balance =
-            "%.2f".format(balance).toFloat()
-
-        /*
-         * Add the customer's inserted cash to the
-         * machine register.
-         */
-
-        deposit.forEach {
-            (denomination, quantity) ->
-
-            if (quantity > 0) {
-
-                machine.register.addCash(
-                    denomination,
-                    quantity
-                )
-            }
-        }
-
-        /*
-         * The customer's deposit has now become
-         * machine cash.
-         */
-
-        deposit.clear()
-
-        /*
-         * Update UI.
-         */
-
-        updateBalance()
-
-        updateSlotButton(
-            button,
-            slot
-        )
-
-        /*
-         * Find the quantity label inside the card.
-         */
-
-        val card =
-            button.parent as VBox
-
-        val quantityLabel =
-            card.children
-                .filterIsInstance<Label>()
-                .lastOrNull()
-
-        if (quantityLabel != null) {
-
-            updateQuantityLabel(
-                quantityLabel,
-                slot
-            )
-        }
-
-        updateItemButtonsEnabledState()
-
-        displayLabel.text =
-            "Dispensed ${item.name}"
-
-        log(
-            "Purchased ${item.name} for ₱%.2f"
-                .format(price)
-        )
-
-        /*
-         * SAVE IMMEDIATELY.
-         */
-
-        saveCurrentMachine()
-    }
-
-    /*
-     * ==========================================================
-     * ADD-ON CARDS
-     * ==========================================================
-     *
-     * SpecialMachine currently does not expose add-on Slot
-     * objects through the API used by this project.
-     *
-     * Therefore these remain display-only until the
-     * SpecialMachine model provides actual add-on slots.
-     */
-
-    private fun createAddOnCards(
-        machine: SpecialMachine
-    ) {
+        val special =
+            machine as SpecialMachine
 
         addOnContainer.children.clear()
 
-        for (i in 0 until machine.getAddOnSlotCount()) {
+        for (index in
+            special.getAddOnSlots().indices
+        ) {
 
             val button =
-                Button("Unavailable")
+                Button()
 
             button.prefWidth =
-                160.0
+                140.0
 
             button.prefHeight =
-                45.0
+                40.0
 
-            button.isDisable =
-                true
+            updateAddOnButton(
+                button,
+                index
+            )
+
+            button.setOnAction {
+
+                purchaseAddOn(index)
+
+            }
+
+            val label =
+                Label(
+                    "Add-on ${index + 1}"
+                )
 
             val card =
                 VBox(10.0)
@@ -480,18 +284,55 @@ class TestController {
                 Pos.CENTER
 
             card.children.addAll(
-                Label("Add-on ${i + 1}"),
+                label,
                 button
             )
 
             addOnContainer.children.add(
                 card
             )
-
-            itemButtons.add(
-                button
-            )
         }
+    }
+
+    /*
+     * ==========================================================
+     * UPDATE ADD-ON BUTTON
+     * ==========================================================
+     */
+
+    private fun updateAddOnButton(
+        button: Button,
+        index: Int
+    ) {
+
+        val special =
+            machine as SpecialMachine
+
+        val slot =
+            special.getAddOnSlot(index)
+                ?: return
+
+        val item =
+            slot.item
+
+        if (item == null) {
+
+            button.text =
+                "Empty"
+
+            button.isDisable =
+                true
+
+            return
+        }
+
+        button.text =
+            "${item.name} ₱%.2f".format(
+                slot.price
+            )
+
+        button.isDisable =
+            !canPurchase(slot)
     }
 
     /*
@@ -523,7 +364,7 @@ class TestController {
         }
 
         /*
-         * Add the coin/bill to the customer's
+         * Add the denomination to the customer's
          * temporary deposit.
          */
 
@@ -533,122 +374,396 @@ class TestController {
                 0
             ) + 1
 
-        balance += denomination
-
-        balance =
-            "%.2f".format(balance).toFloat()
+        balance +=
+            denomination
 
         updateBalance()
+
         updateItemButtonsEnabledState()
 
         displayLabel.text =
             "Inserted ₱%.2f".format(
                 denomination
             )
+    }
 
-        log(
-            "Inserted ₱%.2f".format(
-                denomination
+    /*
+     * ==========================================================
+     * PURCHASE NORMAL SLOT
+     * ==========================================================
+     */
+
+    private fun purchaseSlot(
+        index: Int
+    ) {
+
+        val slot =
+            machine.slots[index]
+
+        if (slot.item == null) {
+
+            displayLabel.text =
+                "Slot Empty"
+
+            return
+        }
+
+        if (slot.quantity <= 0) {
+
+            displayLabel.text =
+                "Out of Stock"
+
+            return
+        }
+
+        purchase(
+            slot
+        )
+    }
+
+    /*
+     * ==========================================================
+     * PURCHASE ADD-ON
+     * ==========================================================
+     */
+
+    private fun purchaseAddOn(
+        index: Int
+    ) {
+
+        val special =
+            machine as SpecialMachine
+
+        val slot =
+            special.getAddOnSlot(index)
+                ?: return
+
+        if (slot.item == null) {
+
+            displayLabel.text =
+                "Add-on Empty"
+
+            return
+        }
+
+        if (slot.quantity <= 0) {
+
+            displayLabel.text =
+                "Add-on Out of Stock"
+
+            return
+        }
+
+        purchase(
+            slot
+        )
+    }
+
+    /*
+     * ==========================================================
+     * PURCHASE
+     *
+     * This is the important part.
+     *
+     * We use VendingMachine.dispenseChange()
+     * to determine whether the machine can actually
+     * produce the required change.
+     * ==========================================================
+     */
+
+    private fun purchase(
+        slot: model.Slot
+    ) {
+
+        /*
+         * Make sure the customer has enough money.
+         */
+
+        if (balance < slot.price) {
+
+            displayLabel.text =
+                "Insufficient Funds"
+
+            return
+        }
+
+        /*
+         * Ask the actual machine logic whether
+         * the required change can be produced.
+         *
+         * dispenseChange() considers:
+         *
+         * 1. Cash already in the machine
+         * 2. Cash currently inserted by the customer
+         * 3. The item's price
+         */
+
+        val change =
+            machine.dispenseChange(
+                deposit,
+                slot.price
             )
+
+        /*
+         * If change == null, the machine cannot
+         * make the exact required change.
+         *
+         * Therefore the purchase MUST NOT happen.
+         */
+
+        if (change == null) {
+
+            displayLabel.text =
+                "Cannot Make Exact Change"
+
+            return
+        }
+
+        /*
+         * ======================================================
+         * TRANSACTION CAN NOW BE COMMITTED
+         * ======================================================
+         */
+
+        /*
+         * First put the customer's inserted cash
+         * into the machine register.
+         */
+
+        machine.updateRegister(
+            deposit
         )
 
-        logCurrentState()
+        /*
+         * Then remove the change from the register.
+         */
+
+        change.forEach {
+
+            (denomination, quantity) ->
+
+            machine.register.removeCash(
+                denomination,
+                quantity
+            )
+        }
+
+        /*
+         * Decrease inventory.
+         */
+
+        slot.quantity--
+
+        /*
+         * Increase sold count.
+         */
+
+        slot.sold++
+
+        /*
+         * Calculate the customer's new balance.
+         */
+
+        balance = 0f
+
+        /*
+         * Customer's inserted money has now been
+         * consumed by the transaction.
+         */
+
+        deposit.clear()
+
+        /*
+         * Update UI.
+         */
+
+        updateBalance()
+
+        updateAllButtons()
+
+        displayLabel.text =
+            if (change.isEmpty()) {
+
+                "Dispensed ${slot.item?.name}"
+
+            } else {
+
+                "Dispensed ${slot.item?.name}, " +
+                "Change ₱%.2f".format(
+                    change.entries.sumOf {
+                        (denomination, quantity) ->
+                        (denomination * quantity).toDouble()
+                    }
+                )
+            }
+
+        /*
+         * Immediately save the updated machine.
+         */
+
+        saveMachine()
+    }
+
+    /*
+     * ==========================================================
+     * CAN PURCHASE?
+     *
+     * This checks BOTH:
+     *
+     * - enough customer balance
+     * - machine can actually make change
+     * ==========================================================
+     */
+
+    private fun canPurchase(
+        slot: model.Slot
+    ): Boolean {
+
+        if (slot.item == null)
+            return false
+
+        if (slot.quantity <= 0)
+            return false
+
+        if (balance < slot.price)
+            return false
+
+        return machine.dispenseChange(
+            deposit,
+            slot.price
+        ) != null
+    }
+
+    /*
+     * ==========================================================
+     * UPDATE ALL BUTTONS
+     * ==========================================================
+     */
+
+    private fun updateAllButtons() {
+
+        /*
+         * Normal slots.
+         */
+
+        itemButtons.forEachIndexed { index, button ->
+
+            updateSlotButton(
+                button,
+                index
+            )
+        }
+
+        /*
+         * Add-ons.
+         */
+
+        if (machine is SpecialMachine) {
+
+            val special =
+                machine as SpecialMachine
+
+            addOnContainer.children
+                .forEachIndexed { index, node ->
+
+                    val card =
+                        node as? VBox
+                            ?: return@forEachIndexed
+
+                    val button =
+                        card.children
+                            .filterIsInstance<Button>()
+                            .firstOrNull()
+                            ?: return@forEachIndexed
+
+                    updateAddOnButton(
+                        button,
+                        index
+                    )
+                }
+        }
+    }
+
+    /*
+     * ==========================================================
+     * UPDATE ENABLED STATE
+     * ==========================================================
+     */
+
+    private fun updateItemButtonsEnabledState() {
+
+        updateAllButtons()
     }
 
     /*
      * ==========================================================
      * GET CHANGE
      * ==========================================================
+     *
+     * This does NOT modify the machine register because
+     * the deposited money has not entered the register yet.
+     * ==========================================================
      */
 
     @FXML
     fun getChange() {
 
-        log(
-            "Get change clicked"
-        )
-
         if (deposit.isEmpty()) {
 
             displayLabel.text =
-                "No cash deposited"
-
-            log(
-                "No cash was deposited"
-            )
+                "No Cash Inserted"
 
             return
         }
 
-        deposit.forEach {
-            (denomination, quantity) ->
+        val change =
+            deposit.toMap()
 
-            log(
-                "Returning ₱$denomination x$quantity"
-            )
-        }
-
-        /*
-         * Return customer's temporary deposit.
-         *
-         * It was NOT added to the machine register,
-         * so no register changes are necessary.
-         */
+        val amount =
+            balance
 
         deposit.clear()
 
         balance = 0f
 
         updateBalance()
+
         updateItemButtonsEnabledState()
 
         displayLabel.text =
-            "Change Returned"
+            "Returned ₱%.2f".format(
+                amount
+            )
 
-        log(
-            "Balance reset to ₱0"
+        println(
+            "[TestController] Returned change: $change"
         )
     }
 
     /*
      * ==========================================================
-     * ENABLE / DISABLE ITEMS
+     * SAVE MACHINE
+     * ==========================================================
+     *
+     * Find the existing MachineEntry in memory and save
+     * that exact machine object.
      * ==========================================================
      */
 
-    private fun updateItemButtonsEnabledState() {
+    private fun saveMachine() {
 
-        /*
-         * Rebuild state from the actual machine slots.
-         */
+        val entry =
+            MachineManager.machines.find {
 
-        machine.slots.forEachIndexed {
-            index,
-            slot ->
+                it.folder == SelectedMachine.folder
 
-            if (index >= itemButtons.size)
-                return@forEachIndexed
-
-            updateSlotButton(
-                itemButtons[index],
-                slot
-            )
-        }
-
-        /*
-         * Add-on buttons currently remain disabled.
-         */
-
-        if (machine is SpecialMachine) {
-
-            for (
-                i in machine.slots.size
-                    until itemButtons.size
-            ) {
-
-                itemButtons[i].isDisable =
-                    true
             }
+
+        if (entry != null) {
+
+            MachineManager.saveMachine(
+                entry
+            )
         }
     }
 
@@ -668,35 +783,6 @@ class TestController {
 
     /*
      * ==========================================================
-     * LOGGING
-     * ==========================================================
-     */
-
-    private fun logCurrentState() {
-
-        log(
-            "Current balance: ₱%.2f"
-                .format(balance)
-        )
-
-        log(
-            "Deposit map: $deposit"
-        )
-    }
-
-    private fun log(
-        message: String
-    ) {
-
-        println(
-            "[TestController] $message"
-        )
-
-        System.out.flush()
-    }
-
-    /*
-     * ==========================================================
      * BACK TO MAIN
      * ==========================================================
      */
@@ -707,11 +793,15 @@ class TestController {
     ) {
 
         /*
-         * Make absolutely sure the latest machine state
-         * is written before leaving the test page.
+         * If the user leaves with money inserted,
+         * automatically return it.
+         *
+         * It was never placed into the machine register.
          */
 
-        saveCurrentMachine()
+        deposit.clear()
+
+        balance = 0f
 
         val root: Parent =
             FXMLLoader.load(
