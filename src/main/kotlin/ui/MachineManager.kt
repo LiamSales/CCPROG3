@@ -4,6 +4,8 @@ import model.Item
 import model.SpecialMachine
 import model.VendingMachine
 import java.io.File
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 object MachineManager {
 
@@ -61,6 +63,7 @@ object MachineManager {
                         ?: return@forEach
 
                 val machine: VendingMachine =
+
                     if (lines.size >= 3) {
 
                         val addOnLimit =
@@ -81,20 +84,17 @@ object MachineManager {
                         )
                     }
 
-                /*
-                 * ItemManager must already be loaded.
-                 */
                 loadInventory(
                     folder,
                     machine
                 )
 
-                loadRegister(
+                loadAddOns(
                     folder,
                     machine
                 )
 
-                loadAddOns(
+                loadRegister(
                     folder,
                     machine
                 )
@@ -112,9 +112,6 @@ object MachineManager {
      * ==========================================================
      * SAVE ONE MACHINE
      * ==========================================================
-     *
-     * This is the ONLY function controllers should call
-     * when they want to persist a machine.
      */
 
     fun saveMachine(
@@ -126,12 +123,12 @@ object MachineManager {
             entry.machine
         )
 
-        saveRegister(
+        saveAddOns(
             entry.folder,
             entry.machine
         )
 
-        saveAddOns(
+        saveRegister(
             entry.folder,
             entry.machine
         )
@@ -146,51 +143,16 @@ object MachineManager {
     fun saveMachines() {
 
         machines.forEach { entry ->
+
             saveMachine(entry)
+
         }
     }
 
     /*
      * ==========================================================
-     * SAVE CURRENT MACHINE
+     * INVENTORY
      * ==========================================================
-     *
-     * Useful from MaintenanceController/TestController.
-     */
-
-    fun saveMachine(
-        folder: File,
-        machine: VendingMachine
-    ) {
-
-        saveInventory(
-            folder,
-            machine
-        )
-
-        saveRegister(
-            folder,
-            machine
-        )
-
-        saveAddOns(
-            folder,
-            machine
-        )
-    }
-
-    /*
-     * ==========================================================
-     * INVENTORY SAVE
-     * ==========================================================
-     *
-     * Format:
-     *
-     * slot,itemName,quantity,price,sold
-     *
-     * Example:
-     *
-     * 0,Coke,5,25.0,2
      */
 
     private fun saveInventory(
@@ -221,12 +183,6 @@ object MachineManager {
         }
     }
 
-    /*
-     * ==========================================================
-     * INVENTORY LOAD
-     * ==========================================================
-     */
-
     private fun loadInventory(
         folder: File,
         machine: VendingMachine
@@ -250,30 +206,30 @@ object MachineManager {
                 return@forEach
 
             val slotIndex =
-                parts[0].trim().toIntOrNull()
+                parts[0].toIntOrNull()
                     ?: return@forEach
 
-            if (slotIndex !in machine.slots.indices)
+            if (
+                slotIndex !in
+                machine.slots.indices
+            ) {
                 return@forEach
+            }
 
             val itemName =
-                parts[1].trim()
+                parts[1]
 
             val quantity =
-                parts[2].trim().toIntOrNull()
+                parts[2].toIntOrNull()
                     ?: return@forEach
 
             val price =
-                parts[3].trim().toFloatOrNull()
+                parts[3].toFloatOrNull()
                     ?: return@forEach
 
             val sold =
-                parts[4].trim().toIntOrNull()
+                parts[4].toIntOrNull()
                     ?: return@forEach
-
-            /*
-             * Empty slot.
-             */
 
             if (itemName.isBlank()) {
 
@@ -284,15 +240,10 @@ object MachineManager {
                 return@forEach
             }
 
-            val item: Item? =
+            val item =
                 ItemManager.items.find {
                     it.name == itemName
                 }
-
-            /*
-             * Item no longer exists.
-             * Leave slot empty.
-             */
 
             if (item == null)
                 return@forEach
@@ -316,98 +267,8 @@ object MachineManager {
 
     /*
      * ==========================================================
-     * REGISTER SAVE
+     * SPECIAL MACHINE ADD-ONS
      * ==========================================================
-     *
-     * Format:
-     *
-     * denomination,quantity
-     */
-
-    private fun saveRegister(
-        folder: File,
-        machine: VendingMachine
-    ) {
-
-        val file =
-            File(folder, "register.csv")
-
-        file.parentFile?.mkdirs()
-
-        file.printWriter().use { out ->
-
-            machine.register
-                .getContents()
-                .forEach { (denomination, quantity) ->
-
-                    if (quantity > 0) {
-
-                        out.println(
-                            "$denomination,$quantity"
-                        )
-                    }
-                }
-        }
-    }
-
-    /*
-     * ==========================================================
-     * REGISTER LOAD
-     * ==========================================================
-     */
-
-    private fun loadRegister(
-        folder: File,
-        machine: VendingMachine
-    ) {
-
-        val file =
-            File(folder, "register.csv")
-
-        if (!file.exists())
-            return
-
-        machine.register.clear()
-
-        file.readLines().forEach { line ->
-
-            if (line.isBlank())
-                return@forEach
-
-            val parts =
-                line.split(",")
-
-            if (parts.size < 2)
-                return@forEach
-
-            val denomination =
-                parts[0].trim().toFloatOrNull()
-                    ?: return@forEach
-
-            val quantity =
-                parts[1].trim().toIntOrNull()
-                    ?: return@forEach
-
-            if (quantity < 0)
-                return@forEach
-
-            machine.register.addCash(
-                denomination,
-                quantity
-            )
-        }
-    }
-
-    /*
-     * ==========================================================
-     * ADD-ON SAVE
-     * ==========================================================
-     *
-     * Format:
-     *
-     * slot,itemName,quantity,price,sold
-     *
-     * Only SpecialMachine has add-ons.
      */
 
     private fun saveAddOns(
@@ -443,12 +304,6 @@ object MachineManager {
         }
     }
 
-    /*
-     * ==========================================================
-     * ADD-ON LOAD
-     * ==========================================================
-     */
-
     private fun loadAddOns(
         folder: File,
         machine: VendingMachine
@@ -476,33 +331,33 @@ object MachineManager {
                 return@forEach
 
             val index =
-                parts[0].trim().toIntOrNull()
+                parts[0].toIntOrNull()
                     ?: return@forEach
 
             if (
                 index !in
                 special.getAddOnSlots().indices
-            )
+            ) {
                 return@forEach
+            }
 
             val itemName =
-                parts[1].trim()
+                parts[1]
 
             val quantity =
-                parts[2].trim().toIntOrNull()
+                parts[2].toIntOrNull()
                     ?: return@forEach
 
             val price =
-                parts[3].trim().toFloatOrNull()
+                parts[3].toFloatOrNull()
                     ?: return@forEach
 
             val sold =
-                parts[4].trim().toIntOrNull()
+                parts[4].toIntOrNull()
                     ?: return@forEach
 
-            /*
-             * Empty add-on slot.
-             */
+            val slot =
+                special.getAddOnSlots()[index]
 
             if (itemName.isBlank()) {
 
@@ -517,11 +372,9 @@ object MachineManager {
                 ItemManager.items.find {
                     it.name == itemName
                 }
-                    ?: return@forEach
 
-            val slot =
-                special.getAddOnSlot(index)
-                    ?: return@forEach
+            if (item == null)
+                return@forEach
 
             slot.item =
                 item
@@ -535,5 +388,222 @@ object MachineManager {
             slot.sold =
                 sold
         }
+    }
+
+    /*
+     * ==========================================================
+     * REGISTER
+     * ==========================================================
+     */
+
+    private fun saveRegister(
+        folder: File,
+        machine: VendingMachine
+    ) {
+
+        val file =
+            File(folder, "register.csv")
+
+        file.parentFile?.mkdirs()
+
+        file.printWriter().use { out ->
+
+            machine.register
+                .getContents()
+                .forEach { (denomination, quantity) ->
+
+                    if (quantity > 0) {
+
+                        out.println(
+                            "$denomination,$quantity"
+                        )
+                    }
+                }
+        }
+    }
+
+    private fun loadRegister(
+        folder: File,
+        machine: VendingMachine
+    ) {
+
+        val file =
+            File(folder, "register.csv")
+
+        if (!file.exists())
+            return
+
+        machine.register.clear()
+
+        file.readLines().forEach { line ->
+
+            if (line.isBlank())
+                return@forEach
+
+            val parts =
+                line.split(",")
+
+            if (parts.size < 2)
+                return@forEach
+
+            val denomination =
+                parts[0].toFloatOrNull()
+                    ?: return@forEach
+
+            val quantity =
+                parts[1].toIntOrNull()
+                    ?: return@forEach
+
+            if (quantity < 0)
+                return@forEach
+
+            machine.register.addCash(
+                denomination,
+                quantity
+            )
+        }
+    }
+
+    /*
+     * ==========================================================
+     * TRANSACTION LOG
+     * ==========================================================
+     */
+
+    fun saveTransaction(
+        entry: MachineEntry,
+        baseItem: String,
+        basePrice: Float,
+        addOns: List<Pair<String, Float>>,
+        totalPrice: Float,
+        cashInserted: Float,
+        change: Float
+    ) {
+
+        val file =
+            File(
+                entry.folder,
+                "transactions.csv"
+            )
+
+        file.parentFile?.mkdirs()
+
+        val isNew =
+            !file.exists() ||
+            file.length() == 0L
+
+        file.appendText(
+            buildString {
+
+                if (isNew) {
+
+                    append(
+                        "timestamp," +
+                        "base_item," +
+                        "base_price," +
+                        "addons," +
+                        "addon_total," +
+                        "total_price," +
+                        "cash_inserted," +
+                        "change"
+                    )
+
+                    append("\n")
+                }
+
+                val timestamp =
+                    LocalDateTime.now()
+                        .format(
+                            DateTimeFormatter.ofPattern(
+                                "yyyy-MM-dd HH:mm:ss"
+                            )
+                        )
+
+                val addonNames =
+                    addOns.joinToString(";") {
+                        escapeCsv(it.first)
+                    }
+
+                val addonTotal =
+                    addOns.sumOf {
+                        it.second.toDouble()
+                    }.toFloat()
+
+                append(
+                    escapeCsv(timestamp)
+                )
+
+                append(",")
+
+                append(
+                    escapeCsv(baseItem)
+                )
+
+                append(",")
+
+                append(
+                    "%.2f".format(basePrice)
+                )
+
+                append(",")
+
+                append(
+                    escapeCsv(addonNames)
+                )
+
+                append(",")
+
+                append(
+                    "%.2f".format(addonTotal)
+                )
+
+                append(",")
+
+                append(
+                    "%.2f".format(totalPrice)
+                )
+
+                append(",")
+
+                append(
+                    "%.2f".format(cashInserted)
+                )
+
+                append(",")
+
+                append(
+                    "%.2f".format(change)
+                )
+
+                append("\n")
+            }
+        )
+    }
+
+    /*
+     * ==========================================================
+     * CSV ESCAPING
+     * ==========================================================
+     */
+
+    private fun escapeCsv(
+        value: String
+    ): String {
+
+        if (
+            value.contains(",") ||
+            value.contains("\"") ||
+            value.contains("\n")
+        ) {
+
+            return "\"" +
+                value.replace(
+                    "\"",
+                    "\"\""
+                ) +
+                "\""
+        }
+
+        return value
     }
 }

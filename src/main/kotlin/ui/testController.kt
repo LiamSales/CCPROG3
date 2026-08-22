@@ -47,30 +47,38 @@ class TestController {
     private val deposit: Cash =
         mutableMapOf()
 
-    private var balance = 0f
+    private var balance =
+        0f
+
+    private var pendingPurchaseTotal =
+        0f
 
     /*
-     * Total amount spent during the current transaction.
+     * ==========================================================
+     * TRANSACTION DETAILS
+     * ==========================================================
      */
-    private var pendingPurchaseTotal = 0f
+
+    private var baseItemName =
+        ""
+
+    private var baseItemPrice =
+        0f
+
+    private val purchasedAddOns =
+        mutableListOf<Pair<String, Float>>()
 
     /*
      * ==========================================================
      * SPECIAL MACHINE STATE
      * ==========================================================
-     *
-     * A special machine requires exactly one base item
-     * before any add-ons can be purchased.
      */
 
-    private var baseItemPurchased = false
+    private var baseItemPurchased =
+        false
 
-    /*
-     * Prevents another base item from being purchased
-     * during the same transaction.
-     */
-
-    private var purchasedBaseSlotIndex: Int? = null
+    private var purchasedBaseSlotIndex:
+        Int? = null
 
     /*
      * ==========================================================
@@ -78,11 +86,9 @@ class TestController {
      * ==========================================================
      */
 
-    private lateinit var machine: VendingMachine
+    private lateinit var machine:
+        VendingMachine
 
-    /*
-     * All purchase buttons.
-     */
     private val itemButtons =
         mutableListOf<Button>()
 
@@ -132,14 +138,21 @@ class TestController {
 
         } else {
 
-            addOnTitle.isVisible = false
-            addOnTitle.isManaged = false
+            addOnTitle.isVisible =
+                false
 
-            addOnScroll.isVisible = false
-            addOnScroll.isManaged = false
+            addOnTitle.isManaged =
+                false
+
+            addOnScroll.isVisible =
+                false
+
+            addOnScroll.isManaged =
+                false
         }
 
         updateBalance()
+
         updateItemButtonsEnabledState()
     }
 
@@ -147,10 +160,6 @@ class TestController {
      * ==========================================================
      * SAVE CURRENT MACHINE
      * ==========================================================
-     *
-     * This saves the SAME machine object.
-     *
-     * MachineManager already contains this object.
      */
 
     private fun saveCurrentMachine() {
@@ -378,6 +387,7 @@ class TestController {
             roundMoney(balance)
 
         updateBalance()
+
         updateItemButtonsEnabledState()
 
         displayLabel.text =
@@ -386,12 +396,9 @@ class TestController {
             )
 
         log(
-            "Inserted ₱%.2f".format(
-                denomination
-            )
+            "Inserted ₱%.2f"
+                .format(denomination)
         )
-
-        logCurrentState()
     }
 
     /*
@@ -426,13 +433,6 @@ class TestController {
             return
         }
 
-        /*
-         * SPECIAL MACHINE:
-         *
-         * Only one base item may be purchased
-         * in a transaction.
-         */
-
         if (
             machine is SpecialMachine &&
             baseItemPurchased
@@ -456,8 +456,8 @@ class TestController {
         }
 
         /*
-         * Check whether the machine can make exact
-         * change for the ENTIRE transaction.
+         * Check whether the machine can make
+         * exact change for the entire transaction.
          */
 
         val possibleChange =
@@ -474,17 +474,27 @@ class TestController {
             return
         }
 
-        /*
-         * Purchase succeeds.
-         */
-
         val itemName =
             slot.item?.name
                 ?: "Item"
 
+        /*
+         * Modify inventory immediately.
+         */
+
         slot.quantity--
 
         slot.sold++
+
+        /*
+         * Record transaction details.
+         */
+
+        baseItemName =
+            itemName
+
+        baseItemPrice =
+            price
 
         pendingPurchaseTotal +=
             price
@@ -494,11 +504,6 @@ class TestController {
 
         balance =
             roundMoney(balance)
-
-        /*
-         * Special machine now has its required
-         * base item.
-         */
 
         if (machine is SpecialMachine) {
 
@@ -515,6 +520,7 @@ class TestController {
         )
 
         updateBalance()
+
         updateItemButtonsEnabledState()
 
         displayLabel.text =
@@ -524,12 +530,6 @@ class TestController {
             "Purchased $itemName for ₱%.2f"
                 .format(price)
         )
-
-        logCurrentState()
-
-        /*
-         * Inventory changes immediately.
-         */
 
         saveCurrentMachine()
     }
@@ -548,13 +548,6 @@ class TestController {
         val special =
             machine as? SpecialMachine
                 ?: return
-
-        /*
-         * IMPORTANT:
-         *
-         * A special-machine add-on CANNOT be
-         * purchased before a base item.
-         */
 
         if (!baseItemPurchased) {
 
@@ -599,11 +592,6 @@ class TestController {
             return
         }
 
-        /*
-         * Check exact change using the actual
-         * machine denominations.
-         */
-
         val possibleChange =
             machine.dispenseChange(
                 deposit,
@@ -618,17 +606,25 @@ class TestController {
             return
         }
 
-        /*
-         * Purchase add-on.
-         */
-
         val itemName =
             slot.item?.name
                 ?: "Add-on"
 
+        /*
+         * Modify inventory immediately.
+         */
+
         slot.quantity--
 
         slot.sold++
+
+        /*
+         * Record the add-on.
+         */
+
+        purchasedAddOns.add(
+            itemName to price
+        )
 
         pendingPurchaseTotal +=
             price
@@ -645,6 +641,7 @@ class TestController {
         )
 
         updateBalance()
+
         updateItemButtonsEnabledState()
 
         displayLabel.text =
@@ -654,8 +651,6 @@ class TestController {
             "Purchased add-on $itemName for ₱%.2f"
                 .format(price)
         )
-
-        logCurrentState()
 
         saveCurrentMachine()
     }
@@ -668,15 +663,14 @@ class TestController {
 
     private fun updateItemButtonsEnabledState() {
 
-        var buttonIndex = 0
+        var buttonIndex =
+            0
 
         /*
-         * ------------------------------------------------------
          * BASE ITEMS
-         * ------------------------------------------------------
          */
 
-        machine.slots.forEachIndexed { index, slot ->
+        machine.slots.forEachIndexed { _, slot ->
 
             if (
                 buttonIndex >=
@@ -692,10 +686,6 @@ class TestController {
 
             buttonIndex++
 
-            /*
-             * Empty / out of stock.
-             */
-
             if (
                 slot.item == null ||
                 slot.quantity <= 0
@@ -706,13 +696,6 @@ class TestController {
 
                 return@forEachIndexed
             }
-
-            /*
-             * Special machine:
-             *
-             * Once a base item has been purchased,
-             * no other base item can be selected.
-             */
 
             if (
                 machine is SpecialMachine &&
@@ -728,24 +711,13 @@ class TestController {
             val price =
                 slot.price
 
-            /*
-             * Not enough money.
-             */
-
-            if (
-                balance < price
-            ) {
+            if (balance < price) {
 
                 button.isDisable =
                     true
 
                 return@forEachIndexed
             }
-
-            /*
-             * Machine must be capable of returning
-             * exact change.
-             */
 
             val possibleChange =
                 machine.dispenseChange(
@@ -758,9 +730,7 @@ class TestController {
         }
 
         /*
-         * ------------------------------------------------------
          * ADD-ONS
-         * ------------------------------------------------------
          */
 
         val special =
@@ -785,11 +755,6 @@ class TestController {
 
                     buttonIndex++
 
-                    /*
-                     * Add-ons are completely disabled
-                     * until a base item exists.
-                     */
-
                     if (!baseItemPurchased) {
 
                         button.isDisable =
@@ -812,9 +777,7 @@ class TestController {
                     val price =
                         slot.price
 
-                    if (
-                        balance < price
-                    ) {
+                    if (balance < price) {
 
                         button.isDisable =
                             true
@@ -836,21 +799,49 @@ class TestController {
 
     /*
      * ==========================================================
-     * DISPENSE CHANGE
+     * DISPENSE CHANGE / COMPLETE TRANSACTION
      * ==========================================================
      */
 
     @FXML
     fun getChange() {
 
+        /*
+         * Nothing has been purchased.
+         *
+         * Return the customer's money without
+         * creating a transaction.
+         */
+
+        if (pendingPurchaseTotal <= 0f) {
+
+            if (deposit.isEmpty()) {
+
+                displayLabel.text =
+                    "No Cash Inserted"
+
+                return
+            }
+
+            deposit.clear()
+
+            balance =
+                0f
+
+            updateBalance()
+
+            updateItemButtonsEnabledState()
+
+            displayLabel.text =
+                "Cash Returned"
+
+            return
+        }
+
         if (deposit.isEmpty()) {
 
             displayLabel.text =
                 "No Cash Inserted"
-
-            log(
-                "Get change clicked with no deposit."
-            )
 
             return
         }
@@ -871,12 +862,46 @@ class TestController {
             displayLabel.text =
                 "Cannot Make Exact Change"
 
-            log(
-                "Cannot return exact change."
-            )
-
             return
         }
+
+        /*
+         * Amount inserted by customer.
+         */
+
+        val cashInserted =
+            deposit.entries.sumOf {
+
+                (
+                    denomination,
+                    quantity
+                ) ->
+
+                (
+                    denomination *
+                    quantity
+                ).toDouble()
+
+            }.toFloat()
+
+        /*
+         * Calculate actual change.
+         */
+
+        val changeAmount =
+            change.entries.sumOf {
+
+                (
+                    denomination,
+                    quantity
+                ) ->
+
+                (
+                    denomination *
+                    quantity
+                ).toDouble()
+
+            }.toFloat()
 
         /*
          * Put customer's money into register.
@@ -887,30 +912,55 @@ class TestController {
         )
 
         /*
-         * Remove the exact change that must
-         * be returned.
+         * Remove exact change from register.
          */
 
         change.forEach {
 
-            (denomination, quantity) ->
+            (
+                denomination,
+                quantity
+            ) ->
 
             machine.register.removeCash(
                 denomination,
                 quantity
             )
+        }
 
-            log(
-                "Returning ₱%.2f x%d"
-                    .format(
-                        denomination,
-                        quantity
-                    )
+        /*
+         * Save transaction BEFORE clearing
+         * the transaction information.
+         */
+
+        val entry =
+            MachineManager.machines.find {
+
+                it.machine === machine
+
+            }
+
+        if (entry != null) {
+
+            MachineManager.saveTransaction(
+                entry = entry,
+                baseItem = baseItemName,
+                basePrice = baseItemPrice,
+                addOns = purchasedAddOns.toList(),
+                totalPrice = pendingPurchaseTotal,
+                cashInserted = cashInserted,
+                change = changeAmount
             )
         }
 
         /*
-         * Clear transaction.
+         * Save inventory + register.
+         */
+
+        saveCurrentMachine()
+
+        /*
+         * Clear customer transaction state.
          */
 
         deposit.clear()
@@ -921,12 +971,13 @@ class TestController {
         pendingPurchaseTotal =
             0f
 
-        /*
-         * IMPORTANT:
-         *
-         * The special machine is now ready
-         * for a completely new order.
-         */
+        baseItemName =
+            ""
+
+        baseItemPrice =
+            0f
+
+        purchasedAddOns.clear()
 
         baseItemPurchased =
             false
@@ -935,22 +986,29 @@ class TestController {
             null
 
         updateBalance()
+
         updateItemButtonsEnabledState()
 
         displayLabel.text =
             "Change Returned"
 
         log(
-            "Transaction complete."
+            "Transaction completed."
         )
 
-        logCurrentState()
+        log(
+            "Total: ₱%.2f"
+                .format(
+                    cashInserted
+                )
+        )
 
-        /*
-         * Register changed.
-         */
-
-        saveCurrentMachine()
+        log(
+            "Change: ₱%.2f"
+                .format(
+                    changeAmount
+                )
+        )
     }
 
     /*
@@ -970,24 +1028,11 @@ class TestController {
             return
         }
 
-        deposit.forEach {
-
-            (denomination, quantity) ->
-
-            log(
-                "Returning ₱%.2f x%d"
-                    .format(
-                        denomination,
-                        quantity
-                    )
-            )
-        }
-
         /*
-         * Return only the customer's
-         * remaining unspent cash.
+         * Only the customer's remaining
+         * unspent cash is returned.
          *
-         * Purchases are NOT undone.
+         * Already purchased items remain purchased.
          */
 
         deposit.clear()
@@ -996,6 +1041,7 @@ class TestController {
             0f
 
         updateBalance()
+
         updateItemButtonsEnabledState()
 
         displayLabel.text =
@@ -1004,8 +1050,6 @@ class TestController {
         log(
             "Remaining cash returned."
         )
-
-        logCurrentState()
     }
 
     /*
@@ -1039,40 +1083,9 @@ class TestController {
 
     /*
      * ==========================================================
-     * DEBUG STATE
+     * DEBUG LOG
      * ==========================================================
      */
-
-    private fun logCurrentState() {
-
-        log(
-            "Current balance: ₱%.2f"
-                .format(balance)
-        )
-
-        log(
-            "Pending purchases: ₱%.2f"
-                .format(
-                    pendingPurchaseTotal
-                )
-        )
-
-        log(
-            "Base item purchased: $baseItemPurchased"
-        )
-
-        log(
-            "Base slot: $purchasedBaseSlotIndex"
-        )
-
-        log(
-            "Deposit map: $deposit"
-        )
-
-        log(
-            "Register: ${machine.register.getContents()}"
-        )
-    }
 
     private fun log(
         message: String
@@ -1097,33 +1110,27 @@ class TestController {
     ) {
 
         /*
-         * Any unspent customer cash is simply
-         * returned. It never entered the register.
+         * Return any unspent customer money.
+         *
+         * The transaction itself is NOT logged because
+         * Dispense Change was never completed.
          */
 
-        if (deposit.isNotEmpty()) {
-
-            deposit.forEach {
-
-                (denomination, quantity) ->
-
-                log(
-                    "Returning ₱%.2f x%d before leaving."
-                        .format(
-                            denomination,
-                            quantity
-                        )
-                )
-            }
-
-            deposit.clear()
-        }
+        deposit.clear()
 
         balance =
             0f
 
         pendingPurchaseTotal =
             0f
+
+        baseItemName =
+            ""
+
+        baseItemPrice =
+            0f
+
+        purchasedAddOns.clear()
 
         baseItemPurchased =
             false
@@ -1132,8 +1139,8 @@ class TestController {
             null
 
         /*
-         * Save any inventory changes made
-         * during testing.
+         * Inventory changes from completed purchases
+         * have already been saved.
          */
 
         saveCurrentMachine()
