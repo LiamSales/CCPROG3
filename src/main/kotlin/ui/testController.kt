@@ -50,24 +50,60 @@ class TestController {
     private var balance = 0f
 
     /*
-     * Total price of everything purchased
-     * during this transaction.
-     *
-     * The customer's deposited cash remains
-     * untouched until Dispense Change is pressed.
+     * Total amount spent during the current transaction.
      */
     private var pendingPurchaseTotal = 0f
 
     /*
-     * IMPORTANT:
+     * ==========================================================
+     * SPECIAL MACHINE STATE
+     * ==========================================================
      *
-     * This is the SAME machine object stored
-     * inside SelectedMachine and MachineManager.
+     * A special machine requires exactly one base item
+     * before any add-ons can be purchased.
      */
+
+    private var baseItemPurchased = false
+
+    /*
+     * Prevents another base item from being purchased
+     * during the same transaction.
+     */
+
+    private var purchasedBaseSlotIndex: Int? = null
+
+    /*
+     * ==========================================================
+     * MACHINE
+     * ==========================================================
+     */
+
     private lateinit var machine: VendingMachine
 
+    /*
+     * All purchase buttons.
+     */
     private val itemButtons =
         mutableListOf<Button>()
+
+    /*
+     * ==========================================================
+     * DENOMINATIONS
+     * ==========================================================
+     */
+
+    private val denominations =
+        listOf(
+            1000f,
+            500f,
+            200f,
+            100f,
+            50f,
+            20f,
+            10f,
+            5f,
+            1f
+        )
 
     /*
      * ==========================================================
@@ -80,9 +116,13 @@ class TestController {
 
         machine =
             SelectedMachine.machine
-                ?: error("No machine selected.")
+                ?: error(
+                    "No machine selected."
+                )
 
-        createSlotCards(machine)
+        createSlotCards(
+            machine
+        )
 
         if (machine is SpecialMachine) {
 
@@ -108,10 +148,9 @@ class TestController {
      * SAVE CURRENT MACHINE
      * ==========================================================
      *
-     * The machine itself is NOT replaced.
+     * This saves the SAME machine object.
      *
-     * MachineManager already contains this exact object.
-     * We simply save its current state to disk.
+     * MachineManager already contains this object.
      */
 
     private fun saveCurrentMachine() {
@@ -123,12 +162,14 @@ class TestController {
 
             } ?: return
 
-        MachineManager.saveMachine(entry)
+        MachineManager.saveMachine(
+            entry
+        )
     }
 
     /*
      * ==========================================================
-     * REGULAR MACHINE SLOTS
+     * CREATE BASE ITEM CARDS
      * ==========================================================
      */
 
@@ -137,6 +178,7 @@ class TestController {
     ) {
 
         slotGrid.children.clear()
+
         itemButtons.clear()
 
         for (i in machine.slots.indices) {
@@ -147,8 +189,11 @@ class TestController {
             val button =
                 Button()
 
-            button.prefWidth = 140.0
-            button.prefHeight = 40.0
+            button.prefWidth =
+                140.0
+
+            button.prefHeight =
+                40.0
 
             updateSlotButton(
                 button,
@@ -157,15 +202,16 @@ class TestController {
 
             button.setOnAction {
 
-                purchaseSlot(
+                purchaseBaseItem(
                     i,
                     button
                 )
-
             }
 
             val label =
-                Label("Slot ${i + 1}")
+                Label(
+                    "Slot ${i + 1}"
+                )
 
             val card =
                 VBox(10.0)
@@ -184,13 +230,15 @@ class TestController {
                 i / 4
             )
 
-            itemButtons.add(button)
+            itemButtons.add(
+                button
+            )
         }
     }
 
     /*
      * ==========================================================
-     * SPECIAL MACHINE ADD-ONS
+     * CREATE ADD-ON CARDS
      * ==========================================================
      */
 
@@ -201,7 +249,8 @@ class TestController {
         addOnContainer.children.clear()
 
         for (
-            i in 0 until machine.getAddOnSlotCount()
+            i in 0 until
+                machine.getAddOnSlotCount()
         ) {
 
             val slot =
@@ -210,8 +259,11 @@ class TestController {
             val button =
                 Button()
 
-            button.prefWidth = 140.0
-            button.prefHeight = 40.0
+            button.prefWidth =
+                140.0
+
+            button.prefHeight =
+                40.0
 
             if (slot != null) {
 
@@ -235,7 +287,6 @@ class TestController {
                     i,
                     button
                 )
-
             }
 
             val card =
@@ -251,12 +302,15 @@ class TestController {
                 ),
 
                 button
-
             )
 
-            addOnContainer.children.add(card)
+            addOnContainer.children.add(
+                card
+            )
 
-            itemButtons.add(button)
+            itemButtons.add(
+                button
+            )
         }
     }
 
@@ -317,7 +371,8 @@ class TestController {
                 0
             ) + 1
 
-        balance += denomination
+        balance +=
+            denomination
 
         balance =
             roundMoney(balance)
@@ -341,11 +396,11 @@ class TestController {
 
     /*
      * ==========================================================
-     * PURCHASE REGULAR SLOT
+     * PURCHASE BASE ITEM
      * ==========================================================
      */
 
-    private fun purchaseSlot(
+    private fun purchaseBaseItem(
         slotIndex: Int,
         button: Button
     ) {
@@ -371,6 +426,24 @@ class TestController {
             return
         }
 
+        /*
+         * SPECIAL MACHINE:
+         *
+         * Only one base item may be purchased
+         * in a transaction.
+         */
+
+        if (
+            machine is SpecialMachine &&
+            baseItemPurchased
+        ) {
+
+            displayLabel.text =
+                "Base Item Already Selected"
+
+            return
+        }
+
         val price =
             slot.price
 
@@ -383,17 +456,10 @@ class TestController {
         }
 
         /*
-         * IMPORTANT:
-         *
-         * Check the ACTUAL denominations available
-         * in the machine register.
-         *
-         * The customer's inserted denominations are also
-         * available to the hypothetical change calculation.
-         *
-         * We calculate the change for ALL purchases made
-         * during this transaction.
+         * Check whether the machine can make exact
+         * change for the ENTIRE transaction.
          */
+
         val possibleChange =
             machine.dispenseChange(
                 deposit,
@@ -410,21 +476,38 @@ class TestController {
 
         /*
          * Purchase succeeds.
-         *
-         * Customer cash remains in deposit.
-         *
-         * It does NOT enter the machine register yet.
          */
 
+        val itemName =
+            slot.item?.name
+                ?: "Item"
+
         slot.quantity--
+
         slot.sold++
 
-        pendingPurchaseTotal += price
+        pendingPurchaseTotal +=
+            price
 
-        balance -= price
+        balance -=
+            price
 
         balance =
             roundMoney(balance)
+
+        /*
+         * Special machine now has its required
+         * base item.
+         */
+
+        if (machine is SpecialMachine) {
+
+            baseItemPurchased =
+                true
+
+            purchasedBaseSlotIndex =
+                slotIndex
+        }
 
         updateSlotButton(
             button,
@@ -435,18 +518,19 @@ class TestController {
         updateItemButtonsEnabledState()
 
         displayLabel.text =
-            "Dispensed ${slot.item?.name ?: "Item"}"
+            "Dispensed $itemName"
 
         log(
-            "Purchased ${slot.item?.name ?: "Item"} for ₱%.2f"
+            "Purchased $itemName for ₱%.2f"
                 .format(price)
         )
 
         logCurrentState()
 
         /*
-         * Inventory changed immediately.
+         * Inventory changes immediately.
          */
+
         saveCurrentMachine()
     }
 
@@ -464,6 +548,21 @@ class TestController {
         val special =
             machine as? SpecialMachine
                 ?: return
+
+        /*
+         * IMPORTANT:
+         *
+         * A special-machine add-on CANNOT be
+         * purchased before a base item.
+         */
+
+        if (!baseItemPurchased) {
+
+            displayLabel.text =
+                "Select a Base Item First"
+
+            return
+        }
 
         val slot =
             special.getAddOnSlot(
@@ -520,15 +619,22 @@ class TestController {
         }
 
         /*
-         * Purchase succeeds.
+         * Purchase add-on.
          */
 
+        val itemName =
+            slot.item?.name
+                ?: "Add-on"
+
         slot.quantity--
+
         slot.sold++
 
-        pendingPurchaseTotal += price
+        pendingPurchaseTotal +=
+            price
 
-        balance -= price
+        balance -=
+            price
 
         balance =
             roundMoney(balance)
@@ -542,34 +648,22 @@ class TestController {
         updateItemButtonsEnabledState()
 
         displayLabel.text =
-            "Dispensed ${slot.item?.name ?: "Add-on"}"
+            "Added $itemName"
 
         log(
-            "Purchased ${slot.item?.name ?: "Add-on"} for ₱%.2f"
+            "Purchased add-on $itemName for ₱%.2f"
                 .format(price)
         )
 
         logCurrentState()
 
-        /*
-         * Inventory changed immediately.
-         */
         saveCurrentMachine()
     }
 
     /*
      * ==========================================================
-     * ENABLE / DISABLE ITEM BUTTONS
+     * ENABLE / DISABLE PURCHASE BUTTONS
      * ==========================================================
-     *
-     * A button is enabled ONLY when:
-     *
-     * 1. Item exists
-     * 2. Item has stock
-     * 3. Customer has enough remaining balance
-     * 4. Machine can make exact change
-     *
-     * This is recalculated every time money or inventory changes.
      */
 
     private fun updateItemButtonsEnabledState() {
@@ -577,41 +671,81 @@ class TestController {
         var buttonIndex = 0
 
         /*
-         * Regular slots
+         * ------------------------------------------------------
+         * BASE ITEMS
+         * ------------------------------------------------------
          */
 
-        machine.slots.forEach { slot ->
+        machine.slots.forEachIndexed { index, slot ->
 
             if (
-                buttonIndex >= itemButtons.size
+                buttonIndex >=
+                itemButtons.size
             ) {
-                return@forEach
+                return@forEachIndexed
             }
 
             val button =
-                itemButtons[buttonIndex]
+                itemButtons[
+                    buttonIndex
+                ]
 
             buttonIndex++
+
+            /*
+             * Empty / out of stock.
+             */
 
             if (
                 slot.item == null ||
                 slot.quantity <= 0
             ) {
 
-                button.isDisable = true
+                button.isDisable =
+                    true
 
-                return@forEach
+                return@forEachIndexed
+            }
+
+            /*
+             * Special machine:
+             *
+             * Once a base item has been purchased,
+             * no other base item can be selected.
+             */
+
+            if (
+                machine is SpecialMachine &&
+                baseItemPurchased
+            ) {
+
+                button.isDisable =
+                    true
+
+                return@forEachIndexed
             }
 
             val price =
                 slot.price
 
-            if (balance < price) {
+            /*
+             * Not enough money.
+             */
 
-                button.isDisable = true
+            if (
+                balance < price
+            ) {
 
-                return@forEach
+                button.isDisable =
+                    true
+
+                return@forEachIndexed
             }
+
+            /*
+             * Machine must be capable of returning
+             * exact change.
+             */
 
             val possibleChange =
                 machine.dispenseChange(
@@ -624,7 +758,9 @@ class TestController {
         }
 
         /*
-         * Special machine add-ons
+         * ------------------------------------------------------
+         * ADD-ONS
+         * ------------------------------------------------------
          */
 
         val special =
@@ -636,22 +772,39 @@ class TestController {
                 .forEach { slot ->
 
                     if (
-                        buttonIndex >= itemButtons.size
+                        buttonIndex >=
+                        itemButtons.size
                     ) {
                         return@forEach
                     }
 
                     val button =
-                        itemButtons[buttonIndex]
+                        itemButtons[
+                            buttonIndex
+                        ]
 
                     buttonIndex++
+
+                    /*
+                     * Add-ons are completely disabled
+                     * until a base item exists.
+                     */
+
+                    if (!baseItemPurchased) {
+
+                        button.isDisable =
+                            true
+
+                        return@forEach
+                    }
 
                     if (
                         slot.item == null ||
                         slot.quantity <= 0
                     ) {
 
-                        button.isDisable = true
+                        button.isDisable =
+                            true
 
                         return@forEach
                     }
@@ -659,9 +812,12 @@ class TestController {
                     val price =
                         slot.price
 
-                    if (balance < price) {
+                    if (
+                        balance < price
+                    ) {
 
-                        button.isDisable = true
+                        button.isDisable =
+                            true
 
                         return@forEach
                     }
@@ -682,14 +838,6 @@ class TestController {
      * ==========================================================
      * DISPENSE CHANGE
      * ==========================================================
-     *
-     * THIS is the only point where:
-     *
-     *     customer deposit -> machine register
-     *
-     * happens.
-     *
-     * Purchases do NOT immediately modify the register.
      */
 
     @FXML
@@ -708,7 +856,8 @@ class TestController {
         }
 
         /*
-         * Calculate exact change for all purchases.
+         * Calculate exact change for the
+         * complete transaction.
          */
 
         val change =
@@ -730,8 +879,7 @@ class TestController {
         }
 
         /*
-         * First put customer's cash into
-         * the machine register.
+         * Put customer's money into register.
          */
 
         machine.updateRegister(
@@ -739,53 +887,52 @@ class TestController {
         )
 
         /*
-         * Then remove the actual change
-         * that must be returned.
+         * Remove the exact change that must
+         * be returned.
          */
 
         change.forEach {
+
             (denomination, quantity) ->
 
             machine.register.removeCash(
                 denomination,
                 quantity
             )
-        }
-
-        /*
-         * Log returned change.
-         */
-
-        if (change.isEmpty()) {
 
             log(
-                "No change required."
+                "Returning ₱%.2f x%d"
+                    .format(
+                        denomination,
+                        quantity
+                    )
             )
-
-        } else {
-
-            change.forEach {
-                (denomination, quantity) ->
-
-                log(
-                    "Returning ₱%.2f x%d"
-                        .format(
-                            denomination,
-                            quantity
-                        )
-                )
-            }
         }
 
         /*
-         * Clear customer's transaction.
+         * Clear transaction.
          */
 
         deposit.clear()
 
-        balance = 0f
+        balance =
+            0f
 
-        pendingPurchaseTotal = 0f
+        pendingPurchaseTotal =
+            0f
+
+        /*
+         * IMPORTANT:
+         *
+         * The special machine is now ready
+         * for a completely new order.
+         */
+
+        baseItemPurchased =
+            false
+
+        purchasedBaseSlotIndex =
+            null
 
         updateBalance()
         updateItemButtonsEnabledState()
@@ -802,16 +949,14 @@ class TestController {
         /*
          * Register changed.
          */
+
         saveCurrentMachine()
     }
 
     /*
      * ==========================================================
-     * CANCEL / RETURN CASH
+     * CANCEL / RETURN REMAINING CASH
      * ==========================================================
-     *
-     * This returns the customer's currently held cash
-     * without putting it into the machine register.
      */
 
     @FXML
@@ -826,6 +971,7 @@ class TestController {
         }
 
         deposit.forEach {
+
             (denomination, quantity) ->
 
             log(
@@ -837,17 +983,17 @@ class TestController {
             )
         }
 
+        /*
+         * Return only the customer's
+         * remaining unspent cash.
+         *
+         * Purchases are NOT undone.
+         */
+
         deposit.clear()
 
-        balance = 0f
-
-        /*
-         * Do NOT undo purchases.
-         *
-         * Purchases already happened.
-         * This only returns the customer's remaining
-         * unspent cash.
-         */
+        balance =
+            0f
 
         updateBalance()
         updateItemButtonsEnabledState()
@@ -912,6 +1058,14 @@ class TestController {
         )
 
         log(
+            "Base item purchased: $baseItemPurchased"
+        )
+
+        log(
+            "Base slot: $purchasedBaseSlotIndex"
+        )
+
+        log(
             "Deposit map: $deposit"
         )
 
@@ -943,14 +1097,14 @@ class TestController {
     ) {
 
         /*
-         * Any cash still in deposit has never entered
-         * the machine register, so it is simply returned
-         * to the customer when leaving.
+         * Any unspent customer cash is simply
+         * returned. It never entered the register.
          */
 
         if (deposit.isNotEmpty()) {
 
             deposit.forEach {
+
                 (denomination, quantity) ->
 
                 log(
@@ -965,12 +1119,23 @@ class TestController {
             deposit.clear()
         }
 
-        balance = 0f
-        pendingPurchaseTotal = 0f
+        balance =
+            0f
+
+        pendingPurchaseTotal =
+            0f
+
+        baseItemPurchased =
+            false
+
+        purchasedBaseSlotIndex =
+            null
 
         /*
-         * Save any inventory changes made during testing.
+         * Save any inventory changes made
+         * during testing.
          */
+
         saveCurrentMachine()
 
         val resource =
@@ -982,7 +1147,9 @@ class TestController {
                 )
 
         val root: Parent =
-            FXMLLoader.load(resource)
+            FXMLLoader.load(
+                resource
+            )
 
         val stage =
             (event.source as javafx.scene.Node)
